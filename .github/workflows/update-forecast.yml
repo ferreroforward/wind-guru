@@ -30,5 +30,12 @@ jobs:
           git config user.name "wind-guru-bot"
           git config user.email "actions@users.noreply.github.com"
           git add data/forecast.json
-          git diff --staged --quiet || git commit -m "Update forecast snapshot [skip ci]"
-          git push
+          git diff --staged --quiet && exit 0
+          git commit -m "Update forecast snapshot [skip ci]"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push && exit 0
+            echo "Push attempt $i failed, retrying..."
+            sleep $((RANDOM % 5 + 2))
+          done
+          echo "Failed to push after 5 attempts"
+          exit 1
