@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wind Guru — Where to ride today</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root{
+    --bg:#0b1220; --panel:#121a2b; --panel2:#182238; --border:#25314a;
+    --text:#e8edf7; --muted:#93a1bd; --accent:#3aa0ff;
+    --green:#1fb570; --green-bg:#0f2e23; --yellow:#e3b23c; --yellow-bg:#2e2a14; --red:#e0546b; --red-bg:#2e1620; --gray:#4a5776; --gray-bg:#1a2133;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);}
+  header{padding:20px 20px 8px;max-width:1200px;margin:0 auto;}
+  header h1{margin:0 0 4px;font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;}
+  header p.sub{margin:0;color:var(--muted);font-size:0.9rem;}
+  .meta-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:0.82rem;color:var(--muted);}
+  .meta-row button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.82rem;}
+  .meta-row button:hover{border-color:var(--accent);}
+  main{max-width:1200px;margin:0 auto;padding:0 20px 60px;}
+
+  .controls{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin:14px 0;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;}
+  .control-group{display:flex;flex-direction:column;gap:6px;}
+  .control-group label{font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;}
+  .range-inputs{display:flex;align-items:center;gap:8px;}
+  .range-inputs input[type=number]{width:64px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.95rem;}
+  .presets{display:flex;gap:6px;flex-wrap:wrap;}
+  .presets button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:20px;cursor:pointer;font-size:0.82rem;}
+  .presets button.active{background:var(--accent);border-color:var(--accent);color:#04101f;font-weight:600;}
+  .day-tabs{display:flex;gap:6px;}
+  .day-tabs button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem;}
+  .day-tabs button.active{background:var(--accent);border-color:var(--accent);color:#04101f;font-weight:600;}
+
+  #map{height:340px;border-radius:14px;border:1px solid var(--border);margin:14px 0;}
+  .leaflet-popup-content-wrapper{background:var(--panel2);color:var(--text);}
+  .leaflet-popup-tip{background:var(--panel2);}
+
+  h2.section{font-size:1rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin:28px 0 10px;}
+
+  .best-bets{display:flex;flex-direction:column;gap:8px;}
+  .bet-card{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 16px;}
+  .bet-rank{font-size:1.1rem;font-weight:700;color:var(--muted);width:22px;text-align:center;}
+  .bet-badge{font-weight:700;font-size:1.05rem;border-radius:8px;padding:6px 10px;min-width:52px;text-align:center;}
+  .bet-info{flex:1;min-width:0;}
+  .bet-info .name{font-weight:600;font-size:1rem;}
+  .bet-info .detail{color:var(--muted);font-size:0.83rem;margin-top:2px;}
+  .bet-info .reason{color:var(--muted);font-size:0.78rem;margin-top:3px;font-style:italic;}
+  .conf-pill{font-size:0.72rem;color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:3px 9px;white-space:nowrap;}
+
+  .spot-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:14px;}
+  .spot-card .head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+  .spot-card .head .name{font-weight:700;font-size:1.05rem;}
+  .spot-card .head .region{color:var(--muted);font-size:0.8rem;}
+  .spot-card .sports{font-size:0.75rem;color:var(--muted);}
+  .hour-strip{display:flex;gap:3px;overflow-x:auto;padding-bottom:4px;}
+  .hour-cell{flex:0 0 auto;width:52px;border-radius:8px;padding:6px 4px;text-align:center;font-size:0.72rem;cursor:default;position:relative;}
+  .hour-cell .t{color:rgba(255,255,255,0.65);font-size:0.68rem;}
+  .hour-cell .p{font-weight:700;font-size:0.9rem;margin:2px 0;}
+  .hour-cell .d{font-size:0.65rem;color:rgba(255,255,255,0.6);}
+  .hour-cell:hover .tip{display:block;}
+  .tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#000;color:#fff;padding:8px 10px;border-radius:8px;font-size:0.72rem;width:190px;z-index:5;text-align:left;box-shadow:0 4px 14px rgba(0,0,0,0.4);}
+  .tip b{display:block;margin-bottom:3px;}
+
+  .lvl-green{background:var(--green-bg);color:var(--green);}
+  .lvl-yellow{background:var(--yellow-bg);color:var(--yellow);}
+  .lvl-red{background:var(--red-bg);color:var(--red);}
+  .lvl-gray{background:var(--gray-bg);color:var(--gray);}
+
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:0.78rem;color:var(--muted);margin:8px 0 4px;}
+  .legend span.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;}
+  .about{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:28px;}
+  .about b{color:var(--text);}
+  footer{text-align:center;color:var(--muted);font-size:0.78rem;padding:20px 0 40px;}
+  .empty{color:var(--muted);font-size:0.9rem;padding:20px;text-align:center;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌬️ Wind Guru</h1>
+  <p class="sub">Where to go windsurf, wingfoil, kite or parawing — Howe Sound, Metro Vancouver &amp; the Strait of Georgia</p>
+  <div class="meta-row">
+    <span id="genLabel">Loading forecast…</span>
+    <button id="refreshBtn">Refresh live</button>
+  </div>
+</header>
+
+<main>
+
+  <div class="controls">
+    <div class="control-group">
+      <label>Wind range (knots)</label>
+      <div class="range-inputs">
+        <input type="number" id="minKt" value="12" min="0" max="60">
+        <span>–</span>
+        <input type="number" id="maxKt" value="20" min="0" max="60">
+      </div>
+    </div>
+    <div class="control-group">
+      <label>Quick picks</label>
+      <div class="presets" id="presets">
+        <button data-lo="8" data-hi="14">8–14 Light</button>
+        <button data-lo="12" data-hi="20" class="active">12–20 Sweet spot</button>
+        <button data-lo="18" data-hi="28">18–28 Powered</button>
+        <button data-lo="25" data-hi="40">25+ Full send</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>Day</label>
+      <div class="day-tabs" id="dayTabs"></div>
+    </div>
+  </div>
+
+  <div id="map"></div>
+  <div class="legend">
+    <span><span class="dot" style="background:#1fb570"></span>Good odds (≥65%)</span>
+    <span><span class="dot" style="background:#e3b23c"></span>Maybe (35–64%)</span>
+    <span><span class="dot" style="background:#e0546b"></span>Unlikely (&lt;35%)</span>
+    <span><span class="dot" style="background:#4a5776"></span>No data / calm</span>
+  </div>
+
+  <h2 class="section">Best bets for your range, today's window</h2>
+  <div class="best-bets" id="bestBets"><div class="empty">Loading…</div></div>
+
+  <h2 class="section">All spots — hour by hour</h2>
+  <div id="spotCards"><div class="empty">Loading…</div></div>
+
+  <div class="about">
+    <b>How this works.</b> Every spot is checked against four independent weather models (GFS, ECMWF, ICON and Environment Canada's GEM/HRDPS, which best resolves local BC terrain). For each spot we don't just show raw numbers — we classify the hour as <b>thermal</b> (local sun-driven sea breeze or valley wind, e.g. the Squamish afternoon southerly), <b>outflow</b> (cold-air drainage / gap wind, e.g. Squamish's northerly), or <b>synoptic</b> (general frontal/gradient wind across the Strait). Probability = the share of models landing your chosen knot range at that hour; confidence is shaded down for pure mesoscale thermal signals that only the fine-resolution model catches, and for wind blowing from a direction that isn't clean onshore/cross-shore at that spot. This is a forecasting aid, not a safety guarantee — always check current conditions, tides and marine warnings before launching.
+  </div>
+
+</main>
+
+<footer>Wind Guru · data via Open-Meteo (GFS / ECMWF / ICON / GEM) · built for Strait of Georgia, Howe Sound &amp; Metro Vancouver</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script type="module">
+import { SPOTS } from "./assets/spots.js";
+import { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth } from "./assets/rules.js";
+
+let forecast = null; // loaded forecast.json shape
+let selectedDayIndex = 0;
+let minKt = 12, maxKt = 20;
+
+const genLabel = document.getElementById("genLabel");
+const bestBetsEl = document.getElementById("bestBets");
+const spotCardsEl = document.getElementById("spotCards");
+const dayTabsEl = document.getElementById("dayTabs");
+const minKtEl = document.getElementById("minKt");
+const maxKtEl = document.getElementById("maxKt");
+const presetsEl = document.getElementById("presets");
+const refreshBtn = document.getElementById("refreshBtn");
+
+let map, markerLayer;
+
+function initMap() {
+  map = L.map("map", { scrollWheelZoom: false }).setView([49.55, -123.35], 9);
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+    attribution: "&copy; OpenStreetMap &copy; CARTO",
+    maxZoom: 13,
+  }).addTo(map);
+  markerLayer = L.layerGroup().addTo(map);
+}
+
+function dayBuckets() {
+  // Group hours[] (America/Los_Angeles local ISO strings) by calendar date.
+  if (!forecast || !forecast.spots.length) return [];
+  const dates = [];
+  for (const h of forecast.spots[0].hours) {
+    const date = h.time.slice(0, 10);
+    if (!dates.includes(date)) dates.push(date);
+  }
+  return dates.slice(0, 4);
+}
+
+function labelForDate(dateStr, idx) {
+  const today = new Date().toISOString().slice(0, 10);
+  if (dateStr === today) return "Today";
+  const d = new Date(dateStr + "T12:00:00");
+  const wd = d.toLocaleDateString("en-US", { weekday: "short" });
+  const md = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return `${wd} ${md}`;
+}
+
+function renderDayTabs() {
+  const dates = dayBuckets();
+  dayTabsEl.innerHTML = "";
+  dates.forEach((d, i) => {
+    const btn = document.createElement("button");
+    btn.textContent = labelForDate(d, i);
+    if (i === selectedDayIndex) btn.classList.add("active");
+    btn.addEventListener("click", () => { selectedDayIndex = i; renderAll(); });
+    dayTabsEl.appendChild(btn);
+  });
+}
+
+function hoursForSelectedDay(spot) {
+  const dates = dayBuckets();
+  const date = dates[selectedDayIndex];
+  if (!date) return [];
+  return spot.hours.filter(h => h.time.slice(0, 10) === date && h.time.slice(11,13) >= "06" && h.time.slice(11,13) <= "20");
+}
+
+function tierClass(pct) {
+  if (pct >= 65) return "lvl-green";
+  if (pct >= 35) return "lvl-yellow";
+  if (pct === null || pct === undefined) return "lvl-gray";
+  return "lvl-red";
+}
+
+function bestWindowForSpot(spot) {
+  const hours = hoursForSelectedDay(spot);
+  let best = null;
+  for (const h of hours) {
+    const { probability, confidence } = probabilityInRange(h, minKt, maxKt);
+    const score = probability * (0.5 + confidence / 200);
+    if (!best || score > best.score) best = { hour: h, probability, confidence, score };
+  }
+  return best;
+}
+
+function renderBestBets() {
+  const ranked = SPOTS.map(sp => {
+    const spot = forecast.spots.find(s => s.id === sp.id);
+    if (!spot) return null;
+    const best = bestWindowForSpot(spot);
+    if (!best) return null;
+    return { spot: sp, spotData: spot, ...best };
+  }).filter(Boolean).sort((a, b) => b.score - a.score);
+
+  bestBetsEl.innerHTML = "";
+  if (!ranked.length) { bestBetsEl.innerHTML = '<div class="empty">No forecast data for this day yet.</div>'; return; }
+
+  ranked.slice(0, 9).forEach((r, i) => {
+    const div = document.createElement("div");
+    div.className = "bet-card";
+    const cls = tierClass(r.probability);
+    div.innerHTML = `
+      <div class="bet-rank">${i + 1}</div>
+      <div class="bet-badge ${cls}">${r.probability}%</div>
+      <div class="bet-info">
+        <div class="name">${r.spot.name} <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">· ${r.spot.region}</span></div>
+        <div class="detail">${r.hour.time.slice(11,16)} · ${r.hour.speed_kt ?? "–"}kt (gust ${r.hour.gust_kt ?? "–"}) ${r.hour.direction_label} · ${r.hour.regime}${r.hour.favorable_direction ? "" : " · off-favorable direction"}</div>
+        <div class="reason">${r.hour.reason}</div>
+      </div>
+      <div class="conf-pill">confidence ${r.confidence}%</div>
+    `;
+    bestBetsEl.appendChild(div);
+  });
+}
+
+function renderSpotCards() {
+  spotCardsEl.innerHTML = "";
+  SPOTS.forEach(sp => {
+    const spot = forecast.spots.find(s => s.id === sp.id);
+    if (!spot) return;
+    const hours = hoursForSelectedDay(spot);
+    const card = document.createElement("div");
+    card.className = "spot-card";
+    const strip = hours.map(h => {
+      const { probability } = probabilityInRange(h, minKt, maxKt);
+      const cls = tierClass(probability);
+      return `<div class="hour-cell ${cls}">
+        <div class="t">${h.time.slice(11,16)}</div>
+        <div class="p">${probability}%</div>
+        <div class="d">${h.speed_kt ?? "–"}kt ${h.direction_label}</div>
+        <div class="tip"><b>${h.regime.toUpperCase()}</b>${h.reason}</div>
+      </div>`;
+    }).join("");
+    card.innerHTML = `
+      <div class="head">
+        <div><span class="name">${sp.name}</span> <span class="region">· ${sp.region} · ${sp.level}</span></div>
+        <div class="sports">${sp.sports.join(" · ")}</div>
+      </div>
+      <div class="hour-strip">${strip || '<div class="empty">No data</div>'}</div>
+    `;
+    spotCardsEl.appendChild(card);
+  });
+}
+
+function renderMap() {
+  if (!map) initMap();
+  markerLayer.clearLayers();
+  SPOTS.forEach(sp => {
+    const spot = forecast.spots.find(s => s.id === sp.id);
+    let pct = null;
+    if (spot) { const b = bestWindowForSpot(spot); pct = b ? b.probability : null; }
+    const color = pct === null ? "#4a5776" : pct >= 65 ? "#1fb570" : pct >= 35 ? "#e3b23c" : "#e0546b";
+    const marker = L.circleMarker([sp.lat, sp.lon], {
+      radius: 9, color, fillColor: color, fillOpacity: 0.85, weight: 2,
+    }).addTo(markerLayer);
+    marker.bindPopup(`<b>${sp.name}</b><br>${pct === null ? "no data" : pct + "% chance of " + minKt + "–" + maxKt + "kt"}`);
+  });
+}
+
+function renderAll() {
+  if (!forecast) return;
+  genLabel.textContent = `Updated ${forecast.generated_at_label} · models: ${forecast.models_used.join(", ")}`;
+  renderDayTabs();
+  renderBestBets();
+  renderSpotCards();
+  renderMap();
+}
+
+async function loadStatic() {
+  try {
+    const res = await fetch("data/forecast.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("no snapshot yet");
+    forecast = await res.json();
+    renderAll();
+  } catch (err) {
+    genLabel.textContent = "No saved snapshot yet — fetching live…";
+    await loadLive();
+  }
+}
+
+async function loadLive() {
+  refreshBtn.disabled = true;
+  refreshBtn.textContent = "Refreshing…";
+  try {
+    const spotsOut = [];
+    for (const spot of SPOTS) {
+      const url = buildForecastUrl(spot.lat, spot.lon, 4);
+      const res = await fetch(url);
+      const json = await res.json();
+      const rows = reshapeOpenMeteo(json);
+      const hours = rows.map(row => {
+        const { hour, month } = localHourAndMonth(row.time);
+        return classifyHour(spot, row, hour, month);
+      });
+      spotsOut.push({ id: spot.id, name: spot.name, hours });
+    }
+    forecast = {
+      generated_at: new Date().toISOString(),
+      generated_at_label: new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" }) + " (live)",
+      models_used: ["GFS", "ECMWF", "ICON", "GEM/HRDPS"],
+      spots: spotsOut,
+    };
+    renderAll();
+  } catch (err) {
+    genLabel.textContent = "Live fetch failed — check your connection.";
+    console.error(err);
+  } finally {
+    refreshBtn.disabled = false;
+    refreshBtn.textContent = "Refresh live";
+  }
+}
+
+minKtEl.addEventListener("change", () => { minKt = Number(minKtEl.value); presetsEl.querySelectorAll("button").forEach(b=>b.classList.remove("active")); renderAll(); });
+maxKtEl.addEventListener("change", () => { maxKt = Number(maxKtEl.value); presetsEl.querySelectorAll("button").forEach(b=>b.classList.remove("active")); renderAll(); });
+presetsEl.querySelectorAll("button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    minKt = Number(btn.dataset.lo); maxKt = Number(btn.dataset.hi);
+    minKtEl.value = minKt; maxKtEl.value = maxKt;
+    presetsEl.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    renderAll();
+  });
+});
+refreshBtn.addEventListener("click", loadLive);
+
+loadStatic();
+</script>
+</body>
+</html>

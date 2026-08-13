@@ -1,0 +1,34 @@
+name: Update wind forecast
+
+on:
+  schedule:
+    # 5:00am and 5:00pm Pacific Daylight Time (UTC-7).
+    # In winter (PST, UTC-8) these land at 4am/4pm local — an hour early.
+    # Adjust to "0 13 * * *" / "0 1 * * *" around November if you want it exact.
+    - cron: "0 12 * * *"
+    - cron: "0 0 * * *"
+  workflow_dispatch: {}   # lets you trigger a run manually from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  update-forecast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate forecast snapshot
+        run: node scripts/generate.mjs
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "wind-guru-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/forecast.json
+          git diff --staged --quiet || git commit -m "Update forecast snapshot [skip ci]"
+          git push

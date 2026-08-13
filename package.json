@@ -1,0 +1,14 @@
+{
+  "name": "wind-guru",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Wind Guru — wind sport forecast tool for Strait of Georgia / Howe Sound / Metro Vancouver",
+  "scripts": {
+    "generate": "node scripts/generate.mjs",
+    "serve": "python3 -m http.server 8080"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
