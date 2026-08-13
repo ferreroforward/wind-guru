@@ -121,16 +121,26 @@ export function classifyHour(spot, row, localHour, month) {
   const thermalCfg = spot.thermal;
   const outflowCfg = spot.outflow;
 
+  // Gate on the BEST available signal, not the flat average across models.
+  // A pure thermal is, by definition, a case where only the fine-res model
+  // (or maybe one or two others) has actually picked it up while coarse
+  // global models still show near-zero — averaging all four together dilutes
+  // exactly the signal we're trying to detect and would keep this branch
+  // from ever firing on a real thermal day. Use whichever model is reading
+  // highest for the go/no-go gate; the display value and probability model
+  // handle weighting separately.
+  const maxSpeed = speedVals.length ? Math.max(...speedVals) : null;
+
   const looksThermal = thermalCfg && thermalCfg.enabled &&
     thermalCfg.months.includes(month) &&
     inHourWindow(thermalCfg.hourWindow) &&
     sunny &&
     direction_deg != null && inSector(direction_deg, thermalCfg.dirSector) &&
-    speed_kt != null && speed_kt >= 6;
+    maxSpeed != null && maxSpeed >= 4;
 
   const looksOutflow = outflowCfg && outflowCfg.enabled &&
     direction_deg != null && inSector(direction_deg, outflowCfg.dirSector) &&
-    speed_kt != null && speed_kt >= 10;
+    maxSpeed != null && maxSpeed >= 8;
 
   const looksSynoptic = speed_kt != null && speed_kt >= 10 && agreement >= 0.6 &&
     !(thermalCfg && thermalCfg.enabled && inHourWindow(thermalCfg.hourWindow) && looksThermal);
@@ -154,9 +164,9 @@ export function classifyHour(spot, row, localHour, month) {
   } else if (looksSynoptic) {
     regime = "synoptic";
     reason = `General Strait/regional gradient wind from the ${degToLabel(direction_deg)}, agreed on by ${speedVals.length} model${speedVals.length === 1 ? "" : "s"}.`;
-  } else if (speed_kt != null && speed_kt < 6) {
+  } else if (maxSpeed != null && maxSpeed < 5) {
     regime = "calm";
-    reason = "Forecast light — under 6kt across models.";
+    reason = "Forecast light — every model under 5kt.";
   } else {
     regime = "mixed";
     reason = `Wind expected (${degToLabel(direction_deg)}) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution.`;
