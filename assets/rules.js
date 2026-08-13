@@ -77,6 +77,21 @@ function calibrateSquamishThermal(coarseMeanKt) {
 }
 
 function mean(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null; }
+
+// Fetch-and-reshape helper for a spot's `referenceStation` — builds a
+// time -> speedKt lookup (simple multi-model mean; reference stations are
+// open, well-exposed points, not mesoscale-tricky terrain, so no special
+// calibration is needed here). Used by both generate.mjs and the browser's
+// live-refresh path so the logic only lives in one place.
+export function referenceStationSpeeds(openMeteoJson) {
+  const rows = reshapeOpenMeteo(openMeteoJson);
+  const map = {};
+  for (const row of rows) {
+    const vals = Object.values(row.speeds).filter(v => v != null);
+    map[row.time] = vals.length ? mean(vals) : null;
+  }
+  return map;
+}
 function circularMeanDeg(degs) {
   if (!degs.length) return null;
   let x = 0, y = 0;
@@ -86,8 +101,13 @@ function circularMeanDeg(degs) {
 }
 
 // Classify one hour's regime for one spot, given the row of model values.
+// `refSpeedKt`, if provided, is the best-estimate wind speed at this same
+// hour from the spot's reference station (see spot.referenceStation) — used
+// for spots where a nearby well-exposed gauge point is a better predictor
+// than the spot's own local model output (e.g. Erwin Park vs Point
+// Atkinson).
 // Returns { regime, reason, direction_deg, speed_kt, gust_kt, agreement }
-export function classifyHour(spot, row, localHour, month) {
+export function classifyHour(spot, row, localHour, month, refSpeedKt = null) {
   const speedVals = Object.values(row.speeds).filter(v => v != null);
   const dirVals = Object.values(row.dirs).filter(v => v != null);
   const cloudVals = Object.values(row.cloud).filter(v => v != null);
@@ -215,6 +235,28 @@ export function classifyHour(spot, row, localHour, month) {
     }
   }
 
+  // Reference-station trigger: some spots are better predicted by whether a
+  // nearby exposed gauge point is already reading above a threshold than by
+  // their own local model output — e.g. Erwin Park (Point Roberts) tends to
+  // turn on once Point Atkinson, the Strait of Georgia entrance station, is
+  // above ~16-18kt, per local rider knowledge. Only steps in when the
+  // ordinary classification came up empty (calm/mixed); if the spot's own
+  // thermal/outflow/synoptic logic already found something, we just add a
+  // corroborating note rather than override it.
+  let referenceTriggered = false;
+  if (spot.referenceStation && refSpeedKt != null && refSpeedKt >= spot.referenceStation.thresholdKt) {
+    referenceTriggered = true;
+    const rs = spot.referenceStation;
+    if (regime === "calm" || regime === "mixed") {
+      regime = "synoptic";
+      displaySpeed = Math.max(displaySpeed ?? 0, rs.thresholdKt);
+      displayGust = displaySpeed * 1.3;
+      reason = `${rs.name} is reading ~${Math.round(refSpeedKt)}kt, above this spot's ${rs.thresholdKt}kt trigger. ${rs.note}`;
+    } else {
+      reason += ` Also corroborated by ${rs.name} reading ~${Math.round(refSpeedKt)}kt, above its ${rs.thresholdKt}kt trigger for this spot.`;
+    }
+  }
+
   // Quick qualitative flags from a 12-year local rider's notes: rain kills
   // it, cloud alone doesn't, and an extreme heat forecast tends to suppress
   // the thermal (or make it very short-lived).
@@ -240,6 +282,7 @@ export function classifyHour(spot, row, localHour, month) {
     model_agreement: Math.round(agreement * 100) / 100,
     fine_vs_coarse_gap: fine_vs_coarse_gap != null ? Math.round(fine_vs_coarse_gap * 10) / 10 : null,
     calibrated,
+    reference_triggered: referenceTriggered,
     models: displayModels,
     raw_models: row.speeds,
   };
@@ -304,6 +347,7 @@ export function probabilityInRange(hourResult, lo, hi) {
   } else {
     confidence = 0.35 + hourResult.model_agreement * 0.2;
   }
+  if (hourResult.reference_triggered) confidence = Math.max(confidence, 0.7);
   if (!hourResult.favorable_direction) confidence *= 0.7;
 
   return {

@@ -145,7 +145,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script type="module">
 import { SPOTS } from "./assets/spots.js";
-import { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth } from "./assets/rules.js";
+import { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, referenceStationSpeeds } from "./assets/rules.js";
 
 let forecast = null; // loaded forecast.json shape
 let selectedDayIndex = 0;
@@ -337,14 +337,29 @@ async function loadLive() {
   refreshBtn.textContent = "Refreshing…";
   try {
     const spotsOut = [];
+    const refCache = {};
     for (const spot of SPOTS) {
       const url = buildForecastUrl(spot.lat, spot.lon, 4);
       const res = await fetch(url);
       const json = await res.json();
       const rows = reshapeOpenMeteo(json);
+
+      let refMap = null;
+      if (spot.referenceStation) {
+        const key = `${spot.referenceStation.lat},${spot.referenceStation.lon}`;
+        if (!refCache[key]) {
+          const refUrl = buildForecastUrl(spot.referenceStation.lat, spot.referenceStation.lon, 4);
+          const refRes = await fetch(refUrl);
+          const refJson = await refRes.json();
+          refCache[key] = referenceStationSpeeds(refJson);
+        }
+        refMap = refCache[key];
+      }
+
       const hours = rows.map(row => {
         const { hour, month } = localHourAndMonth(row.time);
-        return classifyHour(spot, row, hour, month);
+        const refSpeedKt = refMap ? refMap[row.time] : null;
+        return classifyHour(spot, row, hour, month, refSpeedKt);
       });
       spotsOut.push({ id: spot.id, name: spot.name, hours });
     }

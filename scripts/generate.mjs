@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 import { SPOTS } from "../assets/spots.js";
-import { buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth } from "../assets/rules.js";
+import { buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, referenceStationSpeeds } from "../assets/rules.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_PATH = path.join(__dirname, "..", "data", "forecast.json");
@@ -60,6 +60,23 @@ async function fetchMarineBulletin(zone) {
   }
 }
 
+// Reference-station data (e.g. Point Atkinson for Erwin Park) — fetched once
+// per unique station and reused across any spot pointing at it.
+const referenceCache = {};
+async function getReferenceSpeeds(station) {
+  const key = `${station.lat},${station.lon}`;
+  if (referenceCache[key]) return referenceCache[key];
+  process.stdout.write(`Fetching reference station ${station.name}... `);
+  const url = buildForecastUrl(station.lat, station.lon, FORECAST_DAYS);
+  const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
+  if (!res.ok) { console.log(`fetch failed: ${res.status}`); return null; }
+  const json = await res.json();
+  const map = referenceStationSpeeds(json);
+  console.log("done");
+  referenceCache[key] = map;
+  return map;
+}
+
 async function main() {
   const startedAt = new Date();
   const spotsOut = [];
@@ -83,9 +100,19 @@ async function main() {
     if (!rows) { console.log("skipped"); continue; }
     console.log(`${rows.length} hours`);
 
+    let refMap = null;
+    if (spot.referenceStation) {
+      try {
+        refMap = await getReferenceSpeeds(spot.referenceStation);
+      } catch (err) {
+        console.log(`[${spot.id}] reference station fetch failed: ${err.message}`);
+      }
+    }
+
     const hours = rows.map((row) => {
       const { hour, month } = localHourAndMonth(row.time);
-      return classifyHour(spot, row, hour, month);
+      const refSpeedKt = refMap ? refMap[row.time] : null;
+      return classifyHour(spot, row, hour, month, refSpeedKt);
     });
 
     spotsOut.push({

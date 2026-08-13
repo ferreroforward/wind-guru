@@ -108,6 +108,13 @@ the season/hour window/direction that pattern needs, plus a one-line
 explanation shown to users. Add a spot by copying an existing entry; no
 other file needs to change.
 
+A spot can also define a `referenceStation` instead of (or alongside) its
+own thermal/outflow config, for cases where a nearby exposed gauge point
+predicts it better than local models do — e.g. Erwin Park (Point Roberts)
+tends to turn on once Point Atkinson is reading above ~17kt. `generate.mjs`
+and the live-refresh path both fetch the reference station once and pass its
+speed into `classifyHour`; see `assets/rules.js`.
+
 ## Known limitations / good next steps
 
 - No explicit synoptic pressure-map read — the "synoptic" classification is

@@ -158,16 +158,31 @@ export const SPOTS = [
     outflow: { enabled: false }
   },
   {
-    id: "gabriola-pass",
-    name: "Gabriola Pass",
-    region: "Strait of Georgia / Gulf Islands",
-    lat: 49.1444, lon: -123.7936,
-    sports: ["wingfoil", "windsurf", "kite"],
-    level: "advanced",
-    favorable_deg: [[120, 240], [300, 360]],
-    thermal: { enabled: false },
+    id: "erwin-park",
+    name: "Erwin Park",
+    region: "Point Roberts",
+    lat: 48.9740, lon: -123.0850, // approximate — west side of the Point Roberts peninsula
+    sports: ["windsurf", "wingfoil", "kite"],
+    level: "intermediate",
+    favorable_deg: [[150, 280]],
+    thermal: {
+      enabled: true,
+      months: [4,5,6,7,8,9],
+      hourWindow: [12, 19],
+      dirSector: [220, 260],
+      note: "Same south/southwest sea-breeze exposure as Boundary Bay and White Rock nearby."
+    },
     outflow: { enabled: false },
-    synoptic_note: "Fully exposed to open Strait of Georgia gradient wind — SE ahead of a front, NW behind it — with tidal current through the pass adding chop/standing waves. No meaningful local thermal signature; this is a pure synoptic-wind, experienced-rider spot."
+    // Local rider rule of thumb: Erwin Park tends to turn on once Point
+    // Atkinson (the Strait of Georgia entrance station, a good gauge of
+    // broader synoptic push) is reading above roughly 16-18kt — often a
+    // better predictor than the spot's own local model output.
+    referenceStation: {
+      name: "Point Atkinson",
+      lat: 49.3300, lon: -123.2650,
+      thresholdKt: 17,
+      note: "Typically means enough synoptic push in the Strait for Erwin Park to be working, even if the local forecast alone looks marginal."
+    }
   }
 ];
 
