@@ -42,14 +42,21 @@ async function fetchMarineBulletin(zone) {
     const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
     if (!res.ok) return null;
     const html = await res.text();
-    const section = html.split("Extended Forecast")[0];
-    const marineIdx = section.indexOf("Marine Forecast");
-    const raw = marineIdx >= 0 ? section.slice(marineIdx) : section;
-    const text = raw
+    // Anchor on the ">Marine Forecast<" heading tag specifically (not the
+    // "Marine Forecasts" breadcrumb link earlier in the page, which
+    // `indexOf("Marine Forecast")` alone would match first and pull in a
+    // pile of nav/alert-banner text ahead of the actual bulletin), and stop
+    // at the next "Winds" heading.
+    const headingIdx = html.indexOf(">Marine Forecast<");
+    const endIdx = headingIdx >= 0 ? html.indexOf(">Winds<", headingIdx) : -1;
+    const section = headingIdx >= 0
+      ? html.slice(headingIdx, endIdx > headingIdx ? endIdx : headingIdx + 3000)
+      : html.split("Extended Forecast")[0];
+    const text = section
       .replace(/<[^>]+>/g, " ")
       .replace(/&nbsp;/g, " ")
       .replace(/\s+/g, " ")
-      .replace(/Marine Forecast/, "")
+      .replace(/^\s*Marine Forecast\s*/, "")
       .trim()
       .slice(0, 900);
     const warning = /strong wind warning|gale warning|storm warning|small craft warning/i.test(html);

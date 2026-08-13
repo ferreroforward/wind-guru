@@ -183,7 +183,10 @@ function dayBuckets() {
 }
 
 function labelForDate(dateStr, idx) {
-  const today = new Date().toISOString().slice(0, 10);
+  // Forecast dates are Pacific-local (America/Los_Angeles). Comparing
+  // against a UTC "today" breaks in the evening, once UTC has already
+  // rolled over to the next calendar day while it's still today here.
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
   if (dateStr === today) return "Today";
   const d = new Date(dateStr + "T12:00:00");
   const wd = d.toLocaleDateString("en-US", { weekday: "short" });
