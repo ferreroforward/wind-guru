@@ -78,19 +78,31 @@ function calibrateSquamishThermal(coarseMeanKt) {
 
 function mean(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null; }
 
-// Fetch-and-reshape helper for a spot's `referenceStation` — builds a
-// time -> speedKt lookup (simple multi-model mean; reference stations are
-// open, well-exposed points, not mesoscale-tricky terrain, so no special
-// calibration is needed here). Used by both generate.mjs and the browser's
-// live-refresh path so the logic only lives in one place.
-export function referenceStationSpeeds(openMeteoJson) {
-  const rows = reshapeOpenMeteo(openMeteoJson);
+// time -> value lookup from a reshaped row array, for whichever field
+// ("speeds" or "pressure") the caller wants, averaged across models. Shared
+// by the reference-station speed check (Erwin Park) and the pressure
+// gradient check (Squamish family) so the fetch/reshape logic only lives in
+// one place — generate.mjs and the browser's live-refresh path both call
+// through the json-based wrappers below.
+function rowsToSeriesMap(rows, field) {
   const map = {};
   for (const row of rows) {
-    const vals = Object.values(row.speeds).filter(v => v != null);
+    const vals = Object.values(row[field]).filter(v => v != null);
     map[row.time] = vals.length ? mean(vals) : null;
   }
   return map;
+}
+export function referenceStationSpeeds(openMeteoJson) {
+  return rowsToSeriesMap(reshapeOpenMeteo(openMeteoJson), "speeds");
+}
+export function referenceStationPressures(openMeteoJson) {
+  return rowsToSeriesMap(reshapeOpenMeteo(openMeteoJson), "pressure");
+}
+export function rowsToPressureMap(rows) {
+  return rowsToSeriesMap(rows, "pressure");
+}
+export function rowsToSpeedMap(rows) {
+  return rowsToSeriesMap(rows, "speeds");
 }
 function circularMeanDeg(degs) {
   if (!degs.length) return null;
@@ -106,8 +118,13 @@ function circularMeanDeg(degs) {
 // for spots where a nearby well-exposed gauge point is a better predictor
 // than the spot's own local model output (e.g. Erwin Park vs Point
 // Atkinson).
+// `pressureGradients`, if provided, is { largeScale, local } in hPa for
+// Howe Sound spots (see spot.pressureGradientAware) — positive favors
+// inflow/thermal, negative favors outflow.
+// `overrideMultiplier`, if provided, is a rider-feedback-learned correction
+// for this spot (see scripts/apply-feedback.mjs / data/calibration-overrides.json).
 // Returns { regime, reason, direction_deg, speed_kt, gust_kt, agreement }
-export function classifyHour(spot, row, localHour, month, refSpeedKt = null) {
+export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pressureGradients = null, overrideMultiplier = null) {
   const speedVals = Object.values(row.speeds).filter(v => v != null);
   const dirVals = Object.values(row.dirs).filter(v => v != null);
   const cloudVals = Object.values(row.cloud).filter(v => v != null);
@@ -126,13 +143,6 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null) {
     const spread = Math.max(...speedVals) - Math.min(...speedVals);
     agreement = Math.max(0, Math.min(1, 1 - spread / Math.max(8, speed_kt * 1.2)));
   }
-
-  // Pressure gradient proxy: fine-model pressure at this spot vs. the
-  // coarse global model's pressure at the same spot. Not a substitute for
-  // a real synoptic map, but a cheap same-request signal of how "gradient
-  // driven" vs "local" the flow is likely to be.
-  const gemP = row.pressure.gem, gfsP = row.pressure.gfs;
-  const pressureSpread = (gemP != null && gfsP != null) ? Math.abs(gemP - gfsP) : null;
 
   let regime = "calm", reason = "Light and variable — no clear driver.";
   const sunny = cloud_pct != null ? cloud_pct < 55 : true;
@@ -235,6 +245,35 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null) {
     }
   }
 
+  // Pressure gradient check (MSLP), Howe Sound spots only. Squamish wind
+  // isn't purely thermal — it's also a function of the actual pressure
+  // gradient along the corridor (see kiteloop.vercel.app's "MSLP — two
+  // pressure checks" panel, which inspired this): a large-scale coastal-vs-
+  // interior spread (broad synoptic support) and a local spread between the
+  // sound's mouth and the spot itself (is the channel locally pressurized
+  // toward it). Positive = favors inflow (thermal/southerly), negative =
+  // favors outflow (northerly). We use this to raise or discount confidence
+  // and explain *why*, rather than to flip the regime itself — wind-speed
+  // signals stay the primary classifier.
+  let pressureSupport = null;
+  if (spot.pressureGradientAware && pressureGradients &&
+      pressureGradients.largeScale != null && pressureGradients.local != null) {
+    const { largeScale, local } = pressureGradients;
+    const inflowSupport = largeScale > 0.4 && local > 0.2;
+    const outflowSupport = largeScale < -0.4 && local < -0.2;
+    if (regime === "thermal") {
+      pressureSupport = inflowSupport;
+      reason += inflowSupport
+        ? ` MSLP backs this up — both the large-scale coast-vs-interior spread (${largeScale.toFixed(1)}hPa) and the local channel spread (${local.toFixed(1)}hPa) favor inflow.`
+        : ` Caution: MSLP doesn't clearly support inflow yet (large-scale ${largeScale.toFixed(1)}hPa, local ${local.toFixed(1)}hPa) — could be weaker or more marginal than the wind signal alone suggests.`;
+    } else if (regime === "outflow") {
+      pressureSupport = outflowSupport;
+      reason += outflowSupport
+        ? ` MSLP confirms it — both large-scale (${largeScale.toFixed(1)}hPa) and local (${local.toFixed(1)}hPa) spreads favor outflow.`
+        : ` Caution: MSLP is weaker than the wind signal suggests (large-scale ${largeScale.toFixed(1)}hPa, local ${local.toFixed(1)}hPa) — this outflow could fade faster than expected.`;
+    }
+  }
+
   // Reference-station trigger: some spots are better predicted by whether a
   // nearby exposed gauge point is already reading above a threshold than by
   // their own local model output — e.g. Erwin Park (Point Roberts) tends to
@@ -269,6 +308,21 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null) {
     reason += " Very hot forecast — heat waves often kill or badly shorten this thermal; if it does fill in, be ready to go early.";
   }
 
+  // Rider-feedback calibration override (see scripts/apply-feedback.mjs):
+  // a per-spot multiplier learned from "Report actual conditions" issues,
+  // applied on top of everything above. Scales the model votes too, so
+  // probabilityInRange's weighted count reflects it automatically.
+  let feedbackAdjusted = false;
+  if (overrideMultiplier != null && Math.abs(overrideMultiplier - 1) > 0.02) {
+    feedbackAdjusted = true;
+    if (displaySpeed != null) displaySpeed *= overrideMultiplier;
+    if (displayGust != null) displayGust *= overrideMultiplier;
+    displayModels = Object.fromEntries(
+      Object.entries(displayModels).map(([k, v]) => [k, v != null ? v * overrideMultiplier : v])
+    );
+    reason += ` Adjusted ×${overrideMultiplier.toFixed(2)} based on rider-reported actual conditions at this spot (see the "Report actual conditions" link).`;
+  }
+
   return {
     time: row.time,
     speed_kt: displaySpeed != null ? Math.round(displaySpeed * 10) / 10 : null,
@@ -283,6 +337,8 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null) {
     fine_vs_coarse_gap: fine_vs_coarse_gap != null ? Math.round(fine_vs_coarse_gap * 10) / 10 : null,
     calibrated,
     reference_triggered: referenceTriggered,
+    pressure_support: pressureSupport,
+    feedback_adjusted: feedbackAdjusted,
     models: displayModels,
     raw_models: row.speeds,
   };
@@ -348,6 +404,8 @@ export function probabilityInRange(hourResult, lo, hi) {
     confidence = 0.35 + hourResult.model_agreement * 0.2;
   }
   if (hourResult.reference_triggered) confidence = Math.max(confidence, 0.7);
+  if (hourResult.pressure_support === true) confidence = Math.min(1, confidence + 0.12);
+  if (hourResult.pressure_support === false) confidence *= 0.8;
   if (!hourResult.favorable_direction) confidence *= 0.7;
 
   return {

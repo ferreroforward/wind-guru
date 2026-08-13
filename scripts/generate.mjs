@@ -4,16 +4,30 @@
 // writes data/forecast.json. Run twice a day by .github/workflows/update-forecast.yml,
 // or manually: `node scripts/generate.mjs`.
 
-import { writeFile, mkdir } from "node:fs/promises";
+import { writeFile, mkdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-import { SPOTS } from "../assets/spots.js";
-import { buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, referenceStationSpeeds } from "../assets/rules.js";
+import { SPOTS, PRESSURE_REFERENCE } from "../assets/spots.js";
+import { buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap } from "../assets/rules.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_PATH = path.join(__dirname, "..", "data", "forecast.json");
+const OVERRIDES_PATH = path.join(__dirname, "..", "data", "calibration-overrides.json");
 const FORECAST_DAYS = 4; // "today" + 3 days ahead
+
+// Rider-feedback overrides, if scripts/apply-feedback.mjs has produced any
+// (it runs first in the Action — see .github/workflows/update-forecast.yml).
+// Missing file just means no feedback yet; that's fine.
+async function loadOverrides() {
+  try {
+    const raw = await readFile(OVERRIDES_PATH, "utf8");
+    const parsed = JSON.parse(raw);
+    return parsed.spots || {};
+  } catch {
+    return {};
+  }
+}
 
 async function fetchSpot(spot) {
   const url = buildForecastUrl(spot.lat, spot.lon, FORECAST_DAYS);
@@ -67,26 +81,55 @@ async function fetchMarineBulletin(zone) {
   }
 }
 
-// Reference-station data (e.g. Point Atkinson for Erwin Park) — fetched once
-// per unique station and reused across any spot pointing at it.
-const referenceCache = {};
-async function getReferenceSpeeds(station) {
+// Reference-station data (e.g. Point Atkinson for Erwin Park, and the
+// pressure-gradient trio for Howe Sound spots) — fetched once per unique
+// coordinate and reused across any spot/feature pointing at it.
+const stationRowsCache = {};
+async function getStationRows(station) {
   const key = `${station.lat},${station.lon}`;
-  if (referenceCache[key]) return referenceCache[key];
+  if (stationRowsCache[key]) return stationRowsCache[key];
   process.stdout.write(`Fetching reference station ${station.name}... `);
   const url = buildForecastUrl(station.lat, station.lon, FORECAST_DAYS);
   const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
   if (!res.ok) { console.log(`fetch failed: ${res.status}`); return null; }
   const json = await res.json();
-  const map = referenceStationSpeeds(json);
+  const rows = reshapeOpenMeteo(json);
   console.log("done");
-  referenceCache[key] = map;
-  return map;
+  stationRowsCache[key] = rows;
+  return rows;
+}
+async function getReferenceSpeeds(station) {
+  const rows = await getStationRows(station);
+  return rows ? rowsToSpeedMap(rows) : null;
+}
+
+// Pressure-gradient maps (large-scale coast-vs-interior, and Howe Sound
+// mouth for the local check), fetched once and shared by every Howe Sound
+// spot with pressureGradientAware: true. See rules.js for the interpretation.
+let gradientStations = null;
+async function getGradientStations() {
+  if (gradientStations) return gradientStations;
+  const [interiorRows, coastalRows, mouthRows] = await Promise.all([
+    getStationRows(PRESSURE_REFERENCE.interior),
+    getStationRows(PRESSURE_REFERENCE.coastal),
+    getStationRows(PRESSURE_REFERENCE.howeSoundMouth),
+  ]);
+  gradientStations = {
+    interior: interiorRows ? rowsToPressureMap(interiorRows) : {},
+    coastal: coastalRows ? rowsToPressureMap(coastalRows) : {},
+    mouth: mouthRows ? rowsToPressureMap(mouthRows) : {},
+  };
+  return gradientStations;
 }
 
 async function main() {
   const startedAt = new Date();
   const spotsOut = [];
+
+  const overrides = await loadOverrides();
+  if (Object.keys(overrides).length) {
+    console.log(`Loaded calibration overrides for: ${Object.keys(overrides).join(", ")}`);
+  }
 
   console.log("Fetching Environment Canada marine bulletins...");
   const bulletins = {};
@@ -116,10 +159,33 @@ async function main() {
       }
     }
 
+    let gm = null;
+    if (spot.pressureGradientAware) {
+      try {
+        gm = await getGradientStations();
+      } catch (err) {
+        console.log(`[${spot.id}] pressure gradient fetch failed: ${err.message}`);
+      }
+    }
+
     const hours = rows.map((row) => {
       const { hour, month } = localHourAndMonth(row.time);
       const refSpeedKt = refMap ? refMap[row.time] : null;
-      return classifyHour(spot, row, hour, month, refSpeedKt);
+
+      let pressureGradients = null;
+      if (gm) {
+        const coastalP = gm.coastal[row.time], interiorP = gm.interior[row.time], mouthP = gm.mouth[row.time];
+        const ownVals = Object.values(row.pressure).filter(v => v != null);
+        const ownP = ownVals.length ? ownVals.reduce((a, b) => a + b, 0) / ownVals.length : null;
+        pressureGradients = {
+          largeScale: (coastalP != null && interiorP != null) ? coastalP - interiorP : null,
+          local: (mouthP != null && ownP != null) ? mouthP - ownP : null,
+        };
+      }
+
+      const overrideMultiplier = overrides[spot.id] ? overrides[spot.id].multiplier : null;
+
+      return classifyHour(spot, row, hour, month, refSpeedKt, pressureGradients, overrideMultiplier);
     });
 
     spotsOut.push({
@@ -146,6 +212,7 @@ async function main() {
     }),
     models_used: ["GFS (NOAA)", "ECMWF IFS", "ICON (DWD)", "GEM / HRDPS (ECCC)"],
     marine_bulletins: bulletins,
+    calibration_overrides: overrides,
     spots: spotsOut,
   };
 

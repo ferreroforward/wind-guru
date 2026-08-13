@@ -29,13 +29,31 @@ numbers.
   Squamish wind. `generate.mjs` fetches it (server-side only — no CORS for a
   browser fetch) and the page shows it as a banner above the map, alongside
   a link to the [live Squamish wind meter](https://squamishwindsports.com/conditions/wind/).
+- **Pressure gradient (MSLP)**: Squamish wind isn't purely thermal — it's
+  also a function of the real sea-level pressure gradient along the
+  corridor. Inspired by [kiteloop.vercel.app](https://kiteloop.vercel.app/)'s
+  "MSLP — two pressure checks" panel, `generate.mjs` fetches forecast MSLP at
+  three reference points (`PRESSURE_REFERENCE` in `assets/spots.js`:
+  Pemberton for the interior, Vancouver for the coast, Point Atkinson for the
+  Howe Sound mouth) and computes a large-scale (coast − interior) and a local
+  (mouth − spot) gradient for any spot with `pressureGradientAware: true`.
+  When both line up with the wind-speed signal it boosts confidence and says
+  so; when they don't, it adds a caution note. This reads Open-Meteo
+  *forecast* MSLP rather than kiteloop's live SWOB station observations, so
+  treat it as an approximation of the same idea, not a reproduction of that
+  site's exact numbers. See `classifyHour()` in `assets/rules.js`.
+- **Rider feedback loop**: see "Rider feedback & self-calibration" below —
+  actual on-the-water reports nudge each spot's calibration over time.
 - **Two ways the page gets data**:
   1. `data/forecast.json` — a snapshot committed twice a day by the GitHub
-     Action below. Loads instantly, includes the EC bulletin.
+     Action below. Loads instantly, includes the EC bulletin, MSLP gradient,
+     and feedback-learned calibration.
   2. **Refresh live** button — fetches straight from Open-Meteo in the
      visitor's browser and recomputes on the spot (including the Squamish
-     calibration, but not the EC bulletin). Also the automatic fallback if
-     `data/forecast.json` doesn't exist yet.
+     speed calibration), but not the EC bulletin, MSLP gradient, or feedback
+     calibration, since those either need a server-side fetch (no CORS) or
+     read a file the browser doesn't otherwise load. Also the automatic
+     fallback if `data/forecast.json` doesn't exist yet.
 
 ## Local setup
 
@@ -115,14 +133,47 @@ tends to turn on once Point Atkinson is reading above ~17kt. `generate.mjs`
 and the live-refresh path both fetch the reference station once and pass its
 speed into `classifyHour`; see `assets/rules.js`.
 
+Set `pressureGradientAware: true` on a Howe Sound spot to factor in the MSLP
+gradient check described above.
+
+## Rider feedback & self-calibration
+
+Hovering any hour cell on the site shows a **"Report actual conditions"**
+link, prefilled with that spot, date/time, and what the tool forecasted. It
+opens a structured GitHub issue
+([`.github/ISSUE_TEMPLATE/wind-report.yml`](.github/ISSUE_TEMPLATE/wind-report.yml))
+asking for the actual speed/direction and any notes on why it differed.
+
+Every run, `.github/workflows/update-forecast.yml` first runs
+`scripts/apply-feedback.mjs`, which:
+
+1. Pulls all `wind-report`-labeled issues via the GitHub API.
+2. Groups them by spot and computes `actual ÷ forecasted` for each report.
+3. Averages the most recent 20 reports per spot (needs at least 2 before it
+   adjusts anything, so one troll report or typo can't skew it), clamps the
+   result to 0.75x–1.5x, and writes `data/calibration-overrides.json`.
+
+`generate.mjs` reads that file and applies the multiplier for that spot on
+top of everything else (Squamish calibration, MSLP, reference stations),
+scaling both the displayed speed and the model votes used for probability.
+The reasoning text says explicitly when a report-based adjustment is active.
+
+This is a running bias correction, not a trained model — it has no memory of
+what was forecasted for any specific past hour (the snapshot gets
+overwritten twice daily), so it can't compute true forecast-error stats. It
+can only say "actual wind at this spot has been averaging X% of what we
+showed, across recent reports" and nudge accordingly. A more rigorous
+version would archive each day's forecast.json (e.g. to a `history/` folder
+or a proper database) so `apply-feedback.mjs` could match each report
+against what was actually predicted for that exact hour, rather than
+against whatever number the reporter copied down.
+
+To recalibrate manually: `GITHUB_TOKEN=<a token with repo:read> node scripts/apply-feedback.mjs`
+(a token isn't required for a public repo, just raises the API rate limit).
+
 ## Known limitations / good next steps
 
-- No explicit synoptic pressure-map read — the "synoptic" classification is
-  inferred from multi-model agreement + speed, not a real frontal analysis.
-  A next step would be pulling `pressure_msl` at a second inland reference
-  point (e.g. Pemberton) to compute an actual gradient.
-- Tide state (important at Boundary Bay, Iona, Gabriola Pass) isn't
-  factored in.
+- Tide state (important at Boundary Bay and Iona) isn't factored in.
 - The EC bulletin is shown as reference text, not yet parsed into the
   probability model — a good next step would be extracting its knot ranges
   for today/tonight and using them to directly anchor the Squamish estimate
@@ -130,3 +181,8 @@ speed into `classifyHour`; see `assets/rules.js`.
 - The Squamish calibration multiplier is a single rider's field-tuned
   average, not a regression against station data — treat it as a big
   improvement over raw model output, not gospel.
+- The MSLP gradient thresholds (0.4hPa / 0.2hPa) are a reasonable starting
+  guess, not fitted to anything — worth tightening once enough rider
+  feedback accumulates to see which days it called right vs wrong.
+- See "Rider feedback & self-calibration" above for the feedback loop's
+  current limitation (no historical forecast archive to compare against).

@@ -1,0 +1,64 @@
+name: Wind report (forecast vs actual)
+description: Tell us what the wind actually did at a spot, so the forecast model can learn and improve.
+title: "Wind report: "
+labels: ["wind-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! This feeds directly into the calibration —
+        `scripts/apply-feedback.mjs` reads these reports and nudges that
+        spot's forecast up or down to better match reality over time.
+  - type: dropdown
+    id: spot
+    attributes:
+      label: Spot
+      options:
+        - squamish-spit
+        - porteau-cove
+        - furry-creek
+        - jericho
+        - spanish-banks
+        - iona
+        - boundary-bay
+        - white-rock
+        - erwin-park
+    validations:
+      required: true
+  - type: input
+    id: report_date
+    attributes:
+      label: Date
+      placeholder: "2026-08-13"
+    validations:
+      required: true
+  - type: input
+    id: report_time
+    attributes:
+      label: Time (approx, local)
+      placeholder: "14:00"
+  - type: input
+    id: forecasted_speed
+    attributes:
+      label: Forecasted speed (kt)
+      description: The speed number Wind Guru showed for this spot/time
+      placeholder: "e.g. 18"
+    validations:
+      required: true
+  - type: input
+    id: actual_speed
+    attributes:
+      label: Actual speed (kt)
+      placeholder: "e.g. 30"
+    validations:
+      required: true
+  - type: input
+    id: actual_direction
+    attributes:
+      label: Actual direction (optional)
+      placeholder: "e.g. SW"
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes — any idea why it differed?
+      placeholder: "e.g. kicked in earlier than expected, was gustier than shown, etc."

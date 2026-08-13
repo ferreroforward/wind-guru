@@ -10,6 +10,19 @@
 // favorable_deg: [start,end] compass sector(s) considered rideable / safe onshore-to-cross-shore.
 // Directions outside this sector are flagged as "offshore / not rideable" even if speed matches.
 
+// Reference points for the Howe Sound pressure-gradient check (see
+// rules.js). Inspired by kiteloop.vercel.app's "two independent gradients"
+// MSLP panel: a large-scale coast-vs-interior spread (synoptic support) and
+// a local channel spread (does the sound itself favor a pull toward the
+// Spit). Our version reads Open-Meteo forecast MSLP rather than live SWOB
+// station obs, so treat it as an approximation of the same idea, not a
+// reproduction of that site's exact numbers.
+export const PRESSURE_REFERENCE = {
+  interior: { name: "Pemberton", lat: 50.3040, lon: -122.7960 },
+  coastal: { name: "Vancouver", lat: 49.1967, lon: -123.1815 },
+  howeSoundMouth: { name: "Point Atkinson", lat: 49.3300, lon: -123.2650 },
+};
+
 export const SPOTS = [
   {
     id: "squamish-spit",
@@ -20,6 +33,7 @@ export const SPOTS = [
     level: "advanced",
     favorable_deg: [[150, 260]], // S–SW thermal inflow, or N outflow (handled separately as outflow regime)
     outflow_favorable_deg: [[300, 40]],
+    pressureGradientAware: true, // factor in MSLP gradient — see rules.js
     thermal: {
       enabled: true,
       calibrated: true, // apply the local GFS-class-underread correction — see rules.js
@@ -42,6 +56,7 @@ export const SPOTS = [
     sports: ["windsurf", "wingfoil"],
     level: "intermediate",
     favorable_deg: [[300, 40]],
+    pressureGradientAware: true,
     thermal: { enabled: false },
     outflow: {
       enabled: true,
@@ -57,6 +72,7 @@ export const SPOTS = [
     sports: ["windsurf", "wingfoil"],
     level: "intermediate",
     favorable_deg: [[300, 40], [150, 260]],
+    pressureGradientAware: true,
     thermal: {
       enabled: true,
       calibrated: true, // same Howe Sound thermal system as Squamish Spit — see rules.js

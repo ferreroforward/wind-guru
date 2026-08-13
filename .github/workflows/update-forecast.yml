@@ -22,6 +22,11 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Apply rider-feedback calibration
+        run: node scripts/apply-feedback.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Generate forecast snapshot
         run: node scripts/generate.mjs
 
@@ -29,7 +34,7 @@ jobs:
         run: |
           git config user.name "wind-guru-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/forecast.json
+          git add data/forecast.json data/calibration-overrides.json
           git diff --staged --quiet && exit 0
           git commit -m "Update forecast snapshot [skip ci]"
           for i in 1 2 3 4 5; do

@@ -133,7 +133,9 @@
   <div class="about">
     <b>How this works.</b> Every spot is checked against four independent weather models (GFS, ECMWF, ICON and Environment Canada's GEM/HRDPS, which best resolves local BC terrain). For each spot we don't just show raw numbers — we classify the hour as <b>thermal</b> (local sun-driven sea breeze or valley wind, e.g. the Squamish afternoon southerly), <b>outflow</b> (cold-air drainage / gap wind, e.g. Squamish's northerly), or <b>synoptic</b> (general frontal/gradient wind across the Strait). Probability = the share of models landing your chosen knot range at that hour; confidence is shaded down for pure mesoscale thermal signals that only the fine-resolution model catches, and for wind blowing from a direction that isn't clean onshore/cross-shore at that spot.
     <br><br>
-    <b>Squamish Spit and Furry Creek</b> get an extra correction: raw coarse-model wind badly under-reads this specific thermal (a well-documented local quirk), so once the model shows a clean SW signal we scale it up roughly 2.85x, based on field calibration from a long-time local rider (West Coast Wind Sports). Environment Canada's own Howe Sound marine bulletin — generally the single best resource for today's Squamish wind — is shown above when available, and is worth cross-checking against the live wind meter linked at the top before you drive out.
+    <b>Squamish Spit, Porteau Cove and Furry Creek</b> get two extra local corrections. First, raw coarse-model wind badly under-reads the Squamish thermal (a well-documented local quirk), so once the model shows a clean SW signal we scale it up roughly 2.85x, based on field calibration from a long-time local rider (West Coast Wind Sports). Second, we check the sea-level pressure gradient along the corridor — a large-scale coast-vs-interior spread and a local spread between the sound's mouth and the spot itself — since Squamish wind is driven by real pressure differences, not thermal heating alone; when both line up with the wind signal, confidence goes up, when they don't, we flag it. Environment Canada's own Howe Sound marine bulletin — generally the single best resource for today's Squamish wind — is shown above when available, and is worth cross-checking against the live wind meter linked at the top before you drive out.
+    <br><br>
+    <b>Self-improving from rider reports.</b> Hover any hour cell for a "Report actual conditions" link — tell us what it actually did and the twice-daily forecast job factors your report into that spot's calibration (see the repo's README for details). The more reports, the better it gets.
     <br><br>
     This is a forecasting aid, not a safety guarantee — always check current conditions, tides and marine warnings before launching.
   </div>
@@ -261,6 +263,21 @@ function renderBestBets() {
   });
 }
 
+const GITHUB_REPO = "ferreroforward/wind-guru";
+
+function reportUrl(spotId, h) {
+  const date = h.time.slice(0, 10);
+  const time = h.time.slice(11, 16);
+  const params = new URLSearchParams({
+    template: "wind-report.yml",
+    spot: spotId,
+    report_date: date,
+    report_time: time,
+    forecasted_speed: h.speed_kt ?? "",
+  });
+  return `https://github.com/${GITHUB_REPO}/issues/new?${params.toString()}`;
+}
+
 function renderSpotCards() {
   spotCardsEl.innerHTML = "";
   SPOTS.forEach(sp => {
@@ -276,7 +293,9 @@ function renderSpotCards() {
         <div class="t">${h.time.slice(11,16)}</div>
         <div class="p">${probability}%</div>
         <div class="d">${h.speed_kt ?? "–"}kt ${h.direction_label}</div>
-        <div class="tip"><b>${h.regime.toUpperCase()}</b>${h.reason}</div>
+        <div class="tip"><b>${h.regime.toUpperCase()}</b>${h.reason}
+          <a href="${reportUrl(sp.id, h)}" target="_blank" rel="noopener" style="display:block;margin-top:6px;color:#7fc4ff;">Report actual conditions →</a>
+        </div>
       </div>`;
     }).join("");
     card.innerHTML = `
