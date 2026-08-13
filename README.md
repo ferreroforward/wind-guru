@@ -18,12 +18,24 @@ numbers.
   `assets/spots.js`). Thermal and outflow hours weight the fine-resolution
   GEM/HRDPS model more heavily, since it's the only one of the four that
   resolves Howe Sound and Fraser Valley terrain effects.
+- **Squamish thermal calibration**: raw coarse-model (GFS-class) wind badly
+  under-reads the Squamish/Furry Creek thermal once it's actually inflowing.
+  We scale it ~2.85x based on field notes from a 12-year local rider, Jack
+  Rieder of [West Coast Wind Sports](https://www.westcoastwindsports.com/blogs/local-knowledge/forecasting-squamish-wind-with-jack-rieder):
+  5-7kt modeled SW ≈ 15-20kt real, 7-9kt ≈ 20-25kt real, 9kt+ ≈ a strong day.
+  See `calibrateSquamishThermal()` in `assets/rules.js`.
+- **Environment Canada marine bulletin**: per the same source, EC's Howe
+  Sound text forecast is the single best starting resource for today's
+  Squamish wind. `generate.mjs` fetches it (server-side only — no CORS for a
+  browser fetch) and the page shows it as a banner above the map, alongside
+  a link to the [live Squamish wind meter](https://squamishwindsports.com/conditions/wind/).
 - **Two ways the page gets data**:
   1. `data/forecast.json` — a snapshot committed twice a day by the GitHub
-     Action below. Loads instantly.
+     Action below. Loads instantly, includes the EC bulletin.
   2. **Refresh live** button — fetches straight from Open-Meteo in the
-     visitor's browser and recomputes on the spot. Also the automatic
-     fallback if `data/forecast.json` doesn't exist yet.
+     visitor's browser and recomputes on the spot (including the Squamish
+     calibration, but not the EC bulletin). Also the automatic fallback if
+     `data/forecast.json` doesn't exist yet.
 
 ## Local setup
 
@@ -102,8 +114,12 @@ other file needs to change.
   inferred from multi-model agreement + speed, not a real frontal analysis.
   A next step would be pulling `pressure_msl` at a second inland reference
   point (e.g. Pemberton) to compute an actual gradient.
-- Marine warnings / small-craft warnings from Environment Canada
-  (weather.gc.ca marine forecasts for the Strait of Georgia and Howe Sound)
-  aren't pulled in yet — worth adding as a text banner in `generate.mjs`.
 - Tide state (important at Boundary Bay, Iona, Gabriola Pass) isn't
   factored in.
+- The EC bulletin is shown as reference text, not yet parsed into the
+  probability model — a good next step would be extracting its knot ranges
+  for today/tonight and using them to directly anchor the Squamish estimate
+  instead of (or blended with) the GFS-multiplier calibration.
+- The Squamish calibration multiplier is a single rider's field-tuned
+  average, not a regression against station data — treat it as a big
+  improvement over raw model output, not gospel.

@@ -22,18 +22,18 @@ export const MODELS = [
 
 export function buildForecastUrl(lat, lon, days = 4) {
   const models = MODELS.map(m => m.param).join(",");
-  const hourly = ["wind_speed_10m", "wind_gusts_10m", "wind_direction_10m", "cloud_cover", "pressure_msl"].join(",");
+  const hourly = ["wind_speed_10m", "wind_gusts_10m", "wind_direction_10m", "cloud_cover", "pressure_msl", "precipitation", "temperature_2m"].join(",");
   return `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
     `&hourly=${hourly}&models=${models}&wind_speed_unit=kn&timezone=America%2FLos_Angeles&forecast_days=${days}`;
 }
 
 // Reshape Open-Meteo's multi-model response (one array per variable per
 // model, keyed like "wind_speed_10m_gem_seamless") into per-hour records:
-// [{ time, speeds:{gfs,ecmwf,icon,gem}, gusts:{...}, dirs:{...}, cloud:{...}, pressure:{...} }, ...]
+// [{ time, speeds:{gfs,ecmwf,icon,gem}, gusts:{...}, dirs:{...}, cloud:{...}, pressure:{...}, precip:{...}, temp:{...} }, ...]
 export function reshapeOpenMeteo(json) {
   const hourly = json.hourly || {};
   const time = hourly.time || [];
-  const rows = time.map((t) => ({ time: t, speeds: {}, gusts: {}, dirs: {}, cloud: {}, pressure: {} }));
+  const rows = time.map((t) => ({ time: t, speeds: {}, gusts: {}, dirs: {}, cloud: {}, pressure: {}, precip: {}, temp: {} }));
 
   for (const m of MODELS) {
     const sKey = `wind_speed_10m_${m.param}`;
@@ -41,16 +41,39 @@ export function reshapeOpenMeteo(json) {
     const dKey = `wind_direction_10m_${m.param}`;
     const cKey = `cloud_cover_${m.param}`;
     const pKey = `pressure_msl_${m.param}`;
-    const s = hourly[sKey], g = hourly[gKey], d = hourly[dKey], c = hourly[cKey], p = hourly[pKey];
+    const rKey = `precipitation_${m.param}`;
+    const tKey = `temperature_2m_${m.param}`;
+    const s = hourly[sKey], g = hourly[gKey], d = hourly[dKey], c = hourly[cKey], p = hourly[pKey], r = hourly[rKey], t = hourly[tKey];
     rows.forEach((row, i) => {
       if (s && s[i] != null) row.speeds[m.key] = s[i];
       if (g && g[i] != null) row.gusts[m.key] = g[i];
       if (d && d[i] != null) row.dirs[m.key] = d[i];
       if (c && c[i] != null) row.cloud[m.key] = c[i];
       if (p && p[i] != null) row.pressure[m.key] = p[i];
+      if (r && r[i] != null) row.precip[m.key] = r[i];
+      if (t && t[i] != null) row.temp[m.key] = t[i];
     });
   }
   return rows;
+}
+
+// Local calibration for Howe Sound thermal spots (Squamish Spit, Furry
+// Creek), sourced from a 12-year local rider's field notes (Jack Rieder,
+// West Coast Wind Sports, Aug 2026 — see README). His finding: the raw
+// coarse-model (GFS-class, ~13km) SW wind speed badly under-reads the real
+// Squamish thermal, by a fairly consistent ratio once it's actually
+// inflowing:
+//   5-7kt modeled SW  -> 15-20kt real
+//   7-9kt modeled SW  -> 20-25kt real
+//   9kt+ modeled SW   -> "strong day" (25kt+)
+// All three bins average out to roughly a 2.85x multiplier, which is what
+// we apply here. This does NOT apply to the fine-resolution GEM/HRDPS
+// model, which already attempts to resolve the thermal directly.
+const SQUAMISH_THERMAL_MULTIPLIER = 2.85;
+
+function calibrateSquamishThermal(coarseMeanKt) {
+  if (coarseMeanKt == null || coarseMeanKt <= 0) return null;
+  return coarseMeanKt * SQUAMISH_THERMAL_MULTIPLIER;
 }
 
 function mean(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null; }
@@ -154,15 +177,50 @@ export function classifyHour(spot, row, localHour, month) {
   // Howe Sound / the Fraser Valley correctly, so it earns more weight than
   // a straight vote-of-4 would give it.
   let fine_vs_coarse_gap = null;
-  if (row.speeds.gem != null) {
-    const coarse = mean([row.speeds.gfs, row.speeds.ecmwf].filter(v => v != null));
-    if (coarse != null) fine_vs_coarse_gap = row.speeds.gem - coarse;
+  const coarseMean = mean([row.speeds.gfs, row.speeds.ecmwf].filter(v => v != null));
+  if (row.speeds.gem != null && coarseMean != null) {
+    fine_vs_coarse_gap = row.speeds.gem - coarseMean;
+  }
+
+  // Squamish-family thermal calibration (see calibrateSquamishThermal above).
+  // Coarse models under-read this specific thermal badly enough that showing
+  // their raw average as "the forecast" is actively misleading — a rider
+  // checking this tool mid-thermal would see single digits while the water
+  // is doing 20kt+. We override the headline speed/gust and the model votes
+  // used for probability with the calibrated estimate, and keep the raw
+  // per-model numbers available in `raw_models` for transparency.
+  let displaySpeed = speed_kt, displayGust = gust_kt, displayModels = row.speeds, calibrated = false;
+  if (regime === "thermal" && spot.thermal && spot.thermal.calibrated && coarseMean != null) {
+    const calibratedSpeed = calibrateSquamishThermal(coarseMean);
+    if (calibratedSpeed != null) {
+      calibrated = true;
+      // Blend the calibrated coarse-model estimate with GEM/HRDPS's own
+      // (already partially-resolved) number, leaning toward whichever reads
+      // higher — both are known to undercall this specific thermal, not
+      // overcall it.
+      displaySpeed = row.speeds.gem != null ? Math.max(calibratedSpeed, row.speeds.gem) : calibratedSpeed;
+      displayGust = displaySpeed * 1.3;
+      displayModels = { calibrated: displaySpeed, gem_local: row.speeds.gem ?? displaySpeed };
+      reason += ` Field-calibrated: raw coarse-model wind (~${Math.round(coarseMean)}kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README).`;
+    }
+  }
+
+  // Quick qualitative flags from a 12-year local rider's notes: rain kills
+  // it, cloud alone doesn't, and an extreme heat forecast tends to suppress
+  // the thermal (or make it very short-lived).
+  const precip = mean(Object.values(row.precip).filter(v => v != null));
+  const temp = mean(Object.values(row.temp).filter(v => v != null));
+  if (precip != null && precip > 0.3) {
+    reason += " Rain in the forecast — thermal wind is often suppressed on wet days, unlike plain cloud cover.";
+  }
+  if (temp != null && temp >= 29 && regime === "thermal") {
+    reason += " Very hot forecast — heat waves often kill or badly shorten this thermal; if it does fill in, be ready to go early.";
   }
 
   return {
     time: row.time,
-    speed_kt: speed_kt != null ? Math.round(speed_kt * 10) / 10 : null,
-    gust_kt: gust_kt != null ? Math.round(gust_kt * 10) / 10 : null,
+    speed_kt: displaySpeed != null ? Math.round(displaySpeed * 10) / 10 : null,
+    gust_kt: displayGust != null ? Math.round(displayGust * 10) / 10 : null,
     direction_deg: direction_deg != null ? Math.round(direction_deg) : null,
     direction_label: degToLabel(direction_deg),
     cloud_pct: cloud_pct != null ? Math.round(cloud_pct) : null,
@@ -171,7 +229,9 @@ export function classifyHour(spot, row, localHour, month) {
     favorable_direction: favorable,
     model_agreement: Math.round(agreement * 100) / 100,
     fine_vs_coarse_gap: fine_vs_coarse_gap != null ? Math.round(fine_vs_coarse_gap * 10) / 10 : null,
-    models: row.speeds,
+    calibrated,
+    models: displayModels,
+    raw_models: row.speeds,
   };
 }
 

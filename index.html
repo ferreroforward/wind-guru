@@ -84,6 +84,7 @@
   <div class="meta-row">
     <span id="genLabel">Loading forecast…</span>
     <button id="refreshBtn">Refresh live</button>
+    <a href="https://squamishwindsports.com/conditions/wind/" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">Live Squamish wind meter ↗</a>
   </div>
 </header>
 
@@ -113,6 +114,8 @@
     </div>
   </div>
 
+  <div id="bulletinBox" style="display:none;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin:14px 0;font-size:0.82rem;color:var(--muted);"></div>
+
   <div id="map"></div>
   <div class="legend">
     <span><span class="dot" style="background:#1fb570"></span>Good odds (≥65%)</span>
@@ -128,7 +131,11 @@
   <div id="spotCards"><div class="empty">Loading…</div></div>
 
   <div class="about">
-    <b>How this works.</b> Every spot is checked against four independent weather models (GFS, ECMWF, ICON and Environment Canada's GEM/HRDPS, which best resolves local BC terrain). For each spot we don't just show raw numbers — we classify the hour as <b>thermal</b> (local sun-driven sea breeze or valley wind, e.g. the Squamish afternoon southerly), <b>outflow</b> (cold-air drainage / gap wind, e.g. Squamish's northerly), or <b>synoptic</b> (general frontal/gradient wind across the Strait). Probability = the share of models landing your chosen knot range at that hour; confidence is shaded down for pure mesoscale thermal signals that only the fine-resolution model catches, and for wind blowing from a direction that isn't clean onshore/cross-shore at that spot. This is a forecasting aid, not a safety guarantee — always check current conditions, tides and marine warnings before launching.
+    <b>How this works.</b> Every spot is checked against four independent weather models (GFS, ECMWF, ICON and Environment Canada's GEM/HRDPS, which best resolves local BC terrain). For each spot we don't just show raw numbers — we classify the hour as <b>thermal</b> (local sun-driven sea breeze or valley wind, e.g. the Squamish afternoon southerly), <b>outflow</b> (cold-air drainage / gap wind, e.g. Squamish's northerly), or <b>synoptic</b> (general frontal/gradient wind across the Strait). Probability = the share of models landing your chosen knot range at that hour; confidence is shaded down for pure mesoscale thermal signals that only the fine-resolution model catches, and for wind blowing from a direction that isn't clean onshore/cross-shore at that spot.
+    <br><br>
+    <b>Squamish Spit and Furry Creek</b> get an extra correction: raw coarse-model wind badly under-reads this specific thermal (a well-documented local quirk), so once the model shows a clean SW signal we scale it up roughly 2.85x, based on field calibration from a long-time local rider (West Coast Wind Sports). Environment Canada's own Howe Sound marine bulletin — generally the single best resource for today's Squamish wind — is shown above when available, and is worth cross-checking against the live wind meter linked at the top before you drive out.
+    <br><br>
+    This is a forecasting aid, not a safety guarantee — always check current conditions, tides and marine warnings before launching.
   </div>
 
 </main>
@@ -295,9 +302,18 @@ function renderMap() {
   });
 }
 
+function renderBulletin() {
+  const box = document.getElementById("bulletinBox");
+  const b = forecast.marine_bulletins && forecast.marine_bulletins.howe_sound;
+  if (!b || !b.text) { box.style.display = "none"; return; }
+  box.style.display = "block";
+  box.innerHTML = `<b style="color:var(--text);">Environment Canada — ${b.label}${b.warning ? " ⚠️ warning in effect" : ""}</b><br>${b.text} <a href="${b.url}" target="_blank" rel="noopener" style="color:var(--accent);">Full bulletin ↗</a>`;
+}
+
 function renderAll() {
   if (!forecast) return;
   genLabel.textContent = `Updated ${forecast.generated_at_label} · models: ${forecast.models_used.join(", ")}`;
+  renderBulletin();
   renderDayTabs();
   renderBestBets();
   renderSpotCards();

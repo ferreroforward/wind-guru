@@ -22,6 +22,7 @@ export const SPOTS = [
     outflow_favorable_deg: [[300, 40]],
     thermal: {
       enabled: true,
+      calibrated: true, // apply the local GFS-class-underread correction — see rules.js
       months: [4,5,6,7,8,9,10],
       hourWindow: [10, 19],
       dirSector: [150, 260], // S–SW up-sound
@@ -58,6 +59,7 @@ export const SPOTS = [
     favorable_deg: [[300, 40], [150, 260]],
     thermal: {
       enabled: true,
+      calibrated: true, // same Howe Sound thermal system as Squamish Spit — see rules.js
       months: [5,6,7,8,9],
       hourWindow: [11, 18],
       dirSector: [150, 260],

@@ -26,9 +26,50 @@ async function fetchSpot(spot) {
   return reshapeOpenMeteo(json);
 }
 
+// Environment Canada's marine text bulletin — per a 12-year local rider
+// (see README), this is the single best starting resource for Squamish
+// wind, more trustworthy for today's magnitude than any raw model output.
+// We can't fetch it client-side (no CORS), so it only shows up in the
+// twice-daily snapshot, not the live-refresh fallback.
+const MARINE_ZONES = [
+  { id: "howe_sound", label: "Howe Sound", siteID: "06400" },
+  { id: "strait_of_georgia_south", label: "Strait of Georgia (south of Nanaimo)", siteID: "14305" },
+];
+
+async function fetchMarineBulletin(zone) {
+  const url = `https://weather.gc.ca/marine/forecast_e.html?mapID=02&siteID=${zone.siteID}`;
+  try {
+    const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
+    if (!res.ok) return null;
+    const html = await res.text();
+    const section = html.split("Extended Forecast")[0];
+    const marineIdx = section.indexOf("Marine Forecast");
+    const raw = marineIdx >= 0 ? section.slice(marineIdx) : section;
+    const text = raw
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .replace(/\s+/g, " ")
+      .replace(/Marine Forecast/, "")
+      .trim()
+      .slice(0, 900);
+    const warning = /strong wind warning|gale warning|storm warning|small craft warning/i.test(html);
+    return { id: zone.id, label: zone.label, url, text, warning };
+  } catch (err) {
+    console.error(`[${zone.id}] marine bulletin fetch failed: ${err.message}`);
+    return null;
+  }
+}
+
 async function main() {
   const startedAt = new Date();
   const spotsOut = [];
+
+  console.log("Fetching Environment Canada marine bulletins...");
+  const bulletins = {};
+  for (const zone of MARINE_ZONES) {
+    const b = await fetchMarineBulletin(zone);
+    if (b) bulletins[b.id] = b;
+  }
 
   for (const spot of SPOTS) {
     process.stdout.write(`Fetching ${spot.name}... `);
@@ -70,6 +111,7 @@ async function main() {
       hour: "numeric", minute: "2-digit", timeZoneName: "short",
     }),
     models_used: ["GFS (NOAA)", "ECMWF IFS", "ICON (DWD)", "GEM / HRDPS (ECCC)"],
+    marine_bulletins: bulletins,
     spots: spotsOut,
   };
 
