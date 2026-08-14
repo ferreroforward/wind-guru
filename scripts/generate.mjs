@@ -8,7 +8,7 @@ import { writeFile, mkdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-import { SPOTS, PRESSURE_REFERENCE } from "../assets/spots.js";
+import { SPOTS, PRESSURE_REFERENCE, degToLabel } from "../assets/spots.js";
 import { buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch } from "../assets/rules.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -51,7 +51,7 @@ async function loadLiveLog() {
 // humidity, Dew point, Pressure, Visibility. We parse actual <tr>/<td> cells
 // rather than scraping flattened text, since date-separator rows only have
 // one populated cell and would otherwise be easy to misread as data.
-function parseObservedWind(html) {
+function parseEcObservedWind(html) {
   const rowRe = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
   const cellRe = /<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/gi;
   const stripTags = (s) => s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/gi, " ").replace(/\s+/g, " ").trim();
@@ -86,21 +86,57 @@ function parseObservedWind(html) {
   return {
     time, // "HH:MM" Pacific, no date attached
     speedKt: Math.round(speedKmh * 0.539957 * 10) / 10,
+    gustKt: null, // this table doesn't report gust
     directionAbbr,
     directionLabel,
   };
 }
 
+async function fetchEcObservation(station) {
+  const url = `https://weather.gc.ca/past_conditions/index_e.html?station=${station.code}`;
+  const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
+  if (!res.ok) { console.log(`[live:${station.name}] fetch failed: ${res.status}`); return null; }
+  const html = await res.text();
+  return parseEcObservedWind(html);
+}
+
+// Squamish Windsports Society's own wind meter at the Spit
+// (squamishwindsports.com/conditions/wind) — the JSON endpoint behind that
+// page's live chart, found by inspecting its network requests. Reports in
+// knots already. Per local rider feedback, this is a far better read on the
+// Squamish corridor than Environment Canada's Squamish Airport station,
+// which sits in a wind shadow — see spot.liveStation comments in spots.js.
+async function fetchSquamishWindsportsObservation(station) {
+  const dateStr = currentPacificHourString().slice(0, 10);
+  const url = `https://squamishwindsports.com/wind-data/getmet.php?wind_src=${station.windSrc}&reqdate=${dateStr}&reqtime=0`;
+  const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
+  if (!res.ok) { console.log(`[live:${station.name}] fetch failed: ${res.status}`); return null; }
+  const json = await res.json();
+  if (!Array.isArray(json.ws) || !json.ws.length) return null;
+  const i = json.ws.length - 1; // readings are chronological; last = most recent
+  const speedKt = parseFloat(json.ws[i]);
+  if (!isFinite(speedKt)) return null;
+  const gustKt = json.wg ? parseFloat(json.wg[i]) : NaN;
+  const dirDeg = json.wd ? parseFloat(json.wd[i]) : NaN;
+  const dtMs = json.dt ? parseFloat(json.dt[i]) * 1000 : null;
+  return {
+    time: dtMs ? new Date(dtMs).toLocaleTimeString("en-US", { timeZone: "America/Los_Angeles", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }) : null,
+    speedKt,
+    gustKt: isFinite(gustKt) ? gustKt : null,
+    directionAbbr: null,
+    directionLabel: isFinite(dirDeg) ? degToLabel(dirDeg) : null,
+  };
+}
+
 const liveObsCache = {};
 async function getLiveObservation(station) {
-  if (liveObsCache[station.code]) return liveObsCache[station.code];
-  const url = `https://weather.gc.ca/past_conditions/index_e.html?station=${station.code}`;
+  const cacheKey = `${station.type || "ec"}:${station.code || station.windSrc}`;
+  if (liveObsCache[cacheKey]) return liveObsCache[cacheKey];
   try {
-    const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
-    if (!res.ok) { console.log(`[live:${station.name}] fetch failed: ${res.status}`); return null; }
-    const html = await res.text();
-    const parsed = parseObservedWind(html);
-    liveObsCache[station.code] = parsed;
+    const parsed = station.type === "squamishwindsports"
+      ? await fetchSquamishWindsportsObservation(station)
+      : await fetchEcObservation(station);
+    liveObsCache[cacheKey] = parsed;
     return parsed;
   } catch (err) {
     console.log(`[live:${station.name}] fetch error: ${err.message}`);
@@ -289,6 +325,7 @@ async function main() {
             observed_local_time: obs.time,
             forecasted_kt: forecastHour.speed_kt,
             live_kt: obs.speedKt,
+            live_gust_kt: obs.gustKt ?? null,
             live_direction: obs.directionLabel,
             error_pct: Math.round(errorPct * 100),
             mismatch,

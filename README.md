@@ -121,6 +121,18 @@ drifts an hour in winter (PST vs PDT). If you want it exact year-round,
 either accept the ~1hr drift or switch to `13:00`/`01:00 UTC` for the winter
 months.
 
+## App version
+
+The footer shows which commit is actually live and when — e.g. "v3f9a21
+deployed 2h ago" — separate from the forecast-freshness badge in the header
+(that one tracks the *data*, this one tracks the *code*). Every push to
+`main` that touches anything other than `data/` triggers
+`.github/workflows/stamp-version.yml`, which writes the short commit SHA,
+commit message, and a UTC timestamp to `data/version.json`. It's excluded
+from re-triggering itself (and from the twice-daily forecast commits) via
+`paths-ignore: data/**`. If the footer note is blank, that workflow either
+hasn't run yet on this repo or is disabled — check the Actions tab.
+
 ## Editing the spot list
 
 Open `assets/spots.js`. Each spot has coordinates, sports, a rideable
@@ -176,13 +188,30 @@ To recalibrate manually: `GITHUB_TOKEN=<a token with repo:read> node scripts/app
 
 ## Live verification
 
-Every spot has a `liveStation` (see `assets/spots.js`) — the nearest
-Environment Canada station with a
-[Past 24 Hour Conditions](https://weather.gc.ca/past_conditions/index_e.html)
-page, which reports genuinely *observed* wind, not a forecast. Each run,
-`generate.mjs`:
+Every spot has a `liveStation` (see `assets/spots.js`) — a source of
+genuinely *observed* wind, not a forecast. Two source types:
 
-1. Fetches that station's most recent hourly observation (speed + direction).
+- **`type: "squamishwindsports"`** (Squamish Spit, Porteau Cove, Furry
+  Creek): the JSON feed behind [Squamish Windsports Society's live wind
+  chart](https://squamishwindsports.com/conditions/wind/)
+  (`squamishwindsports.com/wind-data/getmet.php?wind_src=spit&...`), found
+  by inspecting that page's network requests — no API key, reports in knots
+  already, includes gust. This is a real instrument at the Spit itself, and
+  per local rider feedback is far more representative of the corridor than
+  Environment Canada's Squamish Airport station, which sits in a wind
+  shadow and is no longer used for anything. Porteau Cove and Furry Creek
+  don't have their own station, so they use the same Spit reading as an
+  approximation — treat their badge as "nearest good corridor reading," not
+  a reading at that exact spot.
+- **`type: "ec"` (default)** (every other spot): the nearest Environment
+  Canada station with a
+  [Past 24 Hour Conditions](https://weather.gc.ca/past_conditions/index_e.html)
+  page.
+
+Each run, `generate.mjs`:
+
+1. Fetches that station's most recent observation (speed + direction, and
+   gust for the squamishwindsports source).
 2. Compares it against what the model forecasted for that same current hour.
 3. Shows the result as a small badge on that spot's card (green if they're
    within 20% of each other, red if not, with the reasoning on hover).
@@ -191,6 +220,18 @@ page, which reports genuinely *observed* wind, not a forecast. Each run,
    signals the rule engine already computed (regime, model agreement, MSLP
    support) — to `data/live-verification-log.json`, capped at the 40 most
    recent entries per spot.
+
+Squamish is also referenced on
+[iKitesurf/Weatherflow](https://wx.ikitesurf.com/spot/1436) (linked in the
+header), which several riders trust — but that data sits behind a paid
+subscription. Automating it would mean storing your personal login/API
+token as a GitHub secret and using your paid access on a public,
+unattended schedule, which isn't something to do without a deliberate,
+separate decision on your part (and I won't handle account credentials
+directly either way — see the app's safety guardrails). It's linked as a
+manual reference only; if you'd like to pursue an authenticated feed later,
+iKitesurf/Weatherflow's developer docs are the place to check for an
+official API and its terms.
 
 `apply-feedback.mjs` reads that log on its *next* run (it runs before
 `generate.mjs`, so the correction lands within one cycle — up to ~12 hours)
@@ -204,13 +245,14 @@ Same anti-overfitting rule as rider feedback: a spot needs at least
 multiplier is clamped to 0.75x–1.5x, so a single bad reading (a gust,
 a stale station, a parsing hiccup) can't swing the whole spot.
 
-Limitations: station locations are the *nearest available* EC observation
+Limitations: station locations are the *nearest available* observation
 point, not co-located with the spot itself (see each spot's `liveStation`
 comment in `spots.js`) — treat the comparison as an approximation, most
-trustworthy for the Howe Sound spots (Squamish Airport is genuinely in the
-corridor) and roughest for Erwin Park/Boundary Bay/White Rock (all sharing
-Sand Heads Lightstation, several km away). It only checks the current hour
-once per run (twice daily), not a continuous stream, so it can catch a
+trustworthy for the Squamish Spit itself (an on-site instrument) and
+roughest for Erwin Park/Boundary Bay/White Rock (all sharing Sand Heads
+Lightstation, several km away) and Porteau Cove/Furry Creek (sharing the
+Spit meter, also several km away). It only checks the current hour once
+per run (twice daily), not a continuous stream, so it can catch a
 systematic bias but won't catch a mismatch that starts and ends between runs.
 
 ## Known limitations / good next steps

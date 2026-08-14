@@ -34,12 +34,14 @@ export const SPOTS = [
     favorable_deg: [[150, 260]], // S–SW thermal inflow, or N outflow (handled separately as outflow regime)
     outflow_favorable_deg: [[300, 40]],
     pressureGradientAware: true, // factor in MSLP gradient — see rules.js
-    // Nearest Environment Canada station with a live "Past 24 Hour
-    // Conditions" page (weather.gc.ca/past_conditions) — genuinely
-    // observed, not forecast, data. generate.mjs compares this against
-    // the forecast for the current hour and logs a mismatch if they
-    // disagree by 20%+. See "Live verification" in README.
-    liveStation: { code: "wsk", name: "Squamish Airport" },
+    // Live wind meter at the Spit itself, published by Squamish Windsports
+    // Society (squamishwindsports.com/conditions/wind) — genuinely observed,
+    // not forecast, data, and per local rider feedback a far better read on
+    // the Spit than Environment Canada's Squamish Airport station, which
+    // sits in a wind shadow. generate.mjs compares this against the
+    // forecast for the current hour and logs a mismatch if they disagree by
+    // 20%+. See "Live verification" in README.
+    liveStation: { type: "squamishwindsports", windSrc: "spit", name: "Squamish Spit wind meter" },
     thermal: {
       enabled: true,
       calibrated: true, // apply the local GFS-class-underread correction — see rules.js
@@ -63,7 +65,11 @@ export const SPOTS = [
     level: "intermediate",
     favorable_deg: [[300, 40]],
     pressureGradientAware: true,
-    liveStation: { code: "wsk", name: "Squamish Airport" }, // nearest station; mid-Sound so treat as approximate
+    // No dedicated station at Porteau itself — the Spit meter (same Howe
+    // Sound corridor, genuinely on-water) is a much better proxy than the
+    // wind-shadowed airport, but still several km away, so treat it as
+    // approximate.
+    liveStation: { type: "squamishwindsports", windSrc: "spit", name: "Squamish Spit wind meter" },
     thermal: { enabled: false },
     outflow: {
       enabled: true,
@@ -80,7 +86,8 @@ export const SPOTS = [
     level: "intermediate",
     favorable_deg: [[300, 40], [150, 260]],
     pressureGradientAware: true,
-    liveStation: { code: "wsk", name: "Squamish Airport" },
+    // Same approximation caveat as Porteau Cove above.
+    liveStation: { type: "squamishwindsports", windSrc: "spit", name: "Squamish Spit wind meter" },
     thermal: {
       enabled: true,
       calibrated: true, // same Howe Sound thermal system as Squamish Spit — see rules.js

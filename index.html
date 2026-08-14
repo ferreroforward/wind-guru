@@ -103,6 +103,7 @@
     <span id="modelsNote" class="models-note"></span>
     <button id="refreshBtn">Refresh live</button>
     <a href="https://squamishwindsports.com/conditions/wind/" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">Live Squamish wind meter ↗</a>
+    <a href="https://wx.ikitesurf.com/spot/1436" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">iKitesurf (subscription) ↗</a>
   </div>
 </header>
 
@@ -161,7 +162,7 @@
 
 </main>
 
-<footer>Wind Guru · data via Open-Meteo (GFS / ECMWF / ICON / GEM) · built for Strait of Georgia, Howe Sound &amp; Metro Vancouver</footer>
+<footer>Wind Guru · data via Open-Meteo (GFS / ECMWF / ICON / GEM) · built for Strait of Georgia, Howe Sound &amp; Metro Vancouver <span id="versionNote"></span></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script type="module">
@@ -360,9 +361,10 @@ function renderSpotCards() {
     if (!spot) return;
     const hours = hoursForSelectedDay(spot);
     const lc = spot.live_check;
+    const liveSpeedText = lc && lc.live_gust_kt != null ? `${lc.live_kt}–${lc.live_gust_kt}kt` : lc ? `${lc.live_kt}kt` : "";
     const liveBadge = lc
       ? `<div class="live-check ${lc.mismatch ? "mismatch" : "match"}" title="${lc.mismatch ? lc.reasoning : ""}">
-           ${lc.station} live: ${lc.live_kt}kt ${lc.live_direction}
+           ${lc.station} live: ${liveSpeedText} ${lc.live_direction ?? ""}
            ${lc.mismatch ? ` — forecast said ${lc.forecasted_kt}kt (${lc.error_pct > 0 ? "+" : ""}${lc.error_pct}%), logged for recalibration` : ` · matches forecast (${lc.forecasted_kt}kt)`}
          </div>`
       : "";
@@ -544,6 +546,25 @@ presetsEl.querySelectorAll("button").forEach(btn => {
   });
 });
 refreshBtn.addEventListener("click", loadLive);
+
+// App version (which commit is actually deployed), separate from the
+// forecast-freshness badge above — see .github/workflows/stamp-version.yml.
+// Purely informational; missing file (e.g. before that workflow's first
+// run) just means the footer note stays blank.
+async function loadVersion() {
+  try {
+    const res = await fetch("data/version.json", { cache: "no-store" });
+    if (!res.ok) return;
+    const v = await res.json();
+    const ageMs = Date.now() - new Date(v.deployed_at).getTime();
+    const el = document.getElementById("versionNote");
+    el.textContent = `· v${v.version} deployed ${formatRelative(ageMs)}`;
+    el.title = `${v.message || ""} (${v.deployed_at})`;
+  } catch {
+    // no version.json yet — leave the footer note blank.
+  }
+}
+loadVersion();
 
 loadStatic();
 </script>
