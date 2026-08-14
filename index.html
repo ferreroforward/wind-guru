@@ -58,10 +58,11 @@
   .live-check.match{background:rgba(31,181,112,0.12);color:#1fb570;}
   .live-check.mismatch{background:rgba(224,84,107,0.12);color:#e0546b;cursor:help;}
   .hour-strip{display:flex;gap:3px;overflow-x:auto;padding-bottom:4px;}
-  .hour-cell{flex:0 0 auto;width:52px;border-radius:8px;padding:6px 4px;text-align:center;font-size:0.72rem;cursor:pointer;position:relative;}
+  .hour-cell{flex:0 0 auto;width:64px;border-radius:8px;padding:6px 4px;text-align:center;font-size:0.72rem;cursor:pointer;position:relative;}
   .hour-cell .t{color:rgba(255,255,255,0.65);font-size:0.68rem;}
   .hour-cell .p{font-weight:700;font-size:0.9rem;margin:2px 0;}
-  .hour-cell .d{font-size:0.65rem;color:rgba(255,255,255,0.6);}
+  .hour-cell .d{font-size:0.64rem;color:rgba(255,255,255,0.65);white-space:nowrap;}
+  .hour-cell .dir{font-size:0.62rem;color:rgba(255,255,255,0.45);}
   /* Tooltip is positioned in JS as a fixed-position element appended to
      <body> (see #globalTip) rather than nested + absolutely positioned
      inside .hour-cell — .hour-strip needs overflow-x:auto for horizontal
@@ -380,7 +381,8 @@ function renderSpotCards() {
         cellEl.innerHTML = `
           <div class="t">${h.time.slice(11,16)}</div>
           <div class="p">${probability}%</div>
-          <div class="d">${h.speed_kt ?? "–"}kt ${h.direction_label}</div>
+          <div class="d">${h.speed_kt != null ? Math.round(h.speed_kt) : "–"}${h.gust_kt != null ? `–${Math.round(h.gust_kt)}` : ""}kt</div>
+          <div class="dir">${h.direction_label}</div>
         `;
         cellEl.addEventListener("mouseenter", () => { cancelHide(); showTip(cellEl, h, sp.id); });
         cellEl.addEventListener("mouseleave", scheduleHide);
