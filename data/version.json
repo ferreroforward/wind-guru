@@ -1,5 +1,5 @@
 {
-  "version": "69036ea",
-  "message": "Add app version tracking; switch Squamish live source to the Spit wind meter",
-  "deployed_at": "2026-08-14T21:41:52Z"
+  "version": "b8bb65a",
+  "message": "Add igetwind live stations: Pam Rocks for Porteau Cove, White Rock METAR for the south-Delta cluster",
+  "deployed_at": "2026-08-14T21:53:41Z"
 }
