@@ -419,3 +419,50 @@ export function localHourAndMonth(isoTime) {
   const d = new Date(isoTime);
   return { hour: d.getHours ? Number(isoTime.slice(11, 13)) : null, month: Number(isoTime.slice(5, 7)) };
 }
+
+// "2026-08-13T14:00" for the current instant, in America/Los_Angeles —
+// matches the local-time format Open-Meteo's hourly.time array uses, so it
+// can be looked up directly against a spot's `hours` array. Used by the
+// live-observation verification check (see generate.mjs) to find "the
+// forecast for right now."
+export function currentPacificHourString(now = new Date()) {
+  const fmt = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", hourCycle: "h23",
+  });
+  const parts = Object.fromEntries(fmt.formatToParts(now).map(p => [p.type, p.value]));
+  return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:00`;
+}
+
+// Plain-English hypothesis for why a live observation and the forecast for
+// that same hour disagree by 20%+ — leans on signals the rule engine already
+// computed (regime, model agreement/spread, MSLP support) rather than
+// inventing anything new, so it's an honest explanation, not a guess.
+// `errorPct` is (live - forecast) / forecast, e.g. 0.35 = live ran 35% hot.
+export function explainMismatch(hourResult, errorPct) {
+  const direction = errorPct > 0 ? "under" : "over";
+  const notes = [];
+  if (hourResult.regime === "thermal") {
+    notes.push(direction === "under"
+      ? "Forecast called a thermal but under-shot its strength — even after the local calibration, coarse models can still lag on an unusually strong thermal day."
+      : "Forecast called a thermal that came in weaker than shown — possible early suppression (heat, high cloud) or the gradient not fully developing.");
+  } else if (hourResult.regime === "outflow") {
+    notes.push(direction === "under"
+      ? "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured."
+      : "Forecast called outflow that came in weaker than shown — outflow events can relax faster than models show once the synoptic pattern eases.");
+  } else if (hourResult.regime === "calm" || hourResult.regime === "mixed") {
+    notes.push(direction === "under"
+      ? "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught."
+      : "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.");
+  } else {
+    notes.push(`Synoptic regime, but the magnitude missed — model agreement was ${Math.round((hourResult.model_agreement ?? 0) * 100)}%, so spread between models likely explains some of the gap.`);
+  }
+  if (hourResult.pressure_support === false) notes.push("MSLP had already flagged this hour as uncertain.");
+  if (hourResult.fine_vs_coarse_gap != null && Math.abs(hourResult.fine_vs_coarse_gap) > 5) {
+    notes.push("Models disagreed sharply with each other, a known low-confidence signature.");
+  }
+  if (hourResult.calibrated) notes.push("This hour already had the Squamish field calibration applied.");
+  if (hourResult.feedback_adjusted) notes.push("This hour already had a rider-feedback adjustment applied.");
+  return notes.join(" ");
+}

@@ -9,12 +9,16 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 import { SPOTS, PRESSURE_REFERENCE } from "../assets/spots.js";
-import { buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap } from "../assets/rules.js";
+import { buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch } from "../assets/rules.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_PATH = path.join(__dirname, "..", "data", "forecast.json");
 const OVERRIDES_PATH = path.join(__dirname, "..", "data", "calibration-overrides.json");
+const LIVE_LOG_PATH = path.join(__dirname, "..", "data", "live-verification-log.json");
 const FORECAST_DAYS = 4; // "today" + 3 days ahead
+const LIVE_ERROR_THRESHOLD = 0.20; // 20% — per spec: flag + log any bigger gap than this
+const LIVE_LOG_MAX_PER_SPOT = 40; // cap so the log file doesn't grow forever
+const LIVE_MIN_FORECAST_KT = 2; // skip the % comparison when forecast is near-zero (division blows up)
 
 // Rider-feedback overrides, if scripts/apply-feedback.mjs has produced any
 // (it runs first in the Action — see .github/workflows/update-forecast.yml).
@@ -26,6 +30,81 @@ async function loadOverrides() {
     return parsed.spots || {};
   } catch {
     return {};
+  }
+}
+
+// Rider-feedback overrides file may or may not exist yet on a fresh clone —
+// harmless if missing, same as loadOverrides above.
+async function loadLiveLog() {
+  try {
+    const raw = await readFile(LIVE_LOG_PATH, "utf8");
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed.entries) ? parsed.entries : [];
+  } catch {
+    return [];
+  }
+}
+
+// Environment Canada's "Past 24 Hour Conditions" page — genuinely observed
+// (not forecast) hourly station data: weather.gc.ca/past_conditions. Table
+// columns are Date/Time, Conditions, Temperature, Wind, Humidex, Relative
+// humidity, Dew point, Pressure, Visibility. We parse actual <tr>/<td> cells
+// rather than scraping flattened text, since date-separator rows only have
+// one populated cell and would otherwise be easy to misread as data.
+function parseObservedWind(html) {
+  const rowRe = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
+  const cellRe = /<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/gi;
+  const stripTags = (s) => s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/gi, " ").replace(/\s+/g, " ").trim();
+
+  const rows = [];
+  let rm;
+  while ((rm = rowRe.exec(html))) {
+    const cells = [];
+    let cm;
+    cellRe.lastIndex = 0;
+    while ((cm = cellRe.exec(rm[1]))) cells.push(stripTags(cm[1]));
+    // Data rows start with an "HH:MM" cell; date-separator rows ("13 August
+    // 2026") and the header row don't match this and are skipped.
+    if (cells.length >= 4 && /^\d{2}:\d{2}$/.test(cells[0])) rows.push(cells);
+  }
+  if (!rows.length) return null;
+
+  const latest = rows[0]; // rows are most-recent-first
+  const time = latest[0];
+  const windRaw = latest[3];
+  let speedKmh, directionLabel, directionAbbr = null;
+  if (/^calm$/i.test(windRaw)) {
+    speedKmh = 0;
+    directionLabel = "calm";
+  } else {
+    const m = windRaw.match(/^([A-Z]+)\s*\(([^)]+)\)\s*([\d.]+)/);
+    if (!m) return null;
+    directionAbbr = m[1];
+    directionLabel = m[2];
+    speedKmh = parseFloat(m[3]);
+  }
+  return {
+    time, // "HH:MM" Pacific, no date attached
+    speedKt: Math.round(speedKmh * 0.539957 * 10) / 10,
+    directionAbbr,
+    directionLabel,
+  };
+}
+
+const liveObsCache = {};
+async function getLiveObservation(station) {
+  if (liveObsCache[station.code]) return liveObsCache[station.code];
+  const url = `https://weather.gc.ca/past_conditions/index_e.html?station=${station.code}`;
+  try {
+    const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
+    if (!res.ok) { console.log(`[live:${station.name}] fetch failed: ${res.status}`); return null; }
+    const html = await res.text();
+    const parsed = parseObservedWind(html);
+    liveObsCache[station.code] = parsed;
+    return parsed;
+  } catch (err) {
+    console.log(`[live:${station.name}] fetch error: ${err.message}`);
+    return null;
   }
 }
 
@@ -125,11 +204,14 @@ async function getGradientStations() {
 async function main() {
   const startedAt = new Date();
   const spotsOut = [];
+  const liveVerifications = []; // new mismatches (>=20% error) found this run, appended to the persisted log below
 
   const overrides = await loadOverrides();
   if (Object.keys(overrides).length) {
     console.log(`Loaded calibration overrides for: ${Object.keys(overrides).join(", ")}`);
   }
+
+  const nowHourStr = currentPacificHourString(startedAt);
 
   console.log("Fetching Environment Canada marine bulletins...");
   const bulletins = {};
@@ -188,6 +270,51 @@ async function main() {
       return classifyHour(spot, row, hour, month, refSpeedKt, pressureGradients, overrideMultiplier);
     });
 
+    // Live verification: compare the forecast for THIS hour against what
+    // the nearest EC station is actually observing right now. If they
+    // disagree by 20%+, log a reasoned mismatch — apply-feedback.mjs picks
+    // this log up on the next run and pools it with rider reports when
+    // computing that spot's calibration multiplier. See README.
+    let liveCheck = null;
+    if (spot.liveStation) {
+      try {
+        const obs = await getLiveObservation(spot.liveStation);
+        const forecastHour = hours.find((h) => h.time === nowHourStr);
+        if (obs && forecastHour && forecastHour.speed_kt != null && forecastHour.speed_kt >= LIVE_MIN_FORECAST_KT) {
+          const errorPct = (obs.speedKt - forecastHour.speed_kt) / forecastHour.speed_kt;
+          const mismatch = Math.abs(errorPct) >= LIVE_ERROR_THRESHOLD;
+          liveCheck = {
+            checked_hour: nowHourStr,
+            station: spot.liveStation.name,
+            observed_local_time: obs.time,
+            forecasted_kt: forecastHour.speed_kt,
+            live_kt: obs.speedKt,
+            live_direction: obs.directionLabel,
+            error_pct: Math.round(errorPct * 100),
+            mismatch,
+            regime: forecastHour.regime,
+          };
+          if (mismatch) {
+            liveCheck.reasoning = explainMismatch(forecastHour, errorPct);
+            console.log(`  [live:${spot.id}] MISMATCH — forecast ${forecastHour.speed_kt}kt vs live ${obs.speedKt}kt (${liveCheck.error_pct > 0 ? "+" : ""}${liveCheck.error_pct}%)`);
+            liveVerifications.push({
+              spot: spot.id,
+              time: nowHourStr,
+              forecasted: forecastHour.speed_kt,
+              actual: obs.speedKt,
+              ratio: obs.speedKt / forecastHour.speed_kt,
+              source: "live-station",
+              station: spot.liveStation.name,
+              reasoning: liveCheck.reasoning,
+              checked_at: startedAt.toISOString(),
+            });
+          }
+        }
+      } catch (err) {
+        console.log(`[${spot.id}] live verification failed: ${err.message}`);
+      }
+    }
+
     spotsOut.push({
       id: spot.id,
       name: spot.name,
@@ -197,11 +324,32 @@ async function main() {
       sports: spot.sports,
       level: spot.level,
       hours,
+      live_check: liveCheck,
     });
 
     // Be polite to the free API.
     await new Promise((r) => setTimeout(r, 300));
   }
+
+  // Merge this run's new mismatches into the persisted live-verification
+  // log, capped per spot so it doesn't grow forever. apply-feedback.mjs
+  // reads this file on the NEXT run (it runs before generate.mjs in the
+  // Action) and pools it with rider reports — see README "Live verification".
+  if (liveVerifications.length) {
+    console.log(`\n${liveVerifications.length} live mismatch(es) this run.`);
+  }
+  const existingLog = await loadLiveLog();
+  const bySpotLog = {};
+  for (const e of [...existingLog, ...liveVerifications]) (bySpotLog[e.spot] ||= []).push(e);
+  const cappedEntries = [];
+  for (const list of Object.values(bySpotLog)) {
+    const dedup = new Map();
+    for (const e of list) dedup.set(e.time, e); // same hour re-checked twice in a day: keep the latest
+    const sorted = [...dedup.values()].sort((a, b) => new Date(b.checked_at) - new Date(a.checked_at));
+    cappedEntries.push(...sorted.slice(0, LIVE_LOG_MAX_PER_SPOT));
+  }
+  await mkdir(path.dirname(LIVE_LOG_PATH), { recursive: true });
+  await writeFile(LIVE_LOG_PATH, JSON.stringify({ updated_at: startedAt.toISOString(), entries: cappedEntries }, null, 2));
 
   const forecast = {
     generated_at: startedAt.toISOString(),
@@ -213,6 +361,7 @@ async function main() {
     models_used: ["GFS (NOAA)", "ECMWF IFS", "ICON (DWD)", "GEM / HRDPS (ECCC)"],
     marine_bulletins: bulletins,
     calibration_overrides: overrides,
+    live_verification_count: cappedEntries.length,
     spots: spotsOut,
   };
 

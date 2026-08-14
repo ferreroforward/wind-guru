@@ -54,14 +54,24 @@
   .spot-card .head .name{font-weight:700;font-size:1.05rem;}
   .spot-card .head .region{color:var(--muted);font-size:0.8rem;}
   .spot-card .sports{font-size:0.75rem;color:var(--muted);}
+  .live-check{font-size:0.75rem;padding:4px 8px;border-radius:8px;margin-bottom:8px;display:inline-block;}
+  .live-check.match{background:rgba(31,181,112,0.12);color:#1fb570;}
+  .live-check.mismatch{background:rgba(224,84,107,0.12);color:#e0546b;cursor:help;}
   .hour-strip{display:flex;gap:3px;overflow-x:auto;padding-bottom:4px;}
   .hour-cell{flex:0 0 auto;width:52px;border-radius:8px;padding:6px 4px;text-align:center;font-size:0.72rem;cursor:default;position:relative;}
   .hour-cell .t{color:rgba(255,255,255,0.65);font-size:0.68rem;}
   .hour-cell .p{font-weight:700;font-size:0.9rem;margin:2px 0;}
   .hour-cell .d{font-size:0.65rem;color:rgba(255,255,255,0.6);}
-  .hour-cell:hover .tip{display:block;}
-  .tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#000;color:#fff;padding:8px 10px;border-radius:8px;font-size:0.72rem;width:190px;z-index:5;text-align:left;box-shadow:0 4px 14px rgba(0,0,0,0.4);}
-  .tip b{display:block;margin-bottom:3px;}
+  /* Tooltip is positioned in JS as a fixed-position element appended to
+     <body> (see #globalTip) rather than nested + absolutely positioned
+     inside .hour-cell — .hour-strip needs overflow-x:auto for horizontal
+     scrolling, which per the CSS spec silently forces overflow-y to auto
+     too, clipping any absolutely-positioned child that pokes outside the
+     row (like a tooltip above the cell). A body-level fixed element sidesteps
+     that entirely. */
+  #globalTip{display:none;position:fixed;background:#000;color:#fff;padding:8px 10px;border-radius:8px;font-size:0.72rem;width:200px;z-index:1000;text-align:left;box-shadow:0 4px 14px rgba(0,0,0,0.4);}
+  #globalTip b{display:block;margin-bottom:3px;}
+  #globalTip a{display:block;margin-top:6px;color:#7fc4ff;}
 
   .lvl-green{background:var(--green-bg);color:var(--green);}
   .lvl-yellow{background:var(--yellow-bg);color:var(--yellow);}
@@ -129,13 +139,14 @@
 
   <h2 class="section">All spots — hour by hour</h2>
   <div id="spotCards"><div class="empty">Loading…</div></div>
+  <div id="globalTip"></div>
 
   <div class="about">
     <b>How this works.</b> Every spot is checked against four independent weather models (GFS, ECMWF, ICON and Environment Canada's GEM/HRDPS, which best resolves local BC terrain). For each spot we don't just show raw numbers — we classify the hour as <b>thermal</b> (local sun-driven sea breeze or valley wind, e.g. the Squamish afternoon southerly), <b>outflow</b> (cold-air drainage / gap wind, e.g. Squamish's northerly), or <b>synoptic</b> (general frontal/gradient wind across the Strait). Probability = the share of models landing your chosen knot range at that hour; confidence is shaded down for pure mesoscale thermal signals that only the fine-resolution model catches, and for wind blowing from a direction that isn't clean onshore/cross-shore at that spot.
     <br><br>
     <b>Squamish Spit, Porteau Cove and Furry Creek</b> get two extra local corrections. First, raw coarse-model wind badly under-reads the Squamish thermal (a well-documented local quirk), so once the model shows a clean SW signal we scale it up roughly 2.85x, based on field calibration from a long-time local rider (West Coast Wind Sports). Second, we check the sea-level pressure gradient along the corridor — a large-scale coast-vs-interior spread and a local spread between the sound's mouth and the spot itself — since Squamish wind is driven by real pressure differences, not thermal heating alone; when both line up with the wind signal, confidence goes up, when they don't, we flag it. Environment Canada's own Howe Sound marine bulletin — generally the single best resource for today's Squamish wind — is shown above when available, and is worth cross-checking against the live wind meter linked at the top before you drive out.
     <br><br>
-    <b>Self-improving from rider reports.</b> Hover any hour cell for a "Report actual conditions" link — tell us what it actually did and the twice-daily forecast job factors your report into that spot's calibration (see the repo's README for details). The more reports, the better it gets.
+    <b>Self-improving from rider reports and live stations.</b> Hover any hour cell for a "Report actual conditions" link — tell us what it actually did and the twice-daily forecast job factors your report into that spot's calibration (see the repo's README for details). Each run also pulls the nearest Environment Canada station's real-time observation (shown as a small badge on each spot card) and checks it against what was forecasted for that same hour — if they disagree by 20% or more, it's logged with a reasoned explanation and folded into that spot's calibration alongside rider reports, so the model keeps correcting itself even between reports.
     <br><br>
     This is a forecasting aid, not a safety guarantee — always check current conditions, tides and marine warnings before launching.
   </div>
@@ -278,33 +289,70 @@ function reportUrl(spotId, h) {
   return `https://github.com/${GITHUB_REPO}/issues/new?${params.toString()}`;
 }
 
+const globalTip = document.getElementById("globalTip");
+
+function showTip(cellEl, h, spotId) {
+  globalTip.innerHTML = `<b>${h.regime.toUpperCase()}</b>${h.reason}
+    <a href="${reportUrl(spotId, h)}" target="_blank" rel="noopener">Report actual conditions →</a>`;
+  const rect = cellEl.getBoundingClientRect();
+  globalTip.style.display = "block";
+  // Measure after display:block so offsetWidth is accurate, then clamp to viewport.
+  const tipWidth = globalTip.offsetWidth || 200;
+  let left = rect.left + rect.width / 2 - tipWidth / 2;
+  left = Math.max(8, Math.min(left, window.innerWidth - tipWidth - 8));
+  let top = rect.top - globalTip.offsetHeight - 8;
+  if (top < 8) top = rect.bottom + 8; // flip below if it would go off the top of the viewport
+  globalTip.style.left = `${left}px`;
+  globalTip.style.top = `${top}px`;
+}
+function hideTip() { globalTip.style.display = "none"; }
+document.addEventListener("scroll", hideTip, true); // catches scroll inside .hour-strip too (capture phase)
+
 function renderSpotCards() {
   spotCardsEl.innerHTML = "";
   SPOTS.forEach(sp => {
     const spot = forecast.spots.find(s => s.id === sp.id);
     if (!spot) return;
     const hours = hoursForSelectedDay(spot);
+    const lc = spot.live_check;
+    const liveBadge = lc
+      ? `<div class="live-check ${lc.mismatch ? "mismatch" : "match"}" title="${lc.mismatch ? lc.reasoning : ""}">
+           ${lc.station} live: ${lc.live_kt}kt ${lc.live_direction}
+           ${lc.mismatch ? ` — forecast said ${lc.forecasted_kt}kt (${lc.error_pct > 0 ? "+" : ""}${lc.error_pct}%), logged for recalibration` : ` · matches forecast (${lc.forecasted_kt}kt)`}
+         </div>`
+      : "";
     const card = document.createElement("div");
     card.className = "spot-card";
-    const strip = hours.map(h => {
-      const { probability } = probabilityInRange(h, minKt, maxKt);
-      const cls = tierClass(probability);
-      return `<div class="hour-cell ${cls}">
-        <div class="t">${h.time.slice(11,16)}</div>
-        <div class="p">${probability}%</div>
-        <div class="d">${h.speed_kt ?? "–"}kt ${h.direction_label}</div>
-        <div class="tip"><b>${h.regime.toUpperCase()}</b>${h.reason}
-          <a href="${reportUrl(sp.id, h)}" target="_blank" rel="noopener" style="display:block;margin-top:6px;color:#7fc4ff;">Report actual conditions →</a>
-        </div>
-      </div>`;
-    }).join("");
     card.innerHTML = `
       <div class="head">
         <div><span class="name">${sp.name}</span> <span class="region">· ${sp.region} · ${sp.level}</span></div>
         <div class="sports">${sp.sports.join(" · ")}</div>
       </div>
-      <div class="hour-strip">${strip || '<div class="empty">No data</div>'}</div>
+      ${liveBadge}
+      <div class="hour-strip"></div>
     `;
+    const stripEl = card.querySelector(".hour-strip");
+    if (!hours.length) {
+      stripEl.innerHTML = '<div class="empty">No data</div>';
+    } else {
+      hours.forEach(h => {
+        const { probability } = probabilityInRange(h, minKt, maxKt);
+        const cls = tierClass(probability);
+        const cellEl = document.createElement("div");
+        cellEl.className = `hour-cell ${cls}`;
+        cellEl.tabIndex = 0; // keyboard/touch accessible, not just mouse hover
+        cellEl.innerHTML = `
+          <div class="t">${h.time.slice(11,16)}</div>
+          <div class="p">${probability}%</div>
+          <div class="d">${h.speed_kt ?? "–"}kt ${h.direction_label}</div>
+        `;
+        cellEl.addEventListener("mouseenter", () => showTip(cellEl, h, sp.id));
+        cellEl.addEventListener("mouseleave", hideTip);
+        cellEl.addEventListener("focus", () => showTip(cellEl, h, sp.id));
+        cellEl.addEventListener("blur", hideTip);
+        stripEl.appendChild(cellEl);
+      });
+    }
     spotCardsEl.appendChild(card);
   });
 }

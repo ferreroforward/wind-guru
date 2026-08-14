@@ -34,6 +34,12 @@ export const SPOTS = [
     favorable_deg: [[150, 260]], // S–SW thermal inflow, or N outflow (handled separately as outflow regime)
     outflow_favorable_deg: [[300, 40]],
     pressureGradientAware: true, // factor in MSLP gradient — see rules.js
+    // Nearest Environment Canada station with a live "Past 24 Hour
+    // Conditions" page (weather.gc.ca/past_conditions) — genuinely
+    // observed, not forecast, data. generate.mjs compares this against
+    // the forecast for the current hour and logs a mismatch if they
+    // disagree by 20%+. See "Live verification" in README.
+    liveStation: { code: "wsk", name: "Squamish Airport" },
     thermal: {
       enabled: true,
       calibrated: true, // apply the local GFS-class-underread correction — see rules.js
@@ -57,6 +63,7 @@ export const SPOTS = [
     level: "intermediate",
     favorable_deg: [[300, 40]],
     pressureGradientAware: true,
+    liveStation: { code: "wsk", name: "Squamish Airport" }, // nearest station; mid-Sound so treat as approximate
     thermal: { enabled: false },
     outflow: {
       enabled: true,
@@ -73,6 +80,7 @@ export const SPOTS = [
     level: "intermediate",
     favorable_deg: [[300, 40], [150, 260]],
     pressureGradientAware: true,
+    liveStation: { code: "wsk", name: "Squamish Airport" },
     thermal: {
       enabled: true,
       calibrated: true, // same Howe Sound thermal system as Squamish Spit — see rules.js
@@ -95,6 +103,7 @@ export const SPOTS = [
     sports: ["windsurf", "wingfoil", "kite"],
     level: "beginner-friendly",
     favorable_deg: [[230, 320]],
+    liveStation: { code: "whc", name: "Vancouver Harbour" },
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],
@@ -112,6 +121,7 @@ export const SPOTS = [
     sports: ["windsurf", "wingfoil", "kite"],
     level: "intermediate",
     favorable_deg: [[230, 320]],
+    liveStation: { code: "whc", name: "Vancouver Harbour" },
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],
@@ -129,6 +139,7 @@ export const SPOTS = [
     sports: ["kite", "windsurf", "wingfoil"],
     level: "intermediate",
     favorable_deg: [[180, 300]],
+    liveStation: { code: "yvr", name: "Vancouver Int'l Airport" },
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],
@@ -146,6 +157,7 @@ export const SPOTS = [
     sports: ["kite", "wingfoil", "windsurf"],
     level: "beginner-friendly",
     favorable_deg: [[150, 260]],
+    liveStation: { code: "wvf", name: "Sand Heads Lightstation" },
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],
@@ -164,6 +176,7 @@ export const SPOTS = [
     sports: ["kite", "wingfoil"],
     level: "beginner-friendly",
     favorable_deg: [[150, 260]],
+    liveStation: { code: "wvf", name: "Sand Heads Lightstation" },
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],
@@ -181,6 +194,7 @@ export const SPOTS = [
     sports: ["windsurf", "wingfoil", "kite"],
     level: "intermediate",
     favorable_deg: [[150, 280]],
+    liveStation: { code: "wvf", name: "Sand Heads Lightstation" },
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],

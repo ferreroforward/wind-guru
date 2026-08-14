@@ -1,18 +1,23 @@
 #!/usr/bin/env node
 // Wind Guru — feedback-to-calibration pipeline.
-// Reads user-submitted "wind-report" GitHub issues (forecast vs actual),
-// computes a per-spot bias multiplier, and writes
+// Pools two sources of "forecasted vs actual" data points per spot:
+//   1. User-submitted "wind-report" GitHub issues.
+//   2. data/live-verification-log.json — automatic mismatches (20%+ error)
+//      between the forecast and the nearest EC station's live observation,
+//      logged by generate.mjs each run (see "Live verification" in README).
+// Computes a per-spot bias multiplier from the combined pool and writes
 // data/calibration-overrides.json. generate.mjs reads that file and applies
 // the multiplier on top of its normal calibration for any spot with enough
-// reports. Run before generate.mjs (see .github/workflows/update-forecast.yml),
+// data points. Run before generate.mjs (see .github/workflows/update-forecast.yml),
 // or manually: `node scripts/apply-feedback.mjs`.
 
-import { writeFile, mkdir } from "node:fs/promises";
+import { writeFile, mkdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_PATH = path.join(__dirname, "..", "data", "calibration-overrides.json");
+const LIVE_LOG_PATH = path.join(__dirname, "..", "data", "live-verification-log.json");
 
 // Edit these if the repo ever moves.
 const OWNER = "ferreroforward";
@@ -52,10 +57,23 @@ async function fetchReports() {
   return issues.filter((i) => !i.pull_request); // issues endpoint also returns PRs
 }
 
+async function loadLiveVerifications() {
+  try {
+    const raw = await readFile(LIVE_LOG_PATH, "utf8");
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed.entries) ? parsed.entries : [];
+  } catch {
+    return [];
+  }
+}
+
 async function main() {
   console.log(`Fetching wind-report issues from ${OWNER}/${REPO}...`);
   const issues = await fetchReports();
   console.log(`Found ${issues.length} labeled issue(s).`);
+
+  const liveEntries = await loadLiveVerifications();
+  console.log(`Found ${liveEntries.length} logged live-verification mismatch(es).`);
 
   const bySpot = {};
   for (const issue of issues) {
@@ -67,7 +85,11 @@ async function main() {
       console.log(`  Skipping issue #${issue.number} — couldn't parse spot/forecasted/actual.`);
       continue;
     }
-    (bySpot[spot] ||= []).push({ issue: issue.number, date: issue.created_at, forecasted, actual, ratio: actual / forecasted });
+    (bySpot[spot] ||= []).push({ date: issue.created_at, forecasted, actual, ratio: actual / forecasted, source: "rider-report" });
+  }
+  for (const e of liveEntries) {
+    if (!e.spot || !isFinite(e.forecasted) || !isFinite(e.actual) || e.forecasted <= 0) continue;
+    (bySpot[e.spot] ||= []).push({ date: e.checked_at || e.time, forecasted: e.forecasted, actual: e.actual, ratio: e.ratio ?? (e.actual / e.forecasted), source: "live-station" });
   }
 
   const overrides = {};
@@ -76,18 +98,22 @@ async function main() {
       .sort((a, b) => new Date(b.date) - new Date(a.date))
       .slice(0, MAX_REPORTS_PER_SPOT);
     if (recent.length < MIN_SAMPLES) {
-      console.log(`  ${spot}: only ${recent.length} report(s), below minimum of ${MIN_SAMPLES} — no adjustment.`);
+      console.log(`  ${spot}: only ${recent.length} data point(s), below minimum of ${MIN_SAMPLES} — no adjustment.`);
       continue;
     }
     const avgRatio = recent.reduce((sum, r) => sum + r.ratio, 0) / recent.length;
     const multiplier = Math.max(MULTIPLIER_CLAMP[0], Math.min(MULTIPLIER_CLAMP[1], avgRatio));
+    const riderCount = recent.filter((r) => r.source === "rider-report").length;
+    const liveCount = recent.filter((r) => r.source === "live-station").length;
     overrides[spot] = {
       sample_size: recent.length,
+      rider_reports: riderCount,
+      live_checks: liveCount,
       avg_ratio: Math.round(avgRatio * 100) / 100,
       multiplier: Math.round(multiplier * 100) / 100,
-      note: `Based on ${recent.length} rider report${recent.length === 1 ? "" : "s"}: actual wind averaged ${Math.round(avgRatio * 100)}% of what was forecasted.`,
+      note: `Based on ${recent.length} data point${recent.length === 1 ? "" : "s"} (${riderCount} rider report${riderCount === 1 ? "" : "s"}, ${liveCount} live-station check${liveCount === 1 ? "" : "s"}): actual wind averaged ${Math.round(avgRatio * 100)}% of what was forecasted.`,
     };
-    console.log(`  ${spot}: ${recent.length} reports, avg ratio ${avgRatio.toFixed(2)}, multiplier ${multiplier.toFixed(2)}`);
+    console.log(`  ${spot}: ${recent.length} data points (${riderCount} rider, ${liveCount} live), avg ratio ${avgRatio.toFixed(2)}, multiplier ${multiplier.toFixed(2)}`);
   }
 
   const out = {

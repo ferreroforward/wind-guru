@@ -44,6 +44,9 @@ numbers.
   site's exact numbers. See `classifyHour()` in `assets/rules.js`.
 - **Rider feedback loop**: see "Rider feedback & self-calibration" below —
   actual on-the-water reports nudge each spot's calibration over time.
+- **Live verification**: see "Live verification" below — each run checks
+  the forecast against a real observation from the nearest Environment
+  Canada station and self-corrects when they disagree.
 - **Two ways the page gets data**:
   1. `data/forecast.json` — a snapshot committed twice a day by the GitHub
      Action below. Loads instantly, includes the EC bulletin, MSLP gradient,
@@ -171,6 +174,45 @@ against whatever number the reporter copied down.
 To recalibrate manually: `GITHUB_TOKEN=<a token with repo:read> node scripts/apply-feedback.mjs`
 (a token isn't required for a public repo, just raises the API rate limit).
 
+## Live verification
+
+Every spot has a `liveStation` (see `assets/spots.js`) — the nearest
+Environment Canada station with a
+[Past 24 Hour Conditions](https://weather.gc.ca/past_conditions/index_e.html)
+page, which reports genuinely *observed* wind, not a forecast. Each run,
+`generate.mjs`:
+
+1. Fetches that station's most recent hourly observation (speed + direction).
+2. Compares it against what the model forecasted for that same current hour.
+3. Shows the result as a small badge on that spot's card (green if they're
+   within 20% of each other, red if not, with the reasoning on hover).
+4. If they disagree by **20% or more**, writes a reasoned mismatch entry —
+   using `explainMismatch()` in `assets/rules.js`, which draws only on
+   signals the rule engine already computed (regime, model agreement, MSLP
+   support) — to `data/live-verification-log.json`, capped at the 40 most
+   recent entries per spot.
+
+`apply-feedback.mjs` reads that log on its *next* run (it runs before
+`generate.mjs`, so the correction lands within one cycle — up to ~12 hours)
+and pools it with rider reports for the same spot when computing the
+calibration multiplier, exactly like a "Report actual conditions" issue
+would. The `note` field in `data/calibration-overrides.json` shows how many
+of each type went into a given spot's multiplier.
+
+Same anti-overfitting rule as rider feedback: a spot needs at least
+`MIN_SAMPLES` (2) combined data points before anything adjusts, and the
+multiplier is clamped to 0.75x–1.5x, so a single bad reading (a gust,
+a stale station, a parsing hiccup) can't swing the whole spot.
+
+Limitations: station locations are the *nearest available* EC observation
+point, not co-located with the spot itself (see each spot's `liveStation`
+comment in `spots.js`) — treat the comparison as an approximation, most
+trustworthy for the Howe Sound spots (Squamish Airport is genuinely in the
+corridor) and roughest for Erwin Park/Boundary Bay/White Rock (all sharing
+Sand Heads Lightstation, several km away). It only checks the current hour
+once per run (twice daily), not a continuous stream, so it can catch a
+systematic bias but won't catch a mismatch that starts and ends between runs.
+
 ## Known limitations / good next steps
 
 - Tide state (important at Boundary Bay and Iona) isn't factored in.
@@ -186,3 +228,8 @@ To recalibrate manually: `GITHUB_TOKEN=<a token with repo:read> node scripts/app
   feedback accumulates to see which days it called right vs wrong.
 - See "Rider feedback & self-calibration" above for the feedback loop's
   current limitation (no historical forecast archive to compare against).
+  Live verification (see above) partially addresses this for the *current*
+  hour only — it still can't check how a forecast made 3 days out held up.
+- Live-station comparisons use the nearest EC station, not a station at the
+  spot itself — see "Live verification" above for which spots share a
+  station and how far it might be.
