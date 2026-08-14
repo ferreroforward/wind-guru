@@ -16,6 +16,8 @@
   header{padding:20px 20px 8px;max-width:1200px;margin:0 auto;}
   header h1{margin:0 0 4px;font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;}
   header p.sub{margin:0;color:var(--muted);font-size:0.9rem;}
+  .hero-summary{font-size:1.35rem;font-weight:600;color:var(--text);line-height:1.5;margin-top:14px;}
+  .hero-summary b{color:var(--accent);}
   .meta-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:0.82rem;color:var(--muted);}
   .meta-row button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.82rem;}
   .meta-row button:hover{border-color:var(--accent);}
@@ -98,6 +100,7 @@
 <header>
   <h1>🌬️ Wind Guru</h1>
   <p class="sub">Where to go windsurf, wingfoil, kite or parawing — Howe Sound, Metro Vancouver &amp; the Strait of Georgia</p>
+  <div class="hero-summary" id="heroSummary">Loading…</div>
   <div class="meta-row">
     <span id="genLabel">Loading forecast…</span>
     <span id="modelsNote" class="models-note"></span>
@@ -156,6 +159,8 @@
     <b>Squamish Spit, Porteau Cove and Furry Creek</b> get two extra local corrections. First, raw coarse-model wind badly under-reads the Squamish thermal (a well-documented local quirk), so once the model shows a clean SW signal we scale it up roughly 2.85x, based on field calibration from a long-time local rider (West Coast Wind Sports). Second, we check the sea-level pressure gradient along the corridor — a large-scale coast-vs-interior spread and a local spread between the sound's mouth and the spot itself — since Squamish wind is driven by real pressure differences, not thermal heating alone; when both line up with the wind signal, confidence goes up, when they don't, we flag it. Environment Canada's own Howe Sound marine bulletin — generally the single best resource for today's Squamish wind — is shown above when available, and is worth cross-checking against the live wind meter linked at the top before you drive out.
     <br><br>
     <b>Self-improving from rider reports and live stations.</b> Hover any hour cell for a "Report actual conditions" link — tell us what it actually did and the twice-daily forecast job factors your report into that spot's calibration (see the repo's README for details). Each run also pulls the nearest Environment Canada station's real-time observation (shown as a small badge on each spot card) and checks it against what was forecasted for that same hour — if they disagree by 20% or more, it's logged with a reasoned explanation and folded into that spot's calibration alongside rider reports, so the model keeps correcting itself even between reports.
+    <br><br>
+    <b>Only spots with a real shot show up below.</b> The headline at the top always calls out the single best option (and its strongest sub-window) for your chosen range and day; the best-bets list and hour-by-hour cards only include spots that clear 40% for that range on that day, to keep the page focused — every spot is still plotted on the map above regardless of odds.
     <br><br>
     This is a forecasting aid, not a safety guarantee — always check current conditions, tides and marine warnings before launching.
   </div>
@@ -254,6 +259,76 @@ function bestWindowForSpot(spot) {
   return best;
 }
 
+// Spots with no realistic shot at the selected range on the selected day
+// are dropped from the lists below (still shown as dots on the map) — see
+// MIN_LIST_PROBABILITY. Shared by the best-bets list, the hour-by-hour
+// cards, and the hero summary so all three agree on what counts as "worth
+// showing."
+const MIN_LIST_PROBABILITY = 40;
+
+function rankedSpotsForDay() {
+  return SPOTS.map(sp => {
+    const spot = forecast.spots.find(s => s.id === sp.id);
+    if (!spot) return null;
+    const best = bestWindowForSpot(spot);
+    if (!best) return null;
+    return { spot: sp, spotData: spot, ...best };
+  }).filter(Boolean).sort((a, b) => b.score - a.score);
+}
+
+function hourLabel(hourNum) {
+  const h = ((hourNum % 24) + 24) % 24;
+  const period = h >= 12 ? "pm" : "am";
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}${period}`;
+}
+
+function renderHeroSummary() {
+  const el = document.getElementById("heroSummary");
+  if (!el) return;
+  const ranked = rankedSpotsForDay();
+  const dates = dayBuckets();
+  const dateStr = dates[selectedDayIndex];
+  const dayLbl = dateStr ? (labelForDate(dateStr, selectedDayIndex) === "Today" ? "today" : labelForDate(dateStr, selectedDayIndex)) : "today";
+
+  if (!ranked.length || ranked[0].probability < MIN_LIST_PROBABILITY) {
+    const closest = ranked[0];
+    el.textContent = closest
+      ? `Nothing great for ${minKt}–${maxKt}kt ${dayLbl} — closest is ${closest.spot.name} around ${closest.hour.time.slice(11,16)} (${closest.probability}%).`
+      : `No forecast data for ${dayLbl} yet.`;
+    return;
+  }
+
+  const top = ranked[0];
+  const hours = hoursForSelectedDay(top.spotData);
+  const withProb = hours.map(h => ({ h, ...probabilityInRange(h, minKt, maxKt) }));
+  let peakIdx = 0;
+  withProb.forEach((w, i) => { if (w.probability > withProb[peakIdx].probability) peakIdx = i; });
+
+  // Expand outward from the peak hour while it's still a workable window.
+  let lo = peakIdx, hi = peakIdx;
+  while (lo > 0 && withProb[lo - 1].probability >= MIN_LIST_PROBABILITY) lo--;
+  while (hi < withProb.length - 1 && withProb[hi + 1].probability >= MIN_LIST_PROBABILITY) hi++;
+  const windowHours = withProb.slice(lo, hi + 1);
+
+  const speeds = windowHours.map(w => w.h.speed_kt).filter(v => v != null);
+  const gusts = windowHours.map(w => w.h.gust_kt).filter(v => v != null);
+  const startHourNum = Number(windowHours[0].h.time.slice(11, 13));
+  const endHourNum = Number(windowHours[windowHours.length - 1].h.time.slice(11, 13)) + 1;
+  const peakHourNum = Number(withProb[peakIdx].h.time.slice(11, 13));
+
+  let html = `Your best option for ${dayLbl} is <b>${top.spot.name}</b> from ${hourLabel(startHourNum)} to ${hourLabel(endHourNum)}`;
+  if (speeds.length) {
+    html += ` with winds from ${Math.round(Math.min(...speeds))}${gusts.length ? ` gusting to ${Math.round(Math.max(...gusts))}` : ""}kt`;
+  }
+  if (windowHours.length > 1) {
+    html += ` — your strongest window is ${hourLabel(peakHourNum)} to ${hourLabel(peakHourNum + 1)} (${withProb[peakIdx].probability}%).`;
+  } else {
+    html += ` (${withProb[peakIdx].probability}%).`;
+  }
+  el.innerHTML = html;
+}
+
 function renderBestBetsHeading() {
   const dates = dayBuckets();
   const date = dates[selectedDayIndex];
@@ -270,16 +345,10 @@ function renderBestBetsHeading() {
 
 function renderBestBets() {
   renderBestBetsHeading();
-  const ranked = SPOTS.map(sp => {
-    const spot = forecast.spots.find(s => s.id === sp.id);
-    if (!spot) return null;
-    const best = bestWindowForSpot(spot);
-    if (!best) return null;
-    return { spot: sp, spotData: spot, ...best };
-  }).filter(Boolean).sort((a, b) => b.score - a.score);
+  const ranked = rankedSpotsForDay().filter(r => r.probability >= MIN_LIST_PROBABILITY);
 
   bestBetsEl.innerHTML = "";
-  if (!ranked.length) { bestBetsEl.innerHTML = '<div class="empty">No forecast data for this day yet.</div>'; return; }
+  if (!ranked.length) { bestBetsEl.innerHTML = `<div class="empty">Nothing hit ${MIN_LIST_PROBABILITY}%+ for this range today — try a wider range or another day.</div>`; return; }
 
   ranked.slice(0, 9).forEach((r, i) => {
     const div = document.createElement("div");
@@ -356,7 +425,13 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape") hideTip();
 
 function renderSpotCards() {
   spotCardsEl.innerHTML = "";
+  const goodIds = new Set(rankedSpotsForDay().filter(r => r.probability >= MIN_LIST_PROBABILITY).map(r => r.spot.id));
+  if (!goodIds.size) {
+    spotCardsEl.innerHTML = `<div class="empty">Nothing hit ${MIN_LIST_PROBABILITY}%+ for this range today — try a wider range or another day. (Every spot is still on the map above.)</div>`;
+    return;
+  }
   SPOTS.forEach(sp => {
+    if (!goodIds.has(sp.id)) return; // below MIN_LIST_PROBABILITY — map only, not the list (see renderMap)
     const spot = forecast.spots.find(s => s.id === sp.id);
     if (!spot) return;
     const hours = hoursForSelectedDay(spot);
@@ -470,6 +545,7 @@ function renderAll() {
   if (!freshnessTimer) freshnessTimer = setInterval(renderFreshnessBadge, 60000); // keep "Xm ago" live while the tab is open
   renderBulletin();
   renderDayTabs();
+  renderHeroSummary();
   renderBestBets();
   renderSpotCards();
   renderMap();
