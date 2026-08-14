@@ -148,8 +148,6 @@
     </div>
   </div>
 
-  <div id="bulletinBox" style="display:none;background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:14px 16px;margin:14px 0;font-size:0.95rem;color:var(--muted);"></div>
-
   <div id="map"></div>
   <div class="legend">
     <span><span class="dot" style="background:#1fb570"></span>Good odds (≥65%)</span>
@@ -174,6 +172,8 @@
     <br><br>
     This is a forecasting aid, not a safety guarantee — always check current conditions, tides and marine warnings before heading out.
   </div>
+
+  <div id="bulletinBox" style="display:none;background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:14px 16px;margin:16px 0;font-size:0.95rem;color:var(--muted);"></div>
 
 </main>
 
@@ -536,12 +536,21 @@ function renderMap() {
   });
 }
 
+// Official Environment Canada marine bulletins for the two zones our spots
+// span. We fetch these server-side (see generate.mjs) since EC doesn't
+// allow CORS; shown as plain links at the bottom of the page rather than
+// the full bulletin text — not the primary thing casual users need, but
+// useful for anyone who wants the official word before heading out.
 function renderBulletin() {
   const box = document.getElementById("bulletinBox");
-  const b = forecast.marine_bulletins && forecast.marine_bulletins.howe_sound;
-  if (!b || !b.url) { box.style.display = "none"; return; }
+  const bulletins = forecast.marine_bulletins || {};
+  const entries = ["howe_sound", "strait_of_georgia_south"]
+    .map(id => bulletins[id])
+    .filter(b => b && b.url);
+  if (!entries.length) { box.style.display = "none"; return; }
   box.style.display = "block";
-  box.innerHTML = `<b style="color:var(--text);">Howe Sound marine forecast</b>${b.warning ? " ⚠️ warning in effect" : ""} — <a href="${b.url}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">Environment Canada bulletin ↗</a>`;
+  box.innerHTML = `<b style="color:var(--text);">Official marine forecasts</b><br>` +
+    entries.map(b => `${b.label}${b.warning ? " ⚠️" : ""} — <a href="${b.url}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">Environment Canada bulletin ↗</a>`).join("<br>");
 }
 
 // The Action refreshes the snapshot roughly every 12h (5am/5pm Pacific).
