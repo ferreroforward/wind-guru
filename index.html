@@ -7,92 +7,93 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root{
-    --bg:#0b1220; --panel:#121a2b; --panel2:#182238; --border:#25314a;
-    --text:#e8edf7; --muted:#93a1bd; --accent:#3aa0ff;
-    --green:#1fb570; --green-bg:#0f2e23; --yellow:#e3b23c; --yellow-bg:#2e2a14; --red:#e0546b; --red-bg:#2e1620; --gray:#4a5776; --gray-bg:#1a2133;
+    --bg:#f4f6fb; --panel:#ffffff; --panel2:#eef1f8; --border:#dbe1ee;
+    --text:#1b2438; --muted:#5c6685; --accent:#2f7fe0;
+    --green:#189863; --green-bg:#e4f7ee; --yellow:#b3790e; --yellow-bg:#fbf0da; --red:#c93b56; --red-bg:#fbe6ea; --gray:#5c6685; --gray-bg:#eaedf5;
+    --shadow:0 1px 3px rgba(27,36,56,0.07), 0 1px 2px rgba(27,36,56,0.04);
   }
   *{box-sizing:border-box;}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);}
-  header{padding:20px 20px 8px;max-width:1200px;margin:0 auto;}
-  header h1{margin:0 0 4px;font-size:1.5rem;font-weight:700;letter-spacing:-0.02em;}
-  header p.sub{margin:0;color:var(--muted);font-size:0.9rem;}
-  .hero-summary{font-size:1.35rem;font-weight:600;color:var(--text);line-height:1.5;margin-top:14px;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.5;}
+  header{padding:24px 20px 10px;max-width:1200px;margin:0 auto;}
+  header h1{margin:0 0 4px;font-size:1.7rem;font-weight:700;letter-spacing:-0.02em;}
+  header p.sub{margin:0;color:var(--muted);font-size:1rem;}
+  .hero-summary{font-size:1.4rem;font-weight:600;color:var(--text);line-height:1.5;margin-top:14px;}
   .hero-summary b{color:var(--accent);}
-  .meta-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:0.82rem;color:var(--muted);}
-  .meta-row button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.82rem;}
+  .meta-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px;font-size:0.92rem;color:var(--muted);}
+  .meta-row button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:0.92rem;}
   .meta-row button:hover{border-color:var(--accent);}
-  .update-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:20px;font-size:0.8rem;border:1px solid var(--border);}
+  .update-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:0.9rem;border:1px solid var(--border);background:var(--panel);}
   .update-badge .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
-  .update-badge.fresh{color:var(--green);border-color:rgba(31,181,112,0.35);} .update-badge.fresh .dot{background:var(--green);}
-  .update-badge.stale{color:var(--yellow);border-color:rgba(227,178,60,0.35);} .update-badge.stale .dot{background:var(--yellow);}
-  .update-badge.very-stale{color:var(--red);border-color:rgba(224,84,107,0.35);} .update-badge.very-stale .dot{background:var(--red);}
+  .update-badge.fresh{color:var(--green);border-color:rgba(24,152,99,0.3);} .update-badge.fresh .dot{background:var(--green);}
+  .update-badge.stale{color:var(--yellow);border-color:rgba(179,121,14,0.3);} .update-badge.stale .dot{background:var(--yellow);}
+  .update-badge.very-stale{color:var(--red);border-color:rgba(201,59,86,0.3);} .update-badge.very-stale .dot{background:var(--red);}
   .models-note{color:var(--muted);}
   main{max-width:1200px;margin:0 auto;padding:0 20px 60px;}
 
-  .controls{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin:14px 0;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;}
-  .control-group{display:flex;flex-direction:column;gap:6px;}
-  .control-group label{font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;}
+  .controls{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;margin:16px 0;display:flex;flex-wrap:wrap;gap:22px;align-items:flex-end;}
+  .control-group{display:flex;flex-direction:column;gap:7px;}
+  .control-group label{font-size:0.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;}
   .range-inputs{display:flex;align-items:center;gap:8px;}
-  .range-inputs input[type=number]{width:64px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:0.95rem;}
-  .presets{display:flex;gap:6px;flex-wrap:wrap;}
-  .presets button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:20px;cursor:pointer;font-size:0.82rem;}
-  .presets button.active{background:var(--accent);border-color:var(--accent);color:#04101f;font-weight:600;}
-  .day-tabs{display:flex;gap:6px;}
-  .day-tabs button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem;}
-  .day-tabs button.active{background:var(--accent);border-color:var(--accent);color:#04101f;font-weight:600;}
+  .range-inputs input[type=number]{width:70px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:8px;font-size:1.05rem;}
+  .presets{display:flex;gap:7px;flex-wrap:wrap;}
+  .presets button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:20px;cursor:pointer;font-size:0.9rem;}
+  .presets button.active{background:var(--accent);border-color:var(--accent);color:#ffffff;font-weight:600;}
+  .day-tabs{display:flex;gap:7px;flex-wrap:wrap;}
+  .day-tabs button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:8px;cursor:pointer;font-size:0.95rem;}
+  .day-tabs button.active{background:var(--accent);border-color:var(--accent);color:#ffffff;font-weight:600;}
 
-  #map{height:340px;border-radius:14px;border:1px solid var(--border);margin:14px 0;}
-  .leaflet-popup-content-wrapper{background:var(--panel2);color:var(--text);}
-  .leaflet-popup-tip{background:var(--panel2);}
+  #map{height:340px;border-radius:14px;border:1px solid var(--border);box-shadow:var(--shadow);margin:16px 0;}
+  .leaflet-popup-content-wrapper{background:var(--panel);color:var(--text);}
+  .leaflet-popup-tip{background:var(--panel);}
 
-  h2.section{font-size:1rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin:28px 0 10px;}
+  h2.section{font-size:1.1rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin:30px 0 12px;}
 
-  .best-bets{display:flex;flex-direction:column;gap:8px;}
-  .bet-card{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 16px;}
-  .bet-rank{font-size:1.1rem;font-weight:700;color:var(--muted);width:22px;text-align:center;}
-  .bet-badge{font-weight:700;font-size:1.05rem;border-radius:8px;padding:6px 10px;min-width:52px;text-align:center;}
+  .best-bets{display:flex;flex-direction:column;gap:10px;}
+  .bet-card{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:14px 18px;}
+  .bet-rank{font-size:1.2rem;font-weight:700;color:var(--muted);width:24px;text-align:center;}
+  .bet-badge{font-weight:700;font-size:1.15rem;border-radius:8px;padding:7px 11px;min-width:56px;text-align:center;}
   .bet-info{flex:1;min-width:0;}
-  .bet-info .name{font-weight:600;font-size:1rem;}
-  .bet-info .detail{color:var(--muted);font-size:0.83rem;margin-top:2px;}
-  .bet-info .reason{color:var(--muted);font-size:0.78rem;margin-top:3px;font-style:italic;}
-  .conf-pill{font-size:0.72rem;color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:3px 9px;white-space:nowrap;}
+  .bet-info .name{font-weight:600;font-size:1.1rem;}
+  .bet-info .detail{color:var(--muted);font-size:0.92rem;margin-top:3px;}
+  .bet-info .reason{color:var(--muted);font-size:0.86rem;margin-top:4px;font-style:italic;}
+  .conf-pill{font-size:0.82rem;color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:4px 10px;white-space:nowrap;}
 
-  .spot-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:14px;}
-  .spot-card .head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
-  .spot-card .head .name{font-weight:700;font-size:1.05rem;}
-  .spot-card .head .region{color:var(--muted);font-size:0.8rem;}
-  .spot-card .sports{font-size:0.75rem;color:var(--muted);}
-  .live-check{font-size:0.75rem;padding:4px 8px;border-radius:8px;margin-bottom:8px;display:inline-block;}
-  .live-check.match{background:rgba(31,181,112,0.12);color:#1fb570;}
-  .live-check.mismatch{background:rgba(224,84,107,0.12);color:#e0546b;cursor:help;}
-  .hour-strip{display:flex;gap:3px;overflow-x:auto;padding-bottom:4px;}
-  .hour-cell{flex:0 0 auto;width:64px;border-radius:8px;padding:6px 4px;text-align:center;font-size:0.72rem;cursor:pointer;position:relative;}
-  .hour-cell .t{color:rgba(255,255,255,0.65);font-size:0.68rem;}
-  .hour-cell .p{font-weight:700;font-size:0.9rem;margin:2px 0;}
-  .hour-cell .d{font-size:0.64rem;color:rgba(255,255,255,0.65);white-space:nowrap;}
-  .hour-cell .dir{font-size:0.62rem;color:rgba(255,255,255,0.45);}
+  .spot-card{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;margin-bottom:16px;}
+  .spot-card .head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+  .spot-card .head .name{font-weight:700;font-size:1.15rem;}
+  .spot-card .head .region{color:var(--muted);font-size:0.88rem;}
+  .spot-card .sports{font-size:0.85rem;color:var(--muted);}
+  .live-check{font-size:0.85rem;padding:5px 10px;border-radius:8px;margin-bottom:10px;display:inline-block;}
+  .live-check.match{background:var(--green-bg);color:var(--green);}
+  .live-check.mismatch{background:var(--red-bg);color:var(--red);cursor:help;}
+  .hour-strip{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px;}
+  .hour-cell{flex:0 0 auto;width:72px;border-radius:8px;padding:7px 5px;text-align:center;font-size:0.8rem;cursor:pointer;position:relative;}
+  .hour-cell .t{color:rgba(27,36,56,0.6);font-size:0.76rem;}
+  .hour-cell .p{font-weight:700;font-size:1rem;margin:3px 0;}
+  .hour-cell .d{font-size:0.74rem;color:rgba(27,36,56,0.65);white-space:nowrap;}
+  .hour-cell .dir{font-size:0.7rem;color:rgba(27,36,56,0.5);}
   /* Tooltip is positioned in JS as a fixed-position element appended to
      <body> (see #globalTip) rather than nested + absolutely positioned
      inside .hour-cell — .hour-strip needs overflow-x:auto for horizontal
      scrolling, which per the CSS spec silently forces overflow-y to auto
      too, clipping any absolutely-positioned child that pokes outside the
      row (like a tooltip above the cell). A body-level fixed element sidesteps
-     that entirely. */
-  #globalTip{display:none;position:fixed;background:#000;color:#fff;padding:8px 10px;border-radius:8px;font-size:0.72rem;width:200px;z-index:1000;text-align:left;box-shadow:0 4px 14px rgba(0,0,0,0.4);}
-  #globalTip b{display:block;margin-bottom:3px;}
-  #globalTip a{display:block;margin-top:6px;color:#7fc4ff;}
+     that entirely. Kept dark-on-light for a popover pop against the page. */
+  #globalTip{display:none;position:fixed;background:#1b2438;color:#fff;padding:10px 12px;border-radius:8px;font-size:0.85rem;width:220px;z-index:1000;text-align:left;box-shadow:0 6px 18px rgba(27,36,56,0.25);}
+  #globalTip b{display:block;margin-bottom:4px;}
+  #globalTip a{display:block;margin-top:7px;color:#8fc4ff;}
 
   .lvl-green{background:var(--green-bg);color:var(--green);}
   .lvl-yellow{background:var(--yellow-bg);color:var(--yellow);}
   .lvl-red{background:var(--red-bg);color:var(--red);}
   .lvl-gray{background:var(--gray-bg);color:var(--gray);}
 
-  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:0.78rem;color:var(--muted);margin:8px 0 4px;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:0.88rem;color:var(--muted);margin:10px 0 4px;}
   .legend span.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;}
-  .about{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;font-size:0.85rem;color:var(--muted);line-height:1.6;margin-top:28px;}
+  .about{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;font-size:0.95rem;color:var(--muted);line-height:1.65;margin-top:30px;}
   .about b{color:var(--text);}
-  footer{text-align:center;color:var(--muted);font-size:0.78rem;padding:20px 0 40px;}
-  .empty{color:var(--muted);font-size:0.9rem;padding:20px;text-align:center;}
+  footer{text-align:center;color:var(--muted);font-size:0.86rem;padding:22px 0 40px;}
+  .empty{color:var(--muted);font-size:1rem;padding:22px;text-align:center;}
 </style>
 </head>
 <body>
@@ -192,7 +193,7 @@ let map, markerLayer;
 
 function initMap() {
   map = L.map("map", { scrollWheelZoom: false }).setView([49.55, -123.35], 9);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
     attribution: "&copy; OpenStreetMap &copy; CARTO",
     maxZoom: 13,
   }).addTo(map);
