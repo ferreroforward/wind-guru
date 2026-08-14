@@ -19,6 +19,12 @@
   .meta-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:0.82rem;color:var(--muted);}
   .meta-row button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.82rem;}
   .meta-row button:hover{border-color:var(--accent);}
+  .update-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:20px;font-size:0.8rem;border:1px solid var(--border);}
+  .update-badge .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+  .update-badge.fresh{color:var(--green);border-color:rgba(31,181,112,0.35);} .update-badge.fresh .dot{background:var(--green);}
+  .update-badge.stale{color:var(--yellow);border-color:rgba(227,178,60,0.35);} .update-badge.stale .dot{background:var(--yellow);}
+  .update-badge.very-stale{color:var(--red);border-color:rgba(224,84,107,0.35);} .update-badge.very-stale .dot{background:var(--red);}
+  .models-note{color:var(--muted);}
   main{max-width:1200px;margin:0 auto;padding:0 20px 60px;}
 
   .controls{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin:14px 0;display:flex;flex-wrap:wrap;gap:20px;align-items:flex-end;}
@@ -94,6 +100,7 @@
   <p class="sub">Where to go windsurf, wingfoil, kite or parawing — Howe Sound, Metro Vancouver &amp; the Strait of Georgia</p>
   <div class="meta-row">
     <span id="genLabel">Loading forecast…</span>
+    <span id="modelsNote" class="models-note"></span>
     <button id="refreshBtn">Refresh live</button>
     <a href="https://squamishwindsports.com/conditions/wind/" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">Live Squamish wind meter ↗</a>
   </div>
@@ -166,6 +173,7 @@ let selectedDayIndex = 0;
 let minKt = 12, maxKt = 20;
 
 const genLabel = document.getElementById("genLabel");
+const modelsNote = document.getElementById("modelsNote");
 const bestBetsEl = document.getElementById("bestBets");
 const spotCardsEl = document.getElementById("spotCards");
 const dayTabsEl = document.getElementById("dayTabs");
@@ -424,9 +432,40 @@ function renderBulletin() {
   box.innerHTML = `<b style="color:var(--text);">Environment Canada — ${b.label}${b.warning ? " ⚠️ warning in effect" : ""}</b><br>${b.text} <a href="${b.url}" target="_blank" rel="noopener" style="color:var(--accent);">Full bulletin ↗</a>`;
 }
 
+// The Action refreshes the snapshot roughly every 12h (5am/5pm Pacific).
+// Anything noticeably older than that means either a run failed or GitHub
+// Pages is serving a cached copy — worth flagging rather than silently
+// showing possibly-outdated wind.
+const STALE_AFTER_MS = 14 * 3600 * 1000;
+const VERY_STALE_AFTER_MS = 26 * 3600 * 1000;
+
+function formatRelative(ms) {
+  const mins = Math.round(ms / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  const remMins = mins % 60;
+  if (hrs < 24) return remMins ? `${hrs}h ${remMins}m ago` : `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ${hrs % 24}h ago`;
+}
+
+let freshnessTimer = null;
+function renderFreshnessBadge() {
+  if (!forecast || !forecast.generated_at) return;
+  const ageMs = Date.now() - new Date(forecast.generated_at).getTime();
+  const isLive = !!forecast.generated_at_label && forecast.generated_at_label.includes("(live)");
+  const cls = isLive ? "fresh" : ageMs > VERY_STALE_AFTER_MS ? "very-stale" : ageMs > STALE_AFTER_MS ? "stale" : "fresh";
+  const statusText = isLive ? "Live — just fetched" : `Updated ${formatRelative(ageMs)}`;
+  genLabel.innerHTML = `<span class="update-badge ${cls}" title="${forecast.generated_at_label}"><span class="dot"></span>${statusText}</span>`;
+  genLabel.title = forecast.generated_at_label;
+  modelsNote.textContent = `· models: ${forecast.models_used.join(", ")}`;
+}
+
 function renderAll() {
   if (!forecast) return;
-  genLabel.textContent = `Updated ${forecast.generated_at_label} · models: ${forecast.models_used.join(", ")}`;
+  renderFreshnessBadge();
+  if (!freshnessTimer) freshnessTimer = setInterval(renderFreshnessBadge, 60000); // keep "Xm ago" live while the tab is open
   renderBulletin();
   renderDayTabs();
   renderBestBets();
