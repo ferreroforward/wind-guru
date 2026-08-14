@@ -1,5 +1,5 @@
 {
-  "version": "b8bb65a",
-  "message": "Add igetwind live stations: Pam Rocks for Porteau Cove, White Rock METAR for the south-Delta cluster",
-  "deployed_at": "2026-08-14T21:53:41Z"
+  "version": "a92cc48",
+  "message": "Add best-option hero summary; hide sub-40% spots from lists (map unaffected)",
+  "deployed_at": "2026-08-14T22:09:44Z"
 }
