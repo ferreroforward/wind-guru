@@ -58,7 +58,7 @@
   .live-check.match{background:rgba(31,181,112,0.12);color:#1fb570;}
   .live-check.mismatch{background:rgba(224,84,107,0.12);color:#e0546b;cursor:help;}
   .hour-strip{display:flex;gap:3px;overflow-x:auto;padding-bottom:4px;}
-  .hour-cell{flex:0 0 auto;width:52px;border-radius:8px;padding:6px 4px;text-align:center;font-size:0.72rem;cursor:default;position:relative;}
+  .hour-cell{flex:0 0 auto;width:52px;border-radius:8px;padding:6px 4px;text-align:center;font-size:0.72rem;cursor:pointer;position:relative;}
   .hour-cell .t{color:rgba(255,255,255,0.65);font-size:0.68rem;}
   .hour-cell .p{font-weight:700;font-size:0.9rem;margin:2px 0;}
   .hour-cell .d{font-size:0.65rem;color:rgba(255,255,255,0.6);}
@@ -134,7 +134,7 @@
     <span><span class="dot" style="background:#4a5776"></span>No data / calm</span>
   </div>
 
-  <h2 class="section">Best bets for your range, today's window</h2>
+  <h2 class="section" id="bestBetsHeading">Best bets for your range, today's window</h2>
   <div class="best-bets" id="bestBets"><div class="empty">Loading…</div></div>
 
   <h2 class="section">All spots — hour by hour</h2>
@@ -142,7 +142,7 @@
   <div id="globalTip"></div>
 
   <div class="about">
-    <b>How this works.</b> Every spot is checked against four independent weather models (GFS, ECMWF, ICON and Environment Canada's GEM/HRDPS, which best resolves local BC terrain). For each spot we don't just show raw numbers — we classify the hour as <b>thermal</b> (local sun-driven sea breeze or valley wind, e.g. the Squamish afternoon southerly), <b>outflow</b> (cold-air drainage / gap wind, e.g. Squamish's northerly), or <b>synoptic</b> (general frontal/gradient wind across the Strait). Probability = the share of models landing your chosen knot range at that hour; confidence is shaded down for pure mesoscale thermal signals that only the fine-resolution model catches, and for wind blowing from a direction that isn't clean onshore/cross-shore at that spot.
+    <b>How this works.</b> Every spot is checked against four independent weather models (GFS, ECMWF, ICON and Environment Canada's GEM/HRDPS, which best resolves local BC terrain). For each spot we don't just show raw numbers — we classify the hour as <b>thermal</b> (local sun-driven sea breeze or valley wind, e.g. the Squamish afternoon southerly), <b>outflow</b> (cold-air drainage / gap wind, e.g. Squamish's northerly), or <b>synoptic</b> (general frontal/gradient wind across the Strait). Probability = the odds your chosen knot range covers the true wind, modeled as a band of uncertainty around that hour's best-estimate speed rather than a strict vote across models — a smoother, more realistic picture than "3 of 4 models agree" style claims of false precision. Confidence is shaded down for pure mesoscale thermal signals that only the fine-resolution model catches, and for wind blowing from a direction that isn't clean onshore/cross-shore at that spot.
     <br><br>
     <b>Squamish Spit, Porteau Cove and Furry Creek</b> get two extra local corrections. First, raw coarse-model wind badly under-reads the Squamish thermal (a well-documented local quirk), so once the model shows a clean SW signal we scale it up roughly 2.85x, based on field calibration from a long-time local rider (West Coast Wind Sports). Second, we check the sea-level pressure gradient along the corridor — a large-scale coast-vs-interior spread and a local spread between the sound's mouth and the spot itself — since Squamish wind is driven by real pressure differences, not thermal heating alone; when both line up with the wind signal, confidence goes up, when they don't, we flag it. Environment Canada's own Howe Sound marine bulletin — generally the single best resource for today's Squamish wind — is shown above when available, and is worth cross-checking against the live wind meter linked at the top before you drive out.
     <br><br>
@@ -244,7 +244,22 @@ function bestWindowForSpot(spot) {
   return best;
 }
 
+function renderBestBetsHeading() {
+  const dates = dayBuckets();
+  const date = dates[selectedDayIndex];
+  const heading = document.getElementById("bestBetsHeading");
+  if (!heading) return;
+  const label = date ? labelForDate(date, selectedDayIndex) : null;
+  // "Today" already reads naturally as "today's window"; any other day
+  // needs its own label so the heading doesn't lie about which day the
+  // list below is actually showing (it always was the right data — this
+  // heading just wasn't following the day tab).
+  const windowPhrase = !label ? "today's window" : label === "Today" ? "today's window" : `${label}'s window`;
+  heading.textContent = `Best bets for your range, ${windowPhrase}`;
+}
+
 function renderBestBets() {
+  renderBestBetsHeading();
   const ranked = SPOTS.map(sp => {
     const spot = forecast.spots.find(s => s.id === sp.id);
     if (!spot) return null;
@@ -291,6 +306,18 @@ function reportUrl(spotId, h) {
 
 const globalTip = document.getElementById("globalTip");
 
+// Mouse-friendly hide: moving from the cell to the tooltip (to reach the
+// "Report actual conditions" link) crosses a gap of ordinary page — that
+// briefly leaves both elements, so hiding immediately on mouseleave made
+// the link unreachable. Instead we delay the hide slightly and cancel it if
+// the pointer (or keyboard focus) lands back on the cell or the tooltip
+// itself. A click on a cell also "pins" the tooltip open — the reliable
+// fallback for touch devices, which don't fire hover events at all.
+let hideTimer = null;
+let pinned = false;
+function cancelHide() { if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; } }
+function scheduleHide() { cancelHide(); hideTimer = setTimeout(() => { if (!pinned) hideTip(); }, 250); }
+
 function showTip(cellEl, h, spotId) {
   globalTip.innerHTML = `<b>${h.regime.toUpperCase()}</b>${h.reason}
     <a href="${reportUrl(spotId, h)}" target="_blank" rel="noopener">Report actual conditions →</a>`;
@@ -305,8 +332,17 @@ function showTip(cellEl, h, spotId) {
   globalTip.style.left = `${left}px`;
   globalTip.style.top = `${top}px`;
 }
-function hideTip() { globalTip.style.display = "none"; }
+function hideTip() { globalTip.style.display = "none"; pinned = false; }
 document.addEventListener("scroll", hideTip, true); // catches scroll inside .hour-strip too (capture phase)
+
+globalTip.addEventListener("mouseenter", cancelHide);
+globalTip.addEventListener("mouseleave", scheduleHide);
+globalTip.addEventListener("focusin", cancelHide);
+globalTip.addEventListener("focusout", scheduleHide);
+document.addEventListener("click", (e) => {
+  if (pinned && !globalTip.contains(e.target) && !e.target.closest(".hour-cell")) hideTip();
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") hideTip(); });
 
 function renderSpotCards() {
   spotCardsEl.innerHTML = "";
@@ -346,10 +382,16 @@ function renderSpotCards() {
           <div class="p">${probability}%</div>
           <div class="d">${h.speed_kt ?? "–"}kt ${h.direction_label}</div>
         `;
-        cellEl.addEventListener("mouseenter", () => showTip(cellEl, h, sp.id));
-        cellEl.addEventListener("mouseleave", hideTip);
-        cellEl.addEventListener("focus", () => showTip(cellEl, h, sp.id));
-        cellEl.addEventListener("blur", hideTip);
+        cellEl.addEventListener("mouseenter", () => { cancelHide(); showTip(cellEl, h, sp.id); });
+        cellEl.addEventListener("mouseleave", scheduleHide);
+        cellEl.addEventListener("focus", () => { cancelHide(); showTip(cellEl, h, sp.id); });
+        cellEl.addEventListener("blur", scheduleHide);
+        cellEl.addEventListener("click", (e) => {
+          e.stopPropagation();
+          cancelHide();
+          showTip(cellEl, h, sp.id);
+          pinned = true;
+        });
         stripEl.appendChild(cellEl);
       });
     }

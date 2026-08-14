@@ -344,48 +344,61 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   };
 }
 
-// Per-regime model weights used when scoring probability. BC's coastal
-// terrain (Howe Sound's walls, the Fraser Valley funnel) is only resolved
-// by the ~2.5km GEM/HRDPS nest — GFS (13-25km) and ECMWF (25km) routinely
-// under- or mis-forecast thermal and outflow events there, so we lean on
-// the fine model more heavily for exactly those two regimes. For general
-// synoptic/gradient wind, all models tend to agree and get equal weight.
-function regimeWeights(regime) {
-  if (regime === "thermal" || regime === "outflow") {
-    return { gfs: 1, ecmwf: 1, icon: 1.3, gem: 2.5 };
-  }
-  return { gfs: 1, ecmwf: 1, icon: 1, gem: 1 };
+// Base uncertainty (kt) around the headline speed estimate, before any
+// data-driven widening — thermal/mesoscale regimes are inherently less
+// certain than a well-agreed synoptic push, even net of calibration, since
+// coarse models routinely miss them entirely rather than just mis-sizing them.
+const REGIME_BASE_SIGMA = { thermal: 3.5, outflow: 3, synoptic: 2, calm: 1.5, mixed: 3 };
+
+// Logistic CDF centered on `center` with spread `s` — a smooth stand-in for
+// a normal CDF that needs no special-function import. Used to turn a single
+// point estimate + uncertainty into P(x <= value).
+function logisticCdf(x, center, s) {
+  return 1 / (1 + Math.exp(-(x - center) / s));
 }
 
-// Probability that the true wind lands in [lo, hi] kt, using a weighted
-// vote across models (see regimeWeights), then a separate confidence score
-// for how much to trust that probability.
+// Probability that the true wind lands in [lo, hi] kt. Modeled as a smooth
+// uncertainty band (logistic distribution) around the hour's final speed
+// estimate (`speed_kt` — already fully calibrated/adjusted), rather than a
+// hard in/out vote across 2-4 model values. The old vote-based version could
+// swing from 0% to 50% to 0% across three adjacent, steadily-building
+// thermal hours whenever the point estimate crossed a range boundary by a
+// fraction of a knot, or when a particular hour's calibrated model set
+// happened to have fewer live model values than its neighbors — a vote
+// count isn't the right tool for "how confident are we the true value is in
+// this band" when the estimate itself already carries real uncertainty.
+// Sigma (the band's width) comes from the regime's base uncertainty, widened
+// by how much the raw models actually disagreed this hour (`raw_models`,
+// which — unlike `models` — always holds all 4 raw values regardless of any
+// calibration override), so a genuinely uncertain hour gets a wider, softer
+// curve and a well-agreed hour gets a tighter, more decisive one.
 export function probabilityInRange(hourResult, lo, hi) {
-  const models = hourResult.models || {};
-  const weights = regimeWeights(hourResult.regime);
-  let weightedIn = 0, weightSum = 0, vals = [];
-  for (const [key, v] of Object.entries(models)) {
-    if (v == null) continue;
-    const w = weights[key] ?? 1;
-    weightSum += w;
-    vals.push(v);
-    if (v >= lo && v <= hi) weightedIn += w;
-  }
-  if (!weightSum) return { probability: 0, confidence: 0 };
-  let probability = weightedIn / weightSum;
+  const center = hourResult.speed_kt;
+  if (center == null) return { probability: 0, confidence: 0 };
 
-  // Soften hard 0%/100% when the mean is close to a boundary — a small
-  // model ensemble shouldn't claim false precision.
-  const meanV = mean(vals);
-  if (meanV != null) {
-    const distToRange = meanV < lo ? lo - meanV : (meanV > hi ? meanV - hi : 0);
-    if (distToRange > 0) {
-      const falloff = Math.max(0, 1 - distToRange / 8);
-      probability = Math.max(probability, 0.15 * falloff);
-    } else if (probability >= 0.99) {
-      probability = 0.9; // never claim absolute certainty
-    }
+  // Sigma (band width) needs two different treatments. For a *calibrated*
+  // hour (Squamish-family thermal), a big gap between the raw coarse models
+  // and GEM/HRDPS is the expected signature of the phenomenon itself (see
+  // calibrateSquamishThermal) — punishing that spread as "uncertainty" would
+  // undercut exactly the events this calibration exists to call with
+  // confidence, and since the spread itself varies hour to hour it also
+  // re-introduces the jagged, cliff-y feel this function is meant to avoid.
+  // So calibrated hours get a fixed relative band (±~22% of the estimate)
+  // instead. Every other regime still widens with genuine raw-model
+  // disagreement, since there all models are on equal footing.
+  let sigma;
+  if (hourResult.calibrated) {
+    sigma = Math.max(2.5, center * 0.22);
+  } else {
+    const rawVals = Object.values(hourResult.raw_models || {}).filter(v => v != null);
+    const rawSpread = rawVals.length >= 2 ? Math.max(...rawVals) - Math.min(...rawVals) : 0;
+    const baseSigma = REGIME_BASE_SIGMA[hourResult.regime] ?? 3;
+    sigma = Math.max(baseSigma, rawSpread * 0.4, 1.5);
   }
+
+  // P(lo <= true value <= hi) = F(hi) - F(lo) under the logistic band.
+  let probability = logisticCdf(hi, center, sigma) - logisticCdf(lo, center, sigma);
+  probability = Math.min(probability, 0.92); // never claim near-total certainty
 
   // Confidence: how much to trust the probability figure above. Pattern
   // match (regime detected + right season/hour/direction) is worth more
