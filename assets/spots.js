@@ -65,11 +65,13 @@ export const SPOTS = [
     level: "intermediate",
     favorable_deg: [[300, 40]],
     pressureGradientAware: true,
-    // No dedicated station at Porteau itself — the Spit meter (same Howe
-    // Sound corridor, genuinely on-water) is a much better proxy than the
-    // wind-shadowed airport, but still several km away, so treat it as
-    // approximate.
-    liveStation: { type: "squamishwindsports", windSrc: "spit", name: "Squamish Spit wind meter" },
+    // Porteau sits further down-Sound, more open water than the Spit's
+    // thermal/outflow convergence zone at the head of Howe Sound — Pam
+    // Rocks (a Coast Guard station right at the Sound's entrance, found via
+    // igetwind.com's station API — see README "Live verification") is a
+    // more representative open-Sound reading for this spot than the Spit
+    // meter would be, even though it's ~10km away.
+    liveStation: { type: "igetwind", sid: "CWAS", lat: 49.48, lon: -123.30, name: "Pam Rocks (Howe Sound entrance)" },
     thermal: { enabled: false },
     outflow: {
       enabled: true,
@@ -164,7 +166,10 @@ export const SPOTS = [
     sports: ["kite", "wingfoil", "windsurf"],
     level: "beginner-friendly",
     favorable_deg: [[150, 260]],
-    liveStation: { code: "wvf", name: "Sand Heads Lightstation" },
+    // White Rock's own official METAR station — found via igetwind.com's
+    // station API (see README "Live verification") — is a few km closer to
+    // this spot than the Sand Heads Lightstation used previously.
+    liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],
@@ -183,7 +188,10 @@ export const SPOTS = [
     sports: ["kite", "wingfoil"],
     level: "beginner-friendly",
     favorable_deg: [[150, 260]],
-    liveStation: { code: "wvf", name: "Sand Heads Lightstation" },
+    // White Rock's own official METAR station — found via igetwind.com's
+    // station API (see README "Live verification") — is a few km closer to
+    // this spot than the Sand Heads Lightstation used previously.
+    liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],
@@ -201,7 +209,10 @@ export const SPOTS = [
     sports: ["windsurf", "wingfoil", "kite"],
     level: "intermediate",
     favorable_deg: [[150, 280]],
-    liveStation: { code: "wvf", name: "Sand Heads Lightstation" },
+    // White Rock's own official METAR station — found via igetwind.com's
+    // station API (see README "Live verification") — is a few km closer to
+    // this spot than the Sand Heads Lightstation used previously.
+    liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],

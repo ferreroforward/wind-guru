@@ -128,13 +128,55 @@ async function fetchSquamishWindsportsObservation(station) {
   };
 }
 
+// igetwind.com's station-finder API (found by inspecting network requests on
+// igetwind.com — public, no auth/key needed): given a center point and a
+// radius in km, returns every nearby station it aggregates (METAR airports,
+// marine buoys, and citizen APRSWXNET/MesoWest stations) with recent
+// observations. We use it to pin a *specific known-good* station by its
+// `sid` — not to auto-pick "nearest" every run, since a lot of what it
+// returns is unstaffed/uncalibrated citizen hardware not worth trusting
+// unattended. `station.lat`/`station.lon` here are the STATION's own
+// coordinates (not the spot's), so the query reliably finds it regardless
+// of which spot references it, and the result is cached once per station.
+const MAX_IGETWIND_OBS_AGE_MIN = 180; // ignore anything older than 3h — stale reading, not "live"
+async function fetchIgetwindObservation(station) {
+  const url = `https://igetwind.com/api/lw/stations/${station.lat}/${station.lon}/${station.radiusKm ?? 10}/0`;
+  const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
+  if (!res.ok) { console.log(`[live:${station.name}] fetch failed: ${res.status}`); return null; }
+  const json = await res.json();
+  const match = (json.stations || []).find((s) => s.sid === station.sid);
+  if (!match || !Array.isArray(match.observations)) return null;
+
+  const windObs = match.observations
+    .filter((o) => o.type === "W" && o.val != null)
+    .sort((a, b) => new Date(b.at) - new Date(a.at))[0];
+  if (!windObs) return null;
+  const ageMin = (Date.now() - new Date(windObs.at.replace(" ", "T") + "Z").getTime()) / 60000; // "at" is "YYYY-MM-DD HH:MM:SS" UTC, unmarked
+  if (!isFinite(ageMin) || ageMin > MAX_IGETWIND_OBS_AGE_MIN) return null;
+
+  const speedMs = parseFloat(windObs.val);
+  if (!isFinite(speedMs)) return null;
+  const gustObs = match.observations.find((o) => o.type === "WG");
+  const dirObs = match.observations.find((o) => o.type === "WD");
+  const gustMs = gustObs ? parseFloat(gustObs.val) : NaN;
+  const dirDeg = dirObs ? parseFloat(dirObs.val) : NaN;
+
+  return {
+    time: windObs.at,
+    speedKt: Math.round(speedMs * 1.943844 * 10) / 10,
+    gustKt: isFinite(gustMs) ? Math.round(gustMs * 1.943844 * 10) / 10 : null,
+    directionAbbr: null,
+    directionLabel: isFinite(dirDeg) ? degToLabel(dirDeg) : null,
+  };
+}
+
 const liveObsCache = {};
 async function getLiveObservation(station) {
-  const cacheKey = `${station.type || "ec"}:${station.code || station.windSrc}`;
+  const cacheKey = `${station.type || "ec"}:${station.code || station.windSrc || station.sid}`;
   if (liveObsCache[cacheKey]) return liveObsCache[cacheKey];
   try {
-    const parsed = station.type === "squamishwindsports"
-      ? await fetchSquamishWindsportsObservation(station)
+    const parsed = station.type === "squamishwindsports" ? await fetchSquamishWindsportsObservation(station)
+      : station.type === "igetwind" ? await fetchIgetwindObservation(station)
       : await fetchEcObservation(station);
     liveObsCache[cacheKey] = parsed;
     return parsed;

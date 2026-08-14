@@ -189,29 +189,43 @@ To recalibrate manually: `GITHUB_TOKEN=<a token with repo:read> node scripts/app
 ## Live verification
 
 Every spot has a `liveStation` (see `assets/spots.js`) — a source of
-genuinely *observed* wind, not a forecast. Two source types:
+genuinely *observed* wind, not a forecast. Three source types:
 
-- **`type: "squamishwindsports"`** (Squamish Spit, Porteau Cove, Furry
-  Creek): the JSON feed behind [Squamish Windsports Society's live wind
+- **`type: "squamishwindsports"`** (Squamish Spit, Furry Creek): the JSON
+  feed behind [Squamish Windsports Society's live wind
   chart](https://squamishwindsports.com/conditions/wind/)
   (`squamishwindsports.com/wind-data/getmet.php?wind_src=spit&...`), found
   by inspecting that page's network requests — no API key, reports in knots
   already, includes gust. This is a real instrument at the Spit itself, and
   per local rider feedback is far more representative of the corridor than
   Environment Canada's Squamish Airport station, which sits in a wind
-  shadow and is no longer used for anything. Porteau Cove and Furry Creek
-  don't have their own station, so they use the same Spit reading as an
-  approximation — treat their badge as "nearest good corridor reading," not
-  a reading at that exact spot.
-- **`type: "ec"` (default)** (every other spot): the nearest Environment
-  Canada station with a
+  shadow and is no longer used for anything.
+- **`type: "igetwind"`** (Porteau Cove, Boundary Bay, White Rock, Erwin
+  Park): [igetwind.com](https://igetwind.com/)'s station-finder API
+  (`igetwind.com/api/lw/stations/{lat}/{lon}/{radiusKm}/0`), also found by
+  inspecting network requests — public, no key needed, aggregates METAR
+  airports, marine buoys, and citizen weather stations. We pin a *specific*
+  known-good `sid` per spot rather than auto-picking "nearest" every run
+  (a lot of what it returns is unstaffed citizen hardware not worth
+  trusting unattended):
+  - Porteau Cove → **Pam Rocks** (`CWAS`), a Coast Guard station right at
+    the Howe Sound entrance — a better read on Porteau's more open exposure
+    than the Spit meter would be, even though it's ~10km away.
+  - Boundary Bay / White Rock / Erwin Park → **White Rock, BC** (`CWWK`),
+    the official METAR station, a few km closer to this cluster than the
+    Sand Heads Lightstation used previously.
+  - Speeds arrive in m/s and get converted to knots (`×1.943844`);
+    observations older than 3 hours are treated as unavailable rather than
+    shown as "live."
+- **`type: "ec"` (default)** (Jericho, Spanish Banks, Iona): the nearest
+  Environment Canada station with a
   [Past 24 Hour Conditions](https://weather.gc.ca/past_conditions/index_e.html)
   page.
 
 Each run, `generate.mjs`:
 
 1. Fetches that station's most recent observation (speed + direction, and
-   gust for the squamishwindsports source).
+   gust for the squamishwindsports/igetwind sources).
 2. Compares it against what the model forecasted for that same current hour.
 3. Shows the result as a small badge on that spot's card (green if they're
    within 20% of each other, red if not, with the reasoning on hover).
@@ -249,9 +263,12 @@ Limitations: station locations are the *nearest available* observation
 point, not co-located with the spot itself (see each spot's `liveStation`
 comment in `spots.js`) — treat the comparison as an approximation, most
 trustworthy for the Squamish Spit itself (an on-site instrument) and
-roughest for Erwin Park/Boundary Bay/White Rock (all sharing Sand Heads
-Lightstation, several km away) and Porteau Cove/Furry Creek (sharing the
-Spit meter, also several km away). It only checks the current hour once
+roughest for Erwin Park (~23km from the White Rock METAR it shares with
+Boundary Bay/White Rock) and Furry Creek (sharing the Spit meter, several
+km away). igetwind's citizen-station data also isn't independently
+audited — we only pin two specific `sid`s from it (Pam Rocks, White Rock
+METAR), both official government stations, not the amateur ones it also
+returns. It only checks the current hour once
 per run (twice daily), not a continuous stream, so it can catch a
 systematic bias but won't catch a mismatch that starts and ends between runs.
 
