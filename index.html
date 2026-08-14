@@ -27,7 +27,6 @@
   .update-badge.fresh{color:var(--green);border-color:rgba(24,152,99,0.3);} .update-badge.fresh .dot{background:var(--green);}
   .update-badge.stale{color:var(--yellow);border-color:rgba(179,121,14,0.3);} .update-badge.stale .dot{background:var(--yellow);}
   .update-badge.very-stale{color:var(--red);border-color:rgba(201,59,86,0.3);} .update-badge.very-stale .dot{background:var(--red);}
-  .models-note{color:var(--muted);}
   main{max-width:1200px;margin:0 auto;padding:0 20px 60px;}
 
   .controls{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;margin:16px 0;display:flex;flex-wrap:wrap;gap:22px;align-items:flex-end;}
@@ -55,8 +54,6 @@
   .bet-info{flex:1;min-width:0;}
   .bet-info .name{font-weight:600;font-size:1.1rem;}
   .bet-info .detail{color:var(--muted);font-size:0.92rem;margin-top:3px;}
-  .bet-info .reason{color:var(--muted);font-size:0.86rem;margin-top:4px;font-style:italic;}
-  .conf-pill{font-size:0.82rem;color:var(--muted);border:1px solid var(--border);border-radius:20px;padding:4px 10px;white-space:nowrap;}
 
   .spot-card{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;margin-bottom:16px;}
   .spot-card .head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
@@ -65,7 +62,9 @@
   .spot-card .sports{font-size:0.85rem;color:var(--muted);}
   .live-check{font-size:0.85rem;padding:5px 10px;border-radius:8px;margin-bottom:10px;display:inline-block;}
   .live-check.match{background:var(--green-bg);color:var(--green);}
-  .live-check.mismatch{background:var(--red-bg);color:var(--red);cursor:help;}
+  .live-check.mismatch{background:var(--red-bg);color:var(--red);}
+  .report-link{display:inline-block;margin-bottom:12px;font-size:0.9rem;color:var(--accent);text-decoration:none;font-weight:600;padding:6px 0;}
+  .report-link:hover{text-decoration:underline;}
   .hour-strip{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px;}
   .hour-cell{flex:0 0 auto;width:72px;border-radius:8px;padding:7px 5px;text-align:center;font-size:0.8rem;cursor:pointer;position:relative;}
   .hour-cell .t{color:rgba(27,36,56,0.6);font-size:0.76rem;}
@@ -94,6 +93,19 @@
   .about b{color:var(--text);}
   footer{text-align:center;color:var(--muted);font-size:0.86rem;padding:22px 0 40px;}
   .empty{color:var(--muted);font-size:1rem;padding:22px;text-align:center;}
+
+  button, a{touch-action:manipulation;}
+  @media (max-width:600px){
+    header{padding:18px 14px 6px;}
+    header h1{font-size:1.45rem;}
+    .hero-summary{font-size:1.2rem;margin-top:12px;}
+    main{padding:0 14px 48px;}
+    .controls{padding:14px 16px;gap:16px;}
+    #map{height:260px;}
+    .bet-card{padding:12px 14px;gap:10px;}
+    .spot-card{padding:14px 16px;}
+    .hour-cell{width:62px;}
+  }
 </style>
 </head>
 <body>
@@ -104,7 +116,6 @@
   <div class="hero-summary" id="heroSummary">Loading…</div>
   <div class="meta-row">
     <span id="genLabel">Loading forecast…</span>
-    <span id="modelsNote" class="models-note"></span>
     <button id="refreshBtn">Refresh live</button>
     <a href="https://squamishwindsports.com/conditions/wind/" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">Live Squamish wind meter ↗</a>
     <a href="https://wx.ikitesurf.com/spot/1436" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">iKitesurf (subscription) ↗</a>
@@ -137,7 +148,7 @@
     </div>
   </div>
 
-  <div id="bulletinBox" style="display:none;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin:14px 0;font-size:0.82rem;color:var(--muted);"></div>
+  <div id="bulletinBox" style="display:none;background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:14px 16px;margin:14px 0;font-size:0.95rem;color:var(--muted);"></div>
 
   <div id="map"></div>
   <div class="legend">
@@ -155,20 +166,18 @@
   <div id="globalTip"></div>
 
   <div class="about">
-    <b>How this works.</b> Every spot is checked against four independent weather models (GFS, ECMWF, ICON and Environment Canada's GEM/HRDPS, which best resolves local BC terrain). For each spot we don't just show raw numbers — we classify the hour as <b>thermal</b> (local sun-driven sea breeze or valley wind, e.g. the Squamish afternoon southerly), <b>outflow</b> (cold-air drainage / gap wind, e.g. Squamish's northerly), or <b>synoptic</b> (general frontal/gradient wind across the Strait). Probability = the odds your chosen knot range covers the true wind, modeled as a band of uncertainty around that hour's best-estimate speed rather than a strict vote across models — a smoother, more realistic picture than "3 of 4 models agree" style claims of false precision. Confidence is shaded down for pure mesoscale thermal signals that only the fine-resolution model catches, and for wind blowing from a direction that isn't clean onshore/cross-shore at that spot.
+    <b>How this works.</b> We check the wind forecast for every spot and show your odds of getting your chosen wind speed, hour by hour. Green means good odds, yellow means maybe, red means unlikely.
     <br><br>
-    <b>Squamish Spit, Porteau Cove and Furry Creek</b> get two extra local corrections. First, raw coarse-model wind badly under-reads the Squamish thermal (a well-documented local quirk), so once the model shows a clean SW signal we scale it up roughly 2.85x, based on field calibration from a long-time local rider (West Coast Wind Sports). Second, we check the sea-level pressure gradient along the corridor — a large-scale coast-vs-interior spread and a local spread between the sound's mouth and the spot itself — since Squamish wind is driven by real pressure differences, not thermal heating alone; when both line up with the wind signal, confidence goes up, when they don't, we flag it. Environment Canada's own Howe Sound marine bulletin — generally the single best resource for today's Squamish wind — is shown above when available, and is worth cross-checking against the live wind meter linked at the top before you drive out.
+    <b>Tuned by local knowledge.</b> Some spots have quirky local wind patterns that generic forecasts miss — we adjust for that using real reports from local riders and nearby live wind stations, so the numbers get more accurate over time. Tap "Report actual conditions" on any spot to help tune it further.
     <br><br>
-    <b>Self-improving from rider reports and live stations.</b> Hover any hour cell for a "Report actual conditions" link — tell us what it actually did and the twice-daily forecast job factors your report into that spot's calibration (see the repo's README for details). Each run also pulls the nearest Environment Canada station's real-time observation (shown as a small badge on each spot card) and checks it against what was forecasted for that same hour — if they disagree by 20% or more, it's logged with a reasoned explanation and folded into that spot's calibration alongside rider reports, so the model keeps correcting itself even between reports.
+    <b>Only the good options are listed below.</b> The headline at the top always calls out your single best option for the day; the lists below only include spots with a decent shot at your chosen range, to keep the page short — every spot is still shown on the map above regardless of odds.
     <br><br>
-    <b>Only spots with a real shot show up below.</b> The headline at the top always calls out the single best option (and its strongest sub-window) for your chosen range and day; the best-bets list and hour-by-hour cards only include spots that clear 40% for that range on that day, to keep the page focused — every spot is still plotted on the map above regardless of odds.
-    <br><br>
-    This is a forecasting aid, not a safety guarantee — always check current conditions, tides and marine warnings before launching.
+    This is a forecasting aid, not a safety guarantee — always check current conditions, tides and marine warnings before heading out.
   </div>
 
 </main>
 
-<footer>Wind Guru · data via Open-Meteo (GFS / ECMWF / ICON / GEM) · built for Strait of Georgia, Howe Sound &amp; Metro Vancouver <span id="versionNote"></span></footer>
+<footer>Wind Guru · built for Strait of Georgia, Howe Sound &amp; Metro Vancouver <span id="versionNote"></span></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script type="module">
@@ -180,7 +189,6 @@ let selectedDayIndex = 0;
 let minKt = 12, maxKt = 20;
 
 const genLabel = document.getElementById("genLabel");
-const modelsNote = document.getElementById("modelsNote");
 const bestBetsEl = document.getElementById("bestBets");
 const spotCardsEl = document.getElementById("spotCards");
 const dayTabsEl = document.getElementById("dayTabs");
@@ -247,6 +255,20 @@ function tierClass(pct) {
   if (pct >= 35) return "lvl-yellow";
   if (pct === null || pct === undefined) return "lvl-gray";
   return "lvl-red";
+}
+
+// Plain-language stand-in for the internal wind-regime classification —
+// riders care whether it's an afternoon breeze or a general blow, not the
+// meteorological label used inside the rule engine.
+function regimeLabel(regime) {
+  switch (regime) {
+    case "thermal": return "Afternoon breeze";
+    case "outflow": return "Outflow wind";
+    case "synoptic": return "General wind";
+    case "calm": return "Light / calm";
+    case "mixed": return "Mixed wind";
+    default: return "Wind";
+  }
 }
 
 function bestWindowForSpot(spot) {
@@ -355,15 +377,14 @@ function renderBestBets() {
     const div = document.createElement("div");
     div.className = "bet-card";
     const cls = tierClass(r.probability);
+    const gustText = r.hour.gust_kt != null ? `–${Math.round(r.hour.gust_kt)}` : "";
     div.innerHTML = `
       <div class="bet-rank">${i + 1}</div>
       <div class="bet-badge ${cls}">${r.probability}%</div>
       <div class="bet-info">
         <div class="name">${r.spot.name} <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">· ${r.spot.region}</span></div>
-        <div class="detail">${r.hour.time.slice(11,16)} · ${r.hour.speed_kt ?? "–"}kt (gust ${r.hour.gust_kt ?? "–"}) ${r.hour.direction_label} · ${r.hour.regime}${r.hour.favorable_direction ? "" : " · off-favorable direction"}</div>
-        <div class="reason">${r.hour.reason}</div>
+        <div class="detail">${r.hour.time.slice(11,16)} · ${r.hour.speed_kt != null ? Math.round(r.hour.speed_kt) : "–"}${gustText}kt ${r.hour.direction_label ?? ""} · ${regimeLabel(r.hour.regime)}</div>
       </div>
-      <div class="conf-pill">confidence ${r.confidence}%</div>
     `;
     bestBetsEl.appendChild(div);
   });
@@ -371,15 +392,18 @@ function renderBestBets() {
 
 const GITHUB_REPO = "ferreroforward/wind-guru";
 
+// h is optional — the header-level "Report actual conditions" link on each
+// spot card has no specific hour in mind, so it falls back to today's date
+// and lets the rider fill in the time themselves in the report form.
 function reportUrl(spotId, h) {
-  const date = h.time.slice(0, 10);
-  const time = h.time.slice(11, 16);
+  const date = h ? h.time.slice(0, 10) : new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
+  const time = h ? h.time.slice(11, 16) : "";
   const params = new URLSearchParams({
     template: "wind-report.yml",
     spot: spotId,
     report_date: date,
     report_time: time,
-    forecasted_speed: h.speed_kt ?? "",
+    forecasted_speed: h && h.speed_kt != null ? h.speed_kt : "",
   });
   return `https://github.com/${GITHUB_REPO}/issues/new?${params.toString()}`;
 }
@@ -399,7 +423,10 @@ function cancelHide() { if (hideTimer) { clearTimeout(hideTimer); hideTimer = nu
 function scheduleHide() { cancelHide(); hideTimer = setTimeout(() => { if (!pinned) hideTip(); }, 250); }
 
 function showTip(cellEl, h, spotId) {
-  globalTip.innerHTML = `<b>${h.regime.toUpperCase()}</b>${h.reason}
+  const speedText = h.speed_kt != null
+    ? `${Math.round(h.speed_kt)}${h.gust_kt != null ? `–${Math.round(h.gust_kt)}` : ""}kt ${h.direction_label ?? ""}`
+    : "No data for this hour";
+  globalTip.innerHTML = `<b>${regimeLabel(h.regime)}</b>${speedText}
     <a href="${reportUrl(spotId, h)}" target="_blank" rel="noopener">Report actual conditions →</a>`;
   const rect = cellEl.getBoundingClientRect();
   globalTip.style.display = "block";
@@ -439,11 +466,17 @@ function renderSpotCards() {
     const lc = spot.live_check;
     const liveSpeedText = lc && lc.live_gust_kt != null ? `${lc.live_kt}–${lc.live_gust_kt}kt` : lc ? `${lc.live_kt}kt` : "";
     const liveBadge = lc
-      ? `<div class="live-check ${lc.mismatch ? "mismatch" : "match"}" title="${lc.mismatch ? lc.reasoning : ""}">
-           ${lc.station} live: ${liveSpeedText} ${lc.live_direction ?? ""}
-           ${lc.mismatch ? ` — forecast said ${lc.forecasted_kt}kt (${lc.error_pct > 0 ? "+" : ""}${lc.error_pct}%), logged for recalibration` : ` · matches forecast (${lc.forecasted_kt}kt)`}
+      ? `<div class="live-check ${lc.mismatch ? "mismatch" : "match"}">
+           ${lc.station} right now: ${liveSpeedText} ${lc.live_direction ?? ""}
+           ${lc.mismatch ? ` — forecast said ${lc.forecasted_kt}kt` : ` · matches forecast`}
          </div>`
       : "";
+    // Always-visible report link, not hidden behind a hover/tap-to-pin
+    // tooltip — on mobile there's no hover at all, so this was previously
+    // undiscoverable. Defaults to today's best window for this spot; the
+    // rider can still change the time in the report form itself.
+    const best = bestWindowForSpot(spot);
+    const reportHref = reportUrl(sp.id, best ? best.hour : null);
     const card = document.createElement("div");
     card.className = "spot-card";
     card.innerHTML = `
@@ -452,6 +485,7 @@ function renderSpotCards() {
         <div class="sports">${sp.sports.join(" · ")}</div>
       </div>
       ${liveBadge}
+      <a class="report-link" href="${reportHref}" target="_blank" rel="noopener">📝 Report actual conditions</a>
       <div class="hour-strip"></div>
     `;
     const stripEl = card.querySelector(".hour-strip");
@@ -505,9 +539,9 @@ function renderMap() {
 function renderBulletin() {
   const box = document.getElementById("bulletinBox");
   const b = forecast.marine_bulletins && forecast.marine_bulletins.howe_sound;
-  if (!b || !b.text) { box.style.display = "none"; return; }
+  if (!b || !b.url) { box.style.display = "none"; return; }
   box.style.display = "block";
-  box.innerHTML = `<b style="color:var(--text);">Environment Canada — ${b.label}${b.warning ? " ⚠️ warning in effect" : ""}</b><br>${b.text} <a href="${b.url}" target="_blank" rel="noopener" style="color:var(--accent);">Full bulletin ↗</a>`;
+  box.innerHTML = `<b style="color:var(--text);">Howe Sound marine forecast</b>${b.warning ? " ⚠️ warning in effect" : ""} — <a href="${b.url}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">Environment Canada bulletin ↗</a>`;
 }
 
 // The Action refreshes the snapshot roughly every 12h (5am/5pm Pacific).
@@ -537,7 +571,6 @@ function renderFreshnessBadge() {
   const statusText = isLive ? "Live — just fetched" : `Updated ${formatRelative(ageMs)}`;
   genLabel.innerHTML = `<span class="update-badge ${cls}" title="${forecast.generated_at_label}"><span class="dot"></span>${statusText}</span>`;
   genLabel.title = forecast.generated_at_label;
-  modelsNote.textContent = `· models: ${forecast.models_used.join(", ")}`;
 }
 
 function renderAll() {
