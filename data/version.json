@@ -1,5 +1,5 @@
 {
-  "version": "c2747b8",
-  "message": "Simplify UI: strip technical jargon, link-only bulletin, visible report link on mobile",
-  "deployed_at": "2026-08-14T22:43:50Z"
+  "version": "282630d",
+  "message": "Move marine forecast links to bottom of page, add Strait of Georgia link",
+  "deployed_at": "2026-08-14T22:49:31Z"
 }
