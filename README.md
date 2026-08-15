@@ -19,7 +19,7 @@ numbers.
   GEM/HRDPS model more heavily, since it's the only one of the four that
   resolves Howe Sound and Fraser Valley terrain effects.
 - **Squamish thermal calibration**: raw coarse-model (GFS-class) wind badly
-  under-reads the Squamish/Furry Creek thermal once it's actually inflowing.
+  under-reads the Squamish/Porteau Cove thermal once it's actually inflowing.
   We scale it ~2.85x based on field notes from a 12-year local rider, Jack
   Rieder of [West Coast Wind Sports](https://www.westcoastwindsports.com/blogs/local-knowledge/forecasting-squamish-wind-with-jack-rieder):
   5-7kt modeled SW ≈ 15-20kt real, 7-9kt ≈ 20-25kt real, 9kt+ ≈ a strong day.
@@ -52,12 +52,18 @@ numbers.
   breeze rather than reinforce it — flagged as a confidence-lowering caution.
   Independent of regime, strong upper wind riding over a decent surface wind
   is flagged as **GUSTY** in the UI (hour cells and best-bets list).
-- **Pam Rocks live nowcast**: for Squamish Spit and Furry Creek only
-  (`pamRocksAware: true`), the live Pam Rocks buoy reading (already fetched
-  for Porteau Cove's live-check — see "Live verification") is projected onto
-  Howe Sound's ~200° SW inflow axis and used to support or caution the
-  *current* hour's thermal confidence. Only ever applies to "right now,"
-  since it's a live observation, not a forecast time series.
+- **Pam Rocks live nowcast**: two independent uses of the live Pam Rocks buoy
+  reading, both restricted to whichever hour matches "right now" since it's
+  a live observation, not a forecast time series:
+  1. For Squamish Spit and Porteau Cove (`pamRocksAware: true`), it's
+     projected onto Howe Sound's ~200° SW inflow axis and used to support or
+     caution the current hour's thermal confidence.
+  2. For Porteau Cove specifically (`pamRocksTrigger`), a plain threshold +
+     direction check — per local rider knowledge, Pam Rocks reading 12kt+
+     from the South/SE meaningfully raises the odds Porteau is working (up
+     toward 20kt) even on an hour the model's own signals came up empty.
+     Mirrors the reference-station trigger pattern used for Erwin Park, just
+     sourced from a live buoy + direction instead of a forecast station.
 - **Rider feedback loop**: see "Rider feedback & self-calibration" below —
   actual on-the-water reports nudge each spot's calibration over time,
   separately per wind regime (a thermal-hour mismatch no longer nudges that
@@ -223,7 +229,7 @@ To recalibrate manually: `GITHUB_TOKEN=<a token with repo:read> node scripts/app
 Every spot has a `liveStation` (see `assets/spots.js`) — a source of
 genuinely *observed* wind, not a forecast. Three source types:
 
-- **`type: "squamishwindsports"`** (Squamish Spit, Furry Creek): the JSON
+- **`type: "squamishwindsports"`** (Squamish Spit): the JSON
   feed behind [Squamish Windsports Society's live wind
   chart](https://squamishwindsports.com/conditions/wind/)
   (`squamishwindsports.com/wind-data/getmet.php?wind_src=spit&...`), found
@@ -294,10 +300,9 @@ a stale station, a parsing hiccup) can't swing the whole spot.
 Limitations: station locations are the *nearest available* observation
 point, not co-located with the spot itself (see each spot's `liveStation`
 comment in `spots.js`) — treat the comparison as an approximation, most
-trustworthy for the Squamish Spit itself (an on-site instrument) and
-roughest for Erwin Park (~23km from the White Rock METAR it shares with
-Boundary Bay/White Rock) and Furry Creek (sharing the Spit meter, several
-km away). igetwind's citizen-station data also isn't independently
+trustworthy for the Squamish Spit and Porteau Cove (both on-site or
+near-on-site instruments) and roughest for Erwin Park (~23km from the White
+Rock METAR it shares with Boundary Bay/White Rock). igetwind's citizen-station data also isn't independently
 audited — we only pin two specific `sid`s from it (Pam Rocks, White Rock
 METAR), both official government stations, not the amateur ones it also
 returns. It only checks the current hour once

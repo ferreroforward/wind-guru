@@ -58,14 +58,32 @@ export const SPOTS = [
     }
   },
   {
+    // Furry Creek used to be modeled as a separate spot, but it's right next
+    // to Porteau Cove (~4km down-Sound, same exposure) — per local knowledge
+    // they're effectively the same spot, so Furry Creek's thermal profile
+    // was merged in here rather than kept as its own entry.
     id: "porteau-cove",
     name: "Porteau Cove",
     region: "Howe Sound",
     lat: 49.5606, lon: -123.2394,
     sports: ["windsurf", "wingfoil"],
     level: "intermediate",
-    favorable_deg: [[300, 40]],
+    favorable_deg: [[300, 40], [135, 260]], // N outflow, or S–SE–SW inflow/gradient wind
     pressureGradientAware: true,
+    pamRocksAware: true, // SW-inflow-projection thermal nowcast on the current hour — see rules.js
+    // Per local rider knowledge: when Pam Rocks is reading 12kt+ from the
+    // South/SE, that meaningfully raises the odds Porteau itself is working
+    // (up toward the 20kt range) even on an hour the model's own signals
+    // came up empty — a distinct signal from the SW-inflow thermal check
+    // above (pamRocksAware). Same live-observation caveat: only ever
+    // applies to the current hour, not the rest of the forecast. See
+    // rules.js for how this is applied.
+    pamRocksTrigger: {
+      thresholdKt: 12,
+      dirSector: [135, 205], // South–SE
+      boostToKt: 18, // conservative floor toward the 20kt+ tier this signal is about, not a guarantee of exactly 20
+      note: "A South/SE marine push at the Sound's entrance reaching this far up is a good sign for Porteau, independent of the usual outflow/thermal patterns."
+    },
     // Porteau sits further down-Sound, more open water than the Spit's
     // thermal/outflow convergence zone at the head of Howe Sound — Pam
     // Rocks (a Coast Guard station right at the Sound's entrance, found via
@@ -73,37 +91,18 @@ export const SPOTS = [
     // more representative open-Sound reading for this spot than the Spit
     // meter would be, even though it's ~10km away.
     liveStation: { type: "igetwind", sid: "CWAS", lat: 49.48, lon: -123.30, name: "Pam Rocks (Howe Sound entrance)" },
-    thermal: { enabled: false },
-    outflow: {
-      enabled: true,
-      dirSector: [300, 40],
-      note: "Mid-Howe Sound outflow/gap-wind site — picks up the same north drainage flow as Squamish, usually a touch lighter and more consistent, less gusty than the Spit."
-    }
-  },
-  {
-    id: "furry-creek",
-    name: "Furry Creek",
-    region: "Howe Sound",
-    lat: 49.5983, lon: -123.2103,
-    sports: ["windsurf", "wingfoil"],
-    level: "intermediate",
-    favorable_deg: [[300, 40], [150, 260]],
-    pressureGradientAware: true,
-    pamRocksAware: true, // same Howe Sound thermal system as Squamish Spit — see rules.js
-    // Same approximation caveat as Porteau Cove above.
-    liveStation: { type: "squamishwindsports", windSrc: "spit", name: "Squamish Spit wind meter" },
     thermal: {
       enabled: true,
       calibrated: true, // same Howe Sound thermal system as Squamish Spit — see rules.js
       months: [5,6,7,8,9],
       hourWindow: [11, 18],
       dirSector: [150, 260],
-      note: "Secondary thermal channel between Squamish and Porteau — weaker and less reliable than the Spit; best on strong-thermal days."
+      note: "Secondary thermal channel down-Sound from the Spit — weaker and less reliable than Squamish itself; best on strong-thermal days."
     },
     outflow: {
       enabled: true,
       dirSector: [300, 40],
-      note: "Also exposed to Howe Sound outflow events."
+      note: "Mid-Howe Sound outflow/gap-wind site — picks up the same north drainage flow as Squamish, usually a touch lighter and more consistent, less gusty than the Spit."
     }
   },
   {

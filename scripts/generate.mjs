@@ -21,8 +21,8 @@ const LIVE_LOG_MAX_PER_SPOT = 40; // cap so the log file doesn't grow forever
 const LIVE_MIN_FORECAST_KT = 2; // skip the % comparison when forecast is near-zero (division blows up)
 
 // Same station Porteau Cove uses as its own live-check (see spots.js) —
-// reused here as a same-day nowcast input for Squamish-family thermal spots
-// (spot.pamRocksAware). Defined once so getLiveObservation's cache key
+// reused here as a same-day nowcast input for any spot with pamRocksAware
+// and/or pamRocksTrigger set. Defined once so getLiveObservation's cache key
 // matches Porteau's own fetch and we never hit igetwind twice for it.
 const PAM_ROCKS_STATION = { type: "igetwind", sid: "CWAS", lat: 49.48, lon: -123.30, name: "Pam Rocks (Howe Sound entrance)" };
 
@@ -298,11 +298,11 @@ async function main() {
 
   const nowHourStr = currentPacificHourString(startedAt);
 
-  // Fetched once, shared by every pamRocksAware spot (Squamish Spit, Furry
-  // Creek) — a live nowcast only ever applies to whichever hour is "right
-  // now," so there's no point fetching it per spot.
+  // Fetched once, shared by every spot that uses it (pamRocksAware and/or
+  // pamRocksTrigger — see rules.js) — a live nowcast only ever applies to
+  // whichever hour is "right now," so there's no point fetching it per spot.
   let pamRocksObs = null;
-  if (SPOTS.some((s) => s.pamRocksAware)) {
+  if (SPOTS.some((s) => s.pamRocksAware || s.pamRocksTrigger)) {
     try {
       pamRocksObs = await getLiveObservation(PAM_ROCKS_STATION);
     } catch (err) {
@@ -366,7 +366,7 @@ async function main() {
 
       // Only ever attached to the row matching "right now" — it's a live
       // buoy reading, not a forecast time series (see rules.js).
-      const pamRocksNow = (spot.pamRocksAware && pamRocksObs && row.time === nowHourStr)
+      const pamRocksNow = ((spot.pamRocksAware || spot.pamRocksTrigger) && pamRocksObs && row.time === nowHourStr)
         ? { speedKt: pamRocksObs.speedKt, directionDeg: pamRocksObs.directionDeg }
         : null;
 

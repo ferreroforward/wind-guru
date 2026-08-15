@@ -160,8 +160,9 @@ export function pamRocksInflowComponent(speedKt, directionDeg, inflowAxisDeg = 2
 // `pamRocksNow`, if provided, is { speedKt, directionDeg } — the live Pam
 // Rocks buoy reading (Howe Sound's mouth), only ever passed for whichever
 // hour matches "right now" (see generate.mjs) since it's a live observation,
-// not a forecast time series. Used as a same-day nowcast booster for
-// Squamish-family thermal spots.
+// not a forecast time series. Two independent uses, both same-day-only:
+// an SW-inflow-projection thermal nowcast (spot.pamRocksAware) and a plain
+// threshold+direction trigger (spot.pamRocksTrigger, Porteau Cove).
 // Returns { regime, reason, direction_deg, speed_kt, gust_kt, agreement }
 export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pressureGradients = null, overrideRecord = null, pamRocksNow = null) {
   const speedVals = Object.values(row.speeds).filter(v => v != null);
@@ -383,6 +384,31 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     }
   }
 
+  // Pam Rocks threshold+direction trigger (Porteau Cove specific, per local
+  // rider knowledge): distinct from the SW-inflow-projection nowcast above —
+  // this one is a plain threshold + direction sector check, not a vector
+  // projection. Same live-observation caveat: only ever fires on the hour
+  // matching "right now." Mirrors the reference-station trigger pattern
+  // (upgrades a calm/mixed hour, corroborates otherwise) but is sourced from
+  // a live buoy reading + direction rather than a forecast reference
+  // station.
+  let pamRocksTriggered = false;
+  if (spot.pamRocksTrigger && pamRocksNow && pamRocksNow.speedKt != null && pamRocksNow.directionDeg != null) {
+    const trig = spot.pamRocksTrigger;
+    const met = pamRocksNow.speedKt >= trig.thresholdKt && inSector(pamRocksNow.directionDeg, trig.dirSector);
+    if (met) {
+      pamRocksTriggered = true;
+      if (regime === "calm" || regime === "mixed") {
+        regime = "synoptic";
+        displaySpeed = Math.max(displaySpeed ?? 0, trig.boostToKt);
+        displayGust = displaySpeed * 1.3;
+        reason = `Pam Rocks is reading ~${Math.round(pamRocksNow.speedKt)}kt from ${degToLabel(pamRocksNow.directionDeg)}, above this spot's ${trig.thresholdKt}kt South/SE trigger. ${trig.note}`;
+      } else {
+        reason += ` Also corroborated by Pam Rocks reading ~${Math.round(pamRocksNow.speedKt)}kt from ${degToLabel(pamRocksNow.directionDeg)}, above its ${trig.thresholdKt}kt South/SE trigger for this spot.`;
+      }
+    }
+  }
+
   // Quick qualitative flags from a 12-year local rider's notes: rain kills
   // it, cloud alone doesn't, and an extreme heat forecast tends to suppress
   // the thermal (or make it very short-lived).
@@ -443,6 +469,7 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     fine_vs_coarse_gap: fine_vs_coarse_gap != null ? Math.round(fine_vs_coarse_gap * 10) / 10 : null,
     calibrated,
     reference_triggered: referenceTriggered,
+    pam_rocks_triggered: pamRocksTriggered,
     pressure_support: pressureSupport,
     upper_suppression: upperSuppression,
     pam_rocks_support: pamRocksSupport,
@@ -524,7 +551,7 @@ export function probabilityInRange(hourResult, lo, hi) {
   } else {
     confidence = 0.35 + hourResult.model_agreement * 0.2;
   }
-  if (hourResult.reference_triggered) confidence = Math.max(confidence, 0.7);
+  if (hourResult.reference_triggered || hourResult.pam_rocks_triggered) confidence = Math.max(confidence, 0.7);
   if (hourResult.pressure_support === true) confidence = Math.min(1, confidence + 0.12);
   if (hourResult.pressure_support === false) confidence *= 0.8;
   if (hourResult.pam_rocks_support === true) confidence = Math.min(1, confidence + 0.1);
