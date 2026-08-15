@@ -1,5 +1,5 @@
 {
-  "version": "8b24b5d",
-  "message": "Add Pam Rocks nowcast, 850hPa suppression/GUSTY flag, solar radiation gating, regime-aware calibration",
-  "deployed_at": "2026-08-15T15:44:22Z"
+  "version": "e66888b",
+  "message": "Merge Furry Creek into Porteau Cove; add South/SE Pam Rocks trigger for Porteau",
+  "deployed_at": "2026-08-15T15:52:59Z"
 }
