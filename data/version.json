@@ -1,5 +1,5 @@
 {
-  "version": "67a6c79",
-  "message": "Restyle to Modernist aesthetic: Archivo type, red-tint odds ramp, flat square UI",
-  "deployed_at": "2026-08-15T14:41:25Z"
+  "version": "93befd3",
+  "message": "Revert Modernist restyle, back to previous light theme",
+  "deployed_at": "2026-08-15T14:49:16Z"
 }
