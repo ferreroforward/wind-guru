@@ -92,7 +92,18 @@ numbers.
   a live observation, not a forecast time series:
   1. For Squamish Spit and Porteau Cove (`pamRocksAware: true`), it's
      projected onto Howe Sound's ~200° SW inflow axis and used to support or
-     caution the current hour's thermal confidence.
+     caution the current hour's thermal confidence. Sharpened with a
+     specific, validated signal borrowed from an independent Squamish-Spit-
+     focused forecast tool ([spitwind.ca](https://spitwind.ca/), checked
+     Aug 2026): Pam Rocks reading 8-12kt specifically from the SSE ("the
+     tell band") has historically preceded the Spit filling to rideable
+     ~91% of the time, a sharper heads-up than the generic projection alone
+     — and the inverse, a *strong* Pam Rocks reading from the west, is
+     flagged as a "head-fake" (looks encouraging, often doesn't reach the
+     Spit) rather than treated as generic support. We don't have a season
+     of our own sensor history to independently derive these bands yet, so
+     treat the specific thresholds as borrowed, not locally-validated —
+     worth revisiting once our own live-verification log has enough depth.
   2. For Porteau Cove specifically (`pamRocksTrigger`), a plain threshold +
      direction check — per local rider knowledge, Pam Rocks reading 12kt+
      from the South/SE meaningfully raises the odds Porteau is working (up
@@ -465,10 +476,18 @@ twice(-now-thrice)-daily Action run.
   now uses a wider base sigma for these hours so they don't read as more
   certain than they are, but the displayed speed itself is still just the
   trigger's threshold/floor number, not a genuine forecast magnitude.
-- Gust is estimated as speed × 1.3 for calibrated-thermal and trigger-fired
-  hours specifically (where there's no trustworthy per-hour model gust value
-  to lean on); every other regime uses the models' own gust forecast
-  directly.
+- Gust is estimated rather than taken from the models directly for
+  calibrated-thermal and trigger-fired hours (where there's no trustworthy
+  per-hour model gust value to lean on); every other regime uses the
+  models' own gust forecast. For calibrated Squamish-family thermal hours
+  specifically, this is now a direction-aware multiplier (~1.21x on-axis, up
+  to ~1.36x drifting west — see `calibratedGustMultiplier()` in
+  `assets/rules.js`, borrowed from spitwind.ca's stated gust-spread stats,
+  same "not locally-validated yet" caveat as the Pam Rocks tell above);
+  trigger-fired hours (reference-station, Pam Rocks threshold) still use a
+  flat 1.3x, since those are a different mechanism (a floor value
+  substituted in, not a genuine per-hour estimate) with no comparable
+  direction-specific data behind them.
 - `forecast.json` includes all 24 hours/day even though the UI only ever
   displays 06:00-20:00 — trimming the unused hours (and any other
   browser-unused fields) before writing would meaningfully shrink both the

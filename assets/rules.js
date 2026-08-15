@@ -109,6 +109,25 @@ function calibrateSquamishThermal(coarseMeanKt) {
   return CALIBRATED_OUTPUT_CAP_KT + excess / (1 + excess / CALIBRATED_TAPER_SOFTNESS);
 }
 
+// Gust-over-average ratio for a calibrated Squamish-family thermal hour,
+// direction-dependent rather than one flat number. Source: an independent
+// Squamish-Spit-focused forecast tool (spitwind.ca, checked Aug 2026),
+// which tracks this from its own live sensor history — a typical on-axis
+// day there gusts about 21% over its average speed, but a day that's
+// drifted west of the main SW inflow axis runs meaningfully gustier, up to
+// ~36% over. We don't have that sensor history ourselves, so this is a
+// directionally-informed refinement of the previous flat 1.3x (30% over),
+// not a locally-validated number — revisit once our own live-verification
+// log has enough gust data to check it. Blends linearly from 1.21x right on
+// the 200° inflow axis up to 1.36x by the time direction reaches due west
+// (270°) or beyond; south-of-axis (150-200°) stays at the base 1.21x since
+// spitwind's finding was specifically about west-drifting days.
+function calibratedGustMultiplier(directionDeg) {
+  if (directionDeg == null) return 1.21;
+  const driftFromAxisToward270 = Math.max(0, Math.min(1, (directionDeg - 200) / 70));
+  return 1.21 + driftFromAxisToward270 * 0.15;
+}
+
 function mean(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null; }
 
 // time -> value lookup from a reshaped row array, for whichever field
@@ -381,7 +400,7 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
       // higher — both are known to undercall this specific thermal, not
       // overcall it.
       displaySpeed = row.speeds.gem != null ? Math.max(calibratedSpeed, row.speeds.gem) : calibratedSpeed;
-      displayGust = displaySpeed * 1.3;
+      displayGust = displaySpeed * calibratedGustMultiplier(direction_deg);
       displayModels = { calibrated: displaySpeed, gem_local: row.speeds.gem ?? displaySpeed };
       reason += ` Field-calibrated: raw coarse-model wind (~${Math.round(coarseMean)}kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README).`;
     }
@@ -422,15 +441,44 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   // series, so it can only corroborate/caution the current hour, not the
   // rest of the forecast. Marine inflow reaching the mouth of the sound is
   // a real-time leading indicator for the thermal reaching the Spit.
-  let pamRocksSupport = null;
+  //
+  // Sharpened with a specific, validated local signal from spitwind.ca (an
+  // independent Squamish-Spit-focused forecast tool, checked Aug 2026):
+  // across a season of recorded Spit sessions, Pam Rocks reading 8-12kt
+  // specifically from the SSE precedes the Spit filling to rideable ~91% of
+  // the time — a much sharper "heads up" than a generic inflow-strength
+  // check. They also flag the inverse: a STRONG Pam Rocks reading from the
+  // west is a "head-fake" that often doesn't reach the Spit at all — worse
+  // than no signal at all, since a big number there looks encouraging but
+  // isn't. We don't have a season of our own history to independently
+  // derive these bands yet (see "Live verification" / the calibration
+  // loop), so treat the specific thresholds below as borrowed, not
+  // locally-validated — worth revisiting once our own log has enough depth.
+  const PAM_TELL_MIN_KT = 8, PAM_TELL_MAX_KT = 12;
+  const PAM_TELL_DIR_SECTOR = [135, 195]; // SE through SSW, centered on SSE
+  const PAM_HEADFAKE_DIR_SECTOR = [260, 300]; // W through WNW
+  const PAM_HEADFAKE_MIN_KT = 10;
+  let pamRocksSupport = null, pamRocksTell = false, pamRocksHeadFake = false;
   if (spot.pamRocksAware && regime === "thermal" && pamRocksNow &&
       pamRocksNow.speedKt != null && pamRocksNow.directionDeg != null) {
-    const component = pamRocksInflowComponent(pamRocksNow.speedKt, pamRocksNow.directionDeg);
-    if (component != null) {
+    const { speedKt: pSpeed, directionDeg: pDir } = pamRocksNow;
+    const isTellBand = pSpeed >= PAM_TELL_MIN_KT && pSpeed <= PAM_TELL_MAX_KT && inSector(pDir, PAM_TELL_DIR_SECTOR);
+    const isHeadFake = pSpeed >= PAM_HEADFAKE_MIN_KT && inSector(pDir, PAM_HEADFAKE_DIR_SECTOR);
+    const component = pamRocksInflowComponent(pSpeed, pDir);
+
+    if (isHeadFake) {
+      pamRocksSupport = false;
+      pamRocksHeadFake = true;
+      reason += ` Caution: Pam Rocks (sound's mouth) is reading ~${Math.round(pSpeed)}kt from ${degToLabel(pDir)} — strong but off-axis (westerly), which often doesn't translate into real inflow at the Spit. Don't read this as a good sign.`;
+    } else if (isTellBand) {
+      pamRocksSupport = true;
+      pamRocksTell = true;
+      reason += ` Pam Rocks (sound's mouth) is reading ~${Math.round(pSpeed)}kt from ${degToLabel(pDir)} — right in the band that's historically preceded this thermal filling in reliably.`;
+    } else if (component != null) {
       pamRocksSupport = component >= 6;
       reason += pamRocksSupport
-        ? ` Pam Rocks (sound's mouth) is reading ~${Math.round(pamRocksNow.speedKt)}kt from ${degToLabel(pamRocksNow.directionDeg)} right now — already showing strong SW inflow, a good real-time sign for this thermal.`
-        : ` Pam Rocks (sound's mouth) isn't yet showing strong SW inflow (~${Math.round(pamRocksNow.speedKt)}kt from ${degToLabel(pamRocksNow.directionDeg)}) — this thermal may not have fully kicked in yet.`;
+        ? ` Pam Rocks (sound's mouth) is reading ~${Math.round(pSpeed)}kt from ${degToLabel(pDir)} right now — already showing strong SW inflow, a good real-time sign for this thermal.`
+        : ` Pam Rocks (sound's mouth) isn't yet showing strong SW inflow (~${Math.round(pSpeed)}kt from ${degToLabel(pDir)}) — this thermal may not have fully kicked in yet.`;
     }
   }
 
@@ -567,6 +615,8 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     pressure_support: pressureSupport,
     upper_suppression: upperSuppression,
     pam_rocks_support: pamRocksSupport,
+    pam_rocks_tell: pamRocksTell,
+    pam_rocks_head_fake: pamRocksHeadFake,
     feedback_adjusted: feedbackAdjusted,
     models: displayModels,
     raw_models: row.speeds,
@@ -661,6 +711,13 @@ export function probabilityInRange(hourResult, lo, hi) {
   if (hourResult.pressure_support === false) confidence *= 0.8;
   if (hourResult.pam_rocks_support === true) confidence = Math.min(1, confidence + 0.1);
   if (hourResult.pam_rocks_support === false) confidence *= 0.9;
+  // Extra adjustments layered on top of the generic support/caution above:
+  // the "tell band" is a specifically validated signal (see classifyHour),
+  // worth more than a generic supportive reading; a head-fake is worse than
+  // a merely-not-yet-supportive one, since it's actively misleading rather
+  // than just inconclusive.
+  if (hourResult.pam_rocks_tell === true) confidence = Math.min(1, confidence + 0.08);
+  if (hourResult.pam_rocks_head_fake === true) confidence *= 0.85;
   if (hourResult.upper_suppression === true) confidence *= 0.75;
   if (!hourResult.favorable_direction) confidence *= 0.7;
 
