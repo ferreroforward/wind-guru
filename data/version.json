@@ -1,5 +1,5 @@
 {
-  "version": "93befd3",
-  "message": "Revert Modernist restyle, back to previous light theme",
-  "deployed_at": "2026-08-15T14:49:16Z"
+  "version": "9bc926b",
+  "message": "Remove redundant wind-range inputs, add PayPal donation section",
+  "deployed_at": "2026-08-15T15:03:17Z"
 }
