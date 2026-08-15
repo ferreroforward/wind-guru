@@ -32,8 +32,6 @@
   .controls{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;margin:16px 0;display:flex;flex-wrap:wrap;gap:22px;align-items:flex-end;}
   .control-group{display:flex;flex-direction:column;gap:7px;}
   .control-group label{font-size:0.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;}
-  .range-inputs{display:flex;align-items:center;gap:8px;}
-  .range-inputs input[type=number]{width:70px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:8px;font-size:1.05rem;}
   .presets{display:flex;gap:7px;flex-wrap:wrap;}
   .presets button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:20px;cursor:pointer;font-size:0.9rem;}
   .presets button.active{background:var(--accent);border-color:var(--accent);color:#ffffff;font-weight:600;}
@@ -91,6 +89,15 @@
   .legend span.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;}
   .about{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;font-size:0.95rem;color:var(--muted);line-height:1.65;margin-top:30px;}
   .about b{color:var(--text);}
+  .support{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+  .support-text{font-size:0.95rem;color:var(--muted);line-height:1.55;}
+  .support-text b{color:var(--text);}
+  .support-btn{flex:0 0 auto;background:#ffc439;border:1px solid #ffc439;color:#1b2438;padding:12px 22px;border-radius:24px;font-weight:700;font-size:0.95rem;text-decoration:none;white-space:nowrap;}
+  .support-btn:hover{background:#ffb400;border-color:#ffb400;}
+  @media (max-width:600px){
+    .support{flex-direction:column;align-items:flex-start;padding:16px;}
+    .support-btn{width:100%;text-align:center;}
+  }
   footer{text-align:center;color:var(--muted);font-size:0.86rem;padding:22px 0 40px;}
   .empty{color:var(--muted);font-size:1rem;padding:22px;text-align:center;}
 
@@ -125,14 +132,6 @@
 <main>
 
   <div class="controls">
-    <div class="control-group">
-      <label>Wind range (knots)</label>
-      <div class="range-inputs">
-        <input type="number" id="minKt" value="12" min="0" max="60">
-        <span>–</span>
-        <input type="number" id="maxKt" value="20" min="0" max="60">
-      </div>
-    </div>
     <div class="control-group">
       <label>Quick picks</label>
       <div class="presets" id="presets">
@@ -175,6 +174,14 @@
 
   <div id="bulletinBox" style="display:none;background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:14px 16px;margin:16px 0;font-size:0.95rem;color:var(--muted);"></div>
 
+  <div class="support">
+    <div class="support-text">
+      <b>Enjoying Wind Guru?</b><br>
+      It's free and always will be. If it's saved you a wasted trip to the beach, you're welcome to buy me a coffee.
+    </div>
+    <a class="support-btn" href="https://paypal.me/ferreroforward" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+  </div>
+
 </main>
 
 <footer>Wind Guru · built for Strait of Georgia, Howe Sound &amp; Metro Vancouver <span id="versionNote"></span></footer>
@@ -192,8 +199,6 @@ const genLabel = document.getElementById("genLabel");
 const bestBetsEl = document.getElementById("bestBets");
 const spotCardsEl = document.getElementById("spotCards");
 const dayTabsEl = document.getElementById("dayTabs");
-const minKtEl = document.getElementById("minKt");
-const maxKtEl = document.getElementById("maxKt");
 const presetsEl = document.getElementById("presets");
 const refreshBtn = document.getElementById("refreshBtn");
 
@@ -653,12 +658,9 @@ async function loadLive() {
   }
 }
 
-minKtEl.addEventListener("change", () => { minKt = Number(minKtEl.value); presetsEl.querySelectorAll("button").forEach(b=>b.classList.remove("active")); renderAll(); });
-maxKtEl.addEventListener("change", () => { maxKt = Number(maxKtEl.value); presetsEl.querySelectorAll("button").forEach(b=>b.classList.remove("active")); renderAll(); });
 presetsEl.querySelectorAll("button").forEach(btn => {
   btn.addEventListener("click", () => {
     minKt = Number(btn.dataset.lo); maxKt = Number(btn.dataset.hi);
-    minKtEl.value = minKt; maxKtEl.value = maxKt;
     presetsEl.querySelectorAll("button").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     renderAll();
