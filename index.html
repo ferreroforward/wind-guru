@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wind Guru — Where to ride today</title>
+<meta name="description" content="Where to go windsurf, wingfoil, kite or parawing today — hour-by-hour wind odds for Howe Sound, Metro Vancouver and the Strait of Georgia.">
+<meta property="og:title" content="Wind Guru — Where to ride today">
+<meta property="og:description" content="Where to go windsurf, wingfoil, kite or parawing today — hour-by-hour wind odds for Howe Sound, Metro Vancouver and the Strait of Georgia.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%AC%EF%B8%8F%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root{
@@ -53,6 +58,7 @@
   .bet-info .name{font-weight:600;font-size:1.1rem;}
   .bet-info .detail{color:var(--muted);font-size:0.92rem;margin-top:3px;}
   .gusty-tag{display:inline-block;margin-left:6px;background:#fdeecb;color:#9a6400;font-weight:700;font-size:0.76rem;padding:2px 7px;border-radius:8px;white-space:nowrap;cursor:help;}
+  .offshore-tag{display:inline-block;margin-left:6px;background:var(--red-bg);color:var(--red);font-weight:700;font-size:0.76rem;padding:2px 7px;border-radius:8px;white-space:nowrap;cursor:help;}
 
   .spot-card{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;margin-bottom:16px;}
   .spot-card .head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
@@ -66,11 +72,12 @@
   .report-link:hover{text-decoration:underline;}
   .hour-strip{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px;}
   .hour-cell{flex:0 0 auto;width:72px;border-radius:8px;padding:7px 5px;text-align:center;font-size:0.8rem;cursor:pointer;position:relative;}
-  .hour-cell .t{color:rgba(27,36,56,0.6);font-size:0.76rem;}
+  .hour-cell .t{color:rgba(27,36,56,0.75);font-size:0.76rem;}
   .hour-cell .p{font-weight:700;font-size:1rem;margin:3px 0;}
-  .hour-cell .d{font-size:0.74rem;color:rgba(27,36,56,0.65);white-space:nowrap;}
-  .hour-cell .dir{font-size:0.7rem;color:rgba(27,36,56,0.5);}
+  .hour-cell .d{font-size:0.74rem;color:rgba(27,36,56,0.8);white-space:nowrap;}
+  .hour-cell .dir{font-size:0.7rem;color:rgba(27,36,56,0.72);}
   .hour-cell .gusty-dot{position:absolute;top:2px;right:3px;font-size:0.65rem;line-height:1;}
+  .hour-cell .offshore-dot{position:absolute;top:2px;left:3px;font-size:0.65rem;line-height:1;}
   /* Tooltip is positioned in JS as a fixed-position element appended to
      <body> (see #globalTip) rather than nested + absolutely positioned
      inside .hour-cell — .hour-strip needs overflow-x:auto for horizontal
@@ -137,10 +144,10 @@
     <div class="control-group">
       <label>Quick picks</label>
       <div class="presets" id="presets">
-        <button data-lo="8" data-hi="14">8–14 Light</button>
-        <button data-lo="12" data-hi="20" class="active">12–20 Sweet spot</button>
-        <button data-lo="18" data-hi="28">18–28 Powered</button>
-        <button data-lo="25" data-hi="40">25+ Full send</button>
+        <button data-lo="8" data-hi="14" aria-pressed="false">8–14 Light</button>
+        <button data-lo="12" data-hi="20" class="active" aria-pressed="true">12–20 Sweet spot</button>
+        <button data-lo="18" data-hi="28" aria-pressed="false">18–28 Powered</button>
+        <button data-lo="25" data-hi="99" aria-pressed="false">25+ Full send</button>
       </div>
     </div>
     <div class="control-group">
@@ -197,6 +204,14 @@ let forecast = null; // loaded forecast.json shape
 let selectedDayIndex = 0;
 let minKt = 12, maxKt = 20;
 
+// "25+ Full send" uses an effectively open-ended top (maxKt=99) so it can
+// still score well on the very biggest wind days instead of scoring near-
+// zero once actual speed climbs past a closed 25-40 band — but "99" isn't a
+// real number to show a rider, so display it as "kt+" instead.
+function rangeLabel() {
+  return maxKt >= 90 ? `${minKt}kt+` : `${minKt}–${maxKt}kt`;
+}
+
 const genLabel = document.getElementById("genLabel");
 const bestBetsEl = document.getElementById("bestBets");
 const spotCardsEl = document.getElementById("spotCards");
@@ -244,7 +259,9 @@ function renderDayTabs() {
   dates.forEach((d, i) => {
     const btn = document.createElement("button");
     btn.textContent = labelForDate(d, i);
-    if (i === selectedDayIndex) btn.classList.add("active");
+    const active = i === selectedDayIndex;
+    if (active) btn.classList.add("active");
+    btn.setAttribute("aria-pressed", active ? "true" : "false");
     btn.addEventListener("click", () => { selectedDayIndex = i; renderAll(); });
     dayTabsEl.appendChild(btn);
   });
@@ -278,15 +295,26 @@ function regimeLabel(regime) {
   }
 }
 
+// Picks the best-scoring hour for a spot, preferring hours where the wind
+// direction is actually rideable here (h.favorable_direction) — an offshore
+// or otherwise wrong-direction hour can still show a big number (speed and
+// direction are scored independently), so without this an offshore day
+// could headline as the day's top pick. Only falls back to an unfavorable
+// hour if the spot has no favorable-direction hour at all that day, so a
+// spot never disappears entirely just because every hour happens to be
+// cross/offshore.
 function bestWindowForSpot(spot) {
   const hours = hoursForSelectedDay(spot);
-  let best = null;
+  let best = null, bestAny = null;
   for (const h of hours) {
     const { probability, confidence } = probabilityInRange(h, minKt, maxKt);
     const score = probability * (0.5 + confidence / 200);
-    if (!best || score > best.score) best = { hour: h, probability, confidence, score };
+    if (!bestAny || score > bestAny.score) bestAny = { hour: h, probability, confidence, score };
+    if (h.favorable_direction !== false && (!best || score > best.score)) {
+      best = { hour: h, probability, confidence, score };
+    }
   }
-  return best;
+  return best || bestAny;
 }
 
 // Spots with no realistic shot at the selected range on the selected day
@@ -324,7 +352,7 @@ function renderHeroSummary() {
   if (!ranked.length || ranked[0].probability < MIN_LIST_PROBABILITY) {
     const closest = ranked[0];
     el.textContent = closest
-      ? `Nothing great for ${minKt}–${maxKt}kt ${dayLbl} — closest is ${closest.spot.name} around ${closest.hour.time.slice(11,16)} (${closest.probability}%).`
+      ? `Nothing great for ${rangeLabel()} ${dayLbl} — closest is ${closest.spot.name} around ${closest.hour.time.slice(11,16)} (${closest.probability}%).`
       : `No forecast data for ${dayLbl} yet.`;
     return;
   }
@@ -386,12 +414,13 @@ function renderBestBets() {
     const cls = tierClass(r.probability);
     const gustText = r.hour.gust_kt != null ? `–${Math.round(r.hour.gust_kt)}` : "";
     const gustyTag = r.hour.gusty ? `<span class="gusty-tag" title="Strong upper-level wind riding over solid surface wind — expect a choppier, more gust-prone day than the average speed alone suggests.">💨 GUSTY</span>` : "";
+    const offshoreTag = r.hour.favorable_direction === false ? `<span class="offshore-tag" title="Wind direction looks offshore or otherwise not rideable here, even though the speed may be there.">⚠️ CHECK DIRECTION</span>` : "";
     div.innerHTML = `
       <div class="bet-rank">${i + 1}</div>
       <div class="bet-badge ${cls}">${r.probability}%</div>
       <div class="bet-info">
         <div class="name">${r.spot.name} <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">· ${r.spot.region}</span></div>
-        <div class="detail">${r.hour.time.slice(11,16)} · ${r.hour.speed_kt != null ? Math.round(r.hour.speed_kt) : "–"}${gustText}kt ${r.hour.direction_label ?? ""} · ${regimeLabel(r.hour.regime)}${gustyTag}</div>
+        <div class="detail">${r.hour.time.slice(11,16)} · ${r.hour.speed_kt != null ? Math.round(r.hour.speed_kt) : "–"}${gustText}kt ${r.hour.direction_label ?? ""} · ${regimeLabel(r.hour.regime)}${gustyTag}${offshoreTag}</div>
       </div>
     `;
     bestBetsEl.appendChild(div);
@@ -434,7 +463,12 @@ function showTip(cellEl, h, spotId) {
   const speedText = h.speed_kt != null
     ? `${Math.round(h.speed_kt)}${h.gust_kt != null ? `–${Math.round(h.gust_kt)}` : ""}kt ${h.direction_label ?? ""}${h.gusty ? " · 💨 gusty" : ""}`
     : "No data for this hour";
-  globalTip.innerHTML = `<b>${regimeLabel(h.regime)}</b>${speedText}
+  // h.summary is a short, jargon-free explanation of the "why" behind the
+  // number (afternoon breeze vs. general wind vs. offshore caution, etc.) —
+  // previously this reasoning was computed every run but never actually
+  // shown anywhere in the UI.
+  const summaryText = h.summary ? `<div style="margin-top:4px;opacity:0.85;font-weight:400;">${h.summary}</div>` : "";
+  globalTip.innerHTML = `<b>${regimeLabel(h.regime)}</b>${speedText}${summaryText}
     <a href="${reportUrl(spotId, h)}" target="_blank" rel="noopener">Report actual conditions →</a>`;
   const rect = cellEl.getBoundingClientRect();
   globalTip.style.display = "block";
@@ -473,9 +507,16 @@ function renderSpotCards() {
     const hours = hoursForSelectedDay(spot);
     const lc = spot.live_check;
     const liveSpeedText = lc && lc.live_gust_kt != null ? `${lc.live_kt}–${lc.live_gust_kt}kt` : lc ? `${lc.live_kt}kt` : "";
+    // "Right now" is only honest if the observation actually is recent — a
+    // twice(-now-thrice)-daily snapshot can otherwise show a reading that's
+    // hours old under a "right now" label. Softens to "as of HH:MM" once the
+    // observation is stale enough that "right now" would be misleading.
+    const STALE_OBS_MIN = 90;
+    const isStaleObs = lc && lc.observed_age_min != null && lc.observed_age_min > STALE_OBS_MIN;
+    const rightNowPhrase = isStaleObs ? `as of ${lc.observed_local_time ?? "earlier"}` : "right now";
     const liveBadge = lc
       ? `<div class="live-check ${lc.mismatch ? "mismatch" : "match"}">
-           ${lc.station} right now: ${liveSpeedText} ${lc.live_direction ?? ""}
+           ${lc.station} ${rightNowPhrase}: ${liveSpeedText} ${lc.live_direction ?? ""}
            ${lc.mismatch ? ` — forecast said ${lc.forecasted_kt}kt` : ` · matches forecast`}
          </div>`
       : "";
@@ -506,8 +547,11 @@ function renderSpotCards() {
         const cellEl = document.createElement("div");
         cellEl.className = `hour-cell ${cls}`;
         cellEl.tabIndex = 0; // keyboard/touch accessible, not just mouse hover
+        cellEl.setAttribute("role", "button");
+        cellEl.setAttribute("aria-label", `${h.time.slice(11,16)}: ${probability}% chance, ${h.speed_kt != null ? Math.round(h.speed_kt) : "no"} knots ${h.direction_label ?? ""}${h.favorable_direction === false ? ", offshore direction" : ""}${h.gusty ? ", gusty" : ""}`);
         cellEl.innerHTML = `
           ${h.gusty ? `<div class="gusty-dot" title="Gusty — strong upper-level wind">💨</div>` : ""}
+          ${h.favorable_direction === false ? `<div class="offshore-dot" title="Offshore / unfavorable direction">⚠️</div>` : ""}
           <div class="t">${h.time.slice(11,16)}</div>
           <div class="p">${probability}%</div>
           <div class="d">${h.speed_kt != null ? Math.round(h.speed_kt) : "–"}${h.gust_kt != null ? `–${Math.round(h.gust_kt)}` : ""}kt</div>
@@ -541,7 +585,7 @@ function renderMap() {
     const marker = L.circleMarker([sp.lat, sp.lon], {
       radius: 9, color, fillColor: color, fillOpacity: 0.85, weight: 2,
     }).addTo(markerLayer);
-    marker.bindPopup(`<b>${sp.name}</b><br>${pct === null ? "no data" : pct + "% chance of " + minKt + "–" + maxKt + "kt"}`);
+    marker.bindPopup(`<b>${sp.name}</b><br>${pct === null ? "no data" : pct + "% chance of " + rangeLabel()}`);
   });
 }
 
@@ -585,8 +629,12 @@ function renderFreshnessBadge() {
   if (!forecast || !forecast.generated_at) return;
   const ageMs = Date.now() - new Date(forecast.generated_at).getTime();
   const isLive = !!forecast.generated_at_label && forecast.generated_at_label.includes("(live)");
-  const cls = isLive ? "fresh" : ageMs > VERY_STALE_AFTER_MS ? "very-stale" : ageMs > STALE_AFTER_MS ? "stale" : "fresh";
-  const statusText = isLive ? "Live — just fetched" : `Updated ${formatRelative(ageMs)}`;
+  // A client-side "Refresh live" fetch is more RECENT but less COMPLETE than
+  // the regular snapshot (see loadLive) — showing it in the same green
+  // "fresh" style as a full, calibrated snapshot overstated its accuracy.
+  // Yellow + "partial" is the honest version of the same "just fetched" idea.
+  const cls = isLive ? "stale" : ageMs > VERY_STALE_AFTER_MS ? "very-stale" : ageMs > STALE_AFTER_MS ? "stale" : "fresh";
+  const statusText = isLive ? "Live (partial) — just fetched" : `Updated ${formatRelative(ageMs)}`;
   genLabel.innerHTML = `<span class="update-badge ${cls}" title="${forecast.generated_at_label}"><span class="dot"></span>${statusText}</span>`;
   genLabel.title = forecast.generated_at_label;
 }
@@ -624,6 +672,7 @@ async function loadLive() {
     for (const spot of SPOTS) {
       const url = buildForecastUrl(spot.lat, spot.lon, 4);
       const res = await fetch(url);
+      if (!res.ok) throw new Error(`Open-Meteo fetch failed for ${spot.name}: HTTP ${res.status}`);
       const json = await res.json();
       const rows = reshapeOpenMeteo(json);
 
@@ -633,6 +682,7 @@ async function loadLive() {
         if (!refCache[key]) {
           const refUrl = buildForecastUrl(spot.referenceStation.lat, spot.referenceStation.lon, 4);
           const refRes = await fetch(refUrl);
+          if (!refRes.ok) throw new Error(`Open-Meteo fetch failed for ${spot.referenceStation.name}: HTTP ${refRes.status}`);
           const refJson = await refRes.json();
           refCache[key] = referenceStationSpeeds(refJson);
         }
@@ -648,6 +698,13 @@ async function loadLive() {
     }
     forecast = {
       generated_at: new Date().toISOString(),
+      // "(live)" is read by renderFreshnessBadge to show a yellow, honestly-
+      // labeled "partial" badge rather than the usual green "fresh" one —
+      // this client-side refresh skips the MSLP pressure-gradient check, the
+      // Pam Rocks nowcast, and any rider-feedback calibration (all of which
+      // need data only the twice(-now-thrice)-daily server run fetches), so
+      // the number it shows is actually less complete than the regular
+      // snapshot, even though it's more recent.
       generated_at_label: new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" }) + " (live)",
       models_used: ["GFS", "ECMWF", "ICON", "GEM/HRDPS"],
       spots: spotsOut,
@@ -665,8 +722,9 @@ async function loadLive() {
 presetsEl.querySelectorAll("button").forEach(btn => {
   btn.addEventListener("click", () => {
     minKt = Number(btn.dataset.lo); maxKt = Number(btn.dataset.hi);
-    presetsEl.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+    presetsEl.querySelectorAll("button").forEach(b => { b.classList.remove("active"); b.setAttribute("aria-pressed", "false"); });
     btn.classList.add("active");
+    btn.setAttribute("aria-pressed", "true");
     renderAll();
   });
 });

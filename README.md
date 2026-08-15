@@ -23,12 +23,21 @@ numbers.
   We scale it ~2.85x based on field notes from a 12-year local rider, Jack
   Rieder of [West Coast Wind Sports](https://www.westcoastwindsports.com/blogs/local-knowledge/forecasting-squamish-wind-with-jack-rieder):
   5-7kt modeled SW ≈ 15-20kt real, 7-9kt ≈ 20-25kt real, 9kt+ ≈ a strong day.
-  See `calibrateSquamishThermal()` in `assets/rules.js`.
+  Those field notes only covered 5-9kt modeled wind, so above a 32kt
+  calibrated output the multiplier tapers off smoothly (an asymptotic curve,
+  not a hard cutoff) instead of continuing to scale linearly — a 22kt coarse
+  reading now lands around 38kt instead of an unvalidated 63kt. See
+  `calibrateSquamishThermal()` in `assets/rules.js`.
 - **Environment Canada marine bulletin**: per the same source, EC's Howe
   Sound text forecast is the single best starting resource for today's
-  Squamish wind. `generate.mjs` fetches it (server-side only — no CORS for a
-  browser fetch) and the page shows it as a banner above the map, alongside
-  a link to the [live Squamish wind meter](https://squamishwindsports.com/conditions/wind/).
+  Squamish wind. `generate.mjs` fetches two zones — Howe Sound and the
+  Strait of Georgia south of Nanaimo — server-side only (no CORS for a
+  browser fetch); the page links both as "Official marine forecasts" near
+  the bottom, alongside a link to the [live Squamish wind
+  meter](https://squamishwindsports.com/conditions/wind/). The bulletin text
+  itself is fetched and stored but deliberately not shown inline — the app is
+  mobile-first and deliberately keeps technical/official-forecast language
+  out of the UI; the link is there for anyone who wants the official word.
 - **Pressure gradient (MSLP)**: Squamish wind isn't purely thermal — it's
   also a function of the real sea-level pressure gradient along the
   corridor. Inspired by [kiteloop.vercel.app](https://kiteloop.vercel.app/)'s
@@ -44,9 +53,35 @@ numbers.
   site's exact numbers. See `classifyHour()` in `assets/rules.js`.
 - **Solar loading**: `shortwave_radiation` from Open-Meteo replaces a flat
   cloud-cover-percent cutoff as the "is the sun actually driving the
-  thermal" gate — it already folds in cloud, sun angle and time of day, so
-  it's a more accurate continuous signal than a binary threshold. Falls back
-  to the cloud-cover cutoff when a model doesn't provide it.
+  thermal" gate. Judged as a *ratio* against that hour's own clear-sky
+  ceiling (`clearSkyRadiationWm2()` in `assets/rules.js`, a standard
+  solar-elevation approximation) rather than one flat W/m² number — a flat
+  cutoff quietly assumed it was always close to solar noon, so a genuinely
+  clear evening session (naturally lower radiation simply because the sun is
+  low, not because it's cloudy) used to get wrongly flagged as "not sunny."
+  Falls back to the cloud-cover cutoff when a model doesn't provide
+  radiation, and to "not sunny" once the sun is essentially down.
+- **Wind direction averaging**: each model's direction is weighted by that
+  same model's own wind speed (`circularMeanDeg()` in `assets/rules.js`)
+  rather than averaged evenly — an unweighted average could invent a
+  direction none of the models actually predicted (e.g. two near-calm
+  readings from the north and two strong readings from the south averaging
+  to due west, missing both real sectors).
+- **Probability band**: sized relative to the *knot range the rider picked*,
+  not the point estimate's own magnitude — a well-centered forecast now
+  reliably clears "good odds" (≥65%) regardless of which preset is active,
+  where the old center-relative sizing meant the flagship Squamish spot
+  could never post a green percentage no matter how clean the thermal
+  signal was. See `probabilityInRange()` in `assets/rules.js`.
+- **Plain-language summary + offshore warning**: every hour also gets a
+  short, jargon-free `summary` string (shown in the hour-cell tooltip) —
+  what kind of wind, plus a caution if the direction looks offshore/
+  unfavorable or if it's likely to be gusty — separate from the detailed
+  `reason` field (model spread, MSLP numbers, calibration factors), which
+  stays internal to respect the app's no-jargon mobile UI. An
+  offshore/unfavorable-direction hour also gets a visible ⚠️ badge and is
+  excluded from the headline "best option" pick unless a spot has no
+  favorable-direction hour at all that day.
 - **Upper-level (850hPa) wind**: fetched alongside the surface data. Strong
   SW flow aloft during a thermal hour can override/suppress the local sea
   breeze rather than reinforce it — flagged as a confidence-lowering caution.
@@ -77,10 +112,13 @@ numbers.
      and feedback-learned calibration.
   2. **Refresh live** button — fetches straight from Open-Meteo in the
      visitor's browser and recomputes on the spot (including the Squamish
-     speed calibration), but not the EC bulletin, MSLP gradient, or feedback
-     calibration, since those either need a server-side fetch (no CORS) or
-     read a file the browser doesn't otherwise load. Also the automatic
-     fallback if `data/forecast.json` doesn't exist yet.
+     speed calibration), but not the EC bulletin, MSLP gradient, Pam Rocks
+     nowcast, or feedback calibration, since those either need a server-side
+     fetch (no CORS) or read a file the browser doesn't otherwise load. Shown
+     with an honest yellow "Live (partial) — just fetched" badge rather than
+     the green "fresh" one the regular snapshot gets, since this path is more
+     *recent* but less *complete*. Also the automatic fallback if
+     `data/forecast.json` doesn't exist yet.
 
 ## Local setup
 
@@ -135,15 +173,24 @@ shared with anyone — GitHub's own Action commits the twice-daily snapshot.
    "Enforce HTTPS" once the certificate provisions (can take up to ~24h).
 
 DNS changes typically propagate within minutes to a few hours. From then on
-the Action refreshes the forecast automatically at ~5am and ~5pm Pacific
-with no further action from you.
+the Action refreshes the forecast automatically at ~5am, ~1pm and ~5pm
+Pacific with no further action from you.
 
 ### Adjusting the schedule
 
 `.github/workflows/update-forecast.yml` runs on a fixed UTC cron, so it
 drifts an hour in winter (PST vs PDT). If you want it exact year-round,
-either accept the ~1hr drift or switch to `13:00`/`01:00 UTC` for the winter
-months.
+either accept the ~1hr drift or switch to `13:00`/`20:00`/`01:00 UTC` for the
+winter months. The midday run was added specifically so the live-
+verification loop (see below) has at least one comparison a day from
+somewhere near peak thermal hours, not just the two calmest hours of the
+day.
+
+If a run fails to fetch most spots (Open-Meteo rate-limiting, an outage,
+etc.), `generate.mjs` aborts without publishing anything rather than
+overwriting `data/forecast.json` with a partial snapshot — the last good
+snapshot stays live, and the failed Action run itself is a signal (GitHub
+emails the repo owner by default on a failed scheduled workflow).
 
 ## App version
 
@@ -186,9 +233,14 @@ asking for the actual speed/direction and any notes on why it differed.
 Every run, `.github/workflows/update-forecast.yml` first runs
 `scripts/apply-feedback.mjs`, which:
 
-1. Pulls all `wind-report`-labeled issues via the GitHub API, and pools in
-   `data/live-verification-log.json`'s auto-logged mismatches too (see "Live
-   verification" below).
+1. Pulls **open** `wind-report`-labeled issues via the GitHub API (closing an
+   issue now retires it from calibration — previously `state=all` meant
+   closing a bogus report did nothing), rejecting any report whose
+   forecasted/actual values fall outside a loose sanity range (catches
+   typos like "actual: 300kt" automatically), and pools in
+   `data/live-verification-log.json`'s entries too (see "Live verification"
+   below — every qualifying comparison is logged there now, not just
+   mismatches).
 2. Groups them by spot and computes `actual ÷ forecasted` for each report —
    both into a spot-wide **general** bucket (rider reports and live-station
    entries alike), and, for live-station entries specifically (they carry a
@@ -196,9 +248,15 @@ Every run, `.github/workflows/update-forecast.yml` first runs
    **regime-specific** bucket (`thermal` / `outflow` / `synoptic` / ...) for
    that spot. Rider reports don't record which regime was in effect, so they
    only ever feed the general bucket.
-3. Averages the most recent 20 data points per bucket (needs at least 2
-   before it adjusts anything, so one troll report or typo can't skew it),
-   clamps the result to 0.75x–1.5x, and writes
+3. Averages the most recent 20 data points per bucket with a **weighted
+   geometric mean** (needs at least 2 points before it adjusts anything, so
+   one troll report or typo can't skew it) — geometric rather than
+   arithmetic so two equal-and-opposite misses cancel out to "no adjustment
+   needed" instead of biasing upward, and weighted so a rider's own
+   eyes-on-the-water report (3x) isn't drowned out by the now much more
+   frequent automated station checks (1x each, since the live-verification
+   loop logs every comparison, not just mismatches) within the 20-point
+   recency window. Clamps the result to 0.75x–1.5x, and writes
    `data/calibration-overrides.json` as `{ spot: { general: {...}, thermal:
    {...}, ... } }`.
 
@@ -252,9 +310,10 @@ genuinely *observed* wind, not a forecast. Three source types:
   - Boundary Bay / White Rock / Erwin Park → **White Rock, BC** (`CWWK`),
     the official METAR station, a few km closer to this cluster than the
     Sand Heads Lightstation used previously.
-  - Speeds arrive in m/s and get converted to knots (`×1.943844`);
-    observations older than 3 hours are treated as unavailable rather than
-    shown as "live."
+  - Speeds arrive in m/s and get converted to knots (`×1.943844`). The
+    observation time was previously passed through as raw UTC and displayed
+    as if it were Pacific local — off by 7-8 hours whenever it was actually
+    shown; now converted properly.
 - **`type: "ec"` (default)** (Jericho, Spanish Banks, Iona): the nearest
   Environment Canada station with a
   [Past 24 Hour Conditions](https://weather.gc.ca/past_conditions/index_e.html)
@@ -263,15 +322,28 @@ genuinely *observed* wind, not a forecast. Three source types:
 Each run, `generate.mjs`:
 
 1. Fetches that station's most recent observation (speed + direction, and
-   gust for the squamishwindsports/igetwind sources).
-2. Compares it against what the model forecasted for that same current hour.
+   gust for the squamishwindsports/igetwind sources). Applied uniformly
+   across all three source types: observations older than 3 hours are
+   discarded as stale rather than treated as "live" (previously only the
+   igetwind source checked this — a frozen EC or Squamish Windsports sensor
+   could otherwise read as live indefinitely).
+2. Compares it against what the model forecasted for that same current hour
+   — but only once the forecast itself is at least **8kt** (was 2kt).
+   Below that, every comparison was effectively a near-calm-hour reading
+   from one of the day's two (now three) snapshot times, which is mostly
+   noise (a 1kt miss on a 2kt forecast reads as "50% error") and was
+   quietly teaching the calibration loop the wrong lesson.
 3. Shows the result as a small badge on that spot's card (green if they're
-   within 20% of each other, red if not, with the reasoning on hover).
-4. If they disagree by **20% or more**, writes a reasoned mismatch entry —
-   using `explainMismatch()` in `assets/rules.js`, which draws only on
-   signals the rule engine already computed (regime, model agreement, MSLP
-   support) — to `data/live-verification-log.json`, capped at the 40 most
-   recent entries per spot.
+   within 20% of each other, red if not, with the reasoning on hover), with
+   staleness-aware wording — "right now" only when the observation is
+   recent, "as of HH:MM" once it's more than 90 minutes old.
+4. Logs **every** qualifying comparison (not just 20%+ mismatches) to
+   `data/live-verification-log.json`, capped at the 40 most recent entries
+   per spot — mismatches also get a reasoned explanation via
+   `explainMismatch()` in `assets/rules.js`. Previously only mismatches were
+   logged, which meant the calibration multiplier could never converge back
+   toward 1.0 even once a spot's forecast was accurate again: every data
+   point that ever made it into the log was, by definition, a bad one.
 
 Squamish is also referenced on
 [iKitesurf/Weatherflow](https://wx.ikitesurf.com/spot/1436) (linked in the
@@ -312,19 +384,27 @@ systematic bias but won't catch a mismatch that starts and ends between runs.
 ## Known limitations / good next steps
 
 - Tide state (important at Boundary Bay and Iona) isn't factored in.
-- The EC bulletin is shown as reference text, not yet parsed into the
-  probability model — a good next step would be extracting its knot ranges
-  for today/tonight and using them to directly anchor the Squamish estimate
-  instead of (or blended with) the GFS-multiplier calibration.
-- The base Squamish 2.85x multiplier is still a single rider's field-tuned
-  average, not a regression against station data — the regime-aware
-  feedback override (see "Rider feedback & self-calibration") corrects it
-  over time as live-verification/rider data accumulates, but needs more
-  samples per regime before it meaningfully moves the number. Treat the base
-  multiplier as a big improvement over raw model output, not gospel.
+- The EC bulletin is shown as a link, not yet parsed into the probability
+  model — a good next step would be extracting its knot ranges for
+  today/tonight and using them to directly anchor the Squamish estimate
+  instead of (or blended with) the GFS-multiplier calibration. Its
+  end-of-section HTML parsing boundary was hardened this session but hasn't
+  been independently re-verified against a live fetch of the actual EC page
+  (this ran in a sandbox that blocks outbound requests to weather.gc.ca) —
+  worth a manual check after deploying.
+- The base Squamish 2.85x multiplier (now capped/tapered above 32kt, see
+  above) is still a single rider's field-tuned average, not a regression
+  against station data — the regime-aware feedback override (see "Rider
+  feedback & self-calibration") corrects it over time as
+  live-verification/rider data accumulates, but needs more samples per
+  regime before it meaningfully moves the number. Treat the base multiplier
+  as a big improvement over raw model output, not gospel.
 - The Pam Rocks nowcast and 850hPa suppression/GUSTY thresholds (6kt inflow
-  component, 20kt suppression, 25kt gusty) are reasonable starting guesses,
-  same caveat as the MSLP thresholds below — not fitted to anything yet.
+  component, 20kt suppression, 25kt gusty), the solar sunny-ratio cutoff
+  (45% of clear-sky), and the probability-band sigma constants are all
+  reasonable starting guesses, same caveat as the MSLP thresholds below —
+  not fitted to anything yet, worth tightening once enough rider feedback
+  accumulates to see which days/hours it called right vs wrong.
 - The MSLP gradient thresholds (0.4hPa / 0.2hPa) are a reasonable starting
   guess, not fitted to anything — worth tightening once enough rider
   feedback accumulates to see which days it called right vs wrong.
@@ -332,6 +412,48 @@ systematic bias but won't catch a mismatch that starts and ends between runs.
   current limitation (no historical forecast archive to compare against).
   Live verification (see above) partially addresses this for the *current*
   hour only — it still can't check how a forecast made 3 days out held up.
-- Live-station comparisons use the nearest EC station, not a station at the
-  spot itself — see "Live verification" above for which spots share a
-  station and how far it might be.
+- Live-station comparisons use the nearest EC/igetwind station, not a
+  station at the spot itself — see "Live verification" above for which
+  spots share a station and how far it might be. Boundary Bay, White Rock
+  and Erwin Park all currently share the same White Rock METAR station
+  (up to ~23km away) — one bad or unusual reading there skews all three
+  spots' live checks at once. Splitting or weighting that shared station is
+  a good next step.
+- A trigger-fired hour (reference-station or Pam Rocks threshold) shows a
+  fixed floor value, not a real per-hour model estimate — `probabilityInRange`
+  now uses a wider base sigma for these hours so they don't read as more
+  certain than they are, but the displayed speed itself is still just the
+  trigger's threshold/floor number, not a genuine forecast magnitude.
+- Gust is estimated as speed × 1.3 for calibrated-thermal and trigger-fired
+  hours specifically (where there's no trustworthy per-hour model gust value
+  to lean on); every other regime uses the models' own gust forecast
+  directly.
+- `forecast.json` includes all 24 hours/day even though the UI only ever
+  displays 06:00-20:00 — trimming the unused hours (and any other
+  browser-unused fields) before writing would meaningfully shrink both the
+  payload and the git history growth rate. Not done this session to keep
+  the change surface focused on forecast-accuracy fixes.
+- No automated CI check that the committed `data/forecast.json` snapshot's
+  spot list matches `assets/spots.js` (would have caught the removed
+  `furry-creek` spot lingering in an old snapshot) or that speeds/hour
+  counts are in a sane range.
+- The Leaflet CDN `<script>`/`<link>` tags don't have Subresource Integrity
+  hashes — this session didn't have a way to fetch the exact CDN bytes to
+  compute a trustworthy hash (and a wrong hash silently breaks the map for
+  every visitor, worse than no hash at all), so this needs a manual step:
+  generate the hashes at [srihash.org](https://www.srihash.org/) for
+  `https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css` and
+  `.../leaflet.min.js`, then add `integrity="..." crossorigin="anonymous"`
+  to both tags in `index.html`.
+- Rider-report parsing in `apply-feedback.mjs` is coupled to the exact field
+  label text in `wind-report.yml` (`extractField(body, "Forecasted speed
+  (kt)")` etc.) — renaming a form label without updating the parser would
+  silently stop new reports from being read.
+- `confidence` is computed per-hour but not shown anywhere in the UI — a
+  70% that's backed by four agreeing models currently looks identical to a
+  70% that's internally flagged as low-confidence (no pressure support,
+  upper-level suppression, etc).
+- Outflow classification doesn't yet factor in season or pressure strength —
+  a light summer morning northerly gets the same "can be strong and gusty"
+  language as a genuine winter outflow event.
+- No "now" marker or dimming of past hours in the hour-by-hour strip.

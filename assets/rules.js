@@ -89,11 +89,24 @@ export function reshapeOpenMeteo(json) {
 // All three bins average out to roughly a 2.85x multiplier, which is what
 // we apply here. This does NOT apply to the fine-resolution GEM/HRDPS
 // model, which already attempts to resolve the thermal directly.
+//
+// The source field notes only covered 5-9kt modeled wind — applying the
+// multiplier with no ceiling to a stronger coarse-model reading produces
+// unsafe-looking numbers (e.g. 22kt coarse -> 62.7kt "forecast"), well past
+// anything the calibration was ever validated against. Above
+// CALIBRATED_OUTPUT_CAP_KT we taper the excess with a soft asymptotic curve
+// instead of cutting it off sharply — still lets a genuinely extreme day
+// read as "strong," just doesn't keep scaling linearly forever.
 const SQUAMISH_THERMAL_MULTIPLIER = 2.85;
+const CALIBRATED_OUTPUT_CAP_KT = 32;
+const CALIBRATED_TAPER_SOFTNESS = 8; // smaller = harder taper above the cap
 
 function calibrateSquamishThermal(coarseMeanKt) {
   if (coarseMeanKt == null || coarseMeanKt <= 0) return null;
-  return coarseMeanKt * SQUAMISH_THERMAL_MULTIPLIER;
+  const raw = coarseMeanKt * SQUAMISH_THERMAL_MULTIPLIER;
+  if (raw <= CALIBRATED_OUTPUT_CAP_KT) return raw;
+  const excess = raw - CALIBRATED_OUTPUT_CAP_KT;
+  return CALIBRATED_OUTPUT_CAP_KT + excess / (1 + excess / CALIBRATED_TAPER_SOFTNESS);
 }
 
 function mean(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null; }
@@ -124,10 +137,24 @@ export function rowsToPressureMap(rows) {
 export function rowsToSpeedMap(rows) {
   return rowsToSeriesMap(rows, "speeds");
 }
-function circularMeanDeg(degs) {
+// Circular mean of a set of compass directions, optionally weighted (same
+// length/order as `degs`). Unweighted, this can invent a direction none of
+// the models actually predicted: two light 2kt-from-N readings and two
+// strong 12-14kt-from-S readings average to due WNW, missing both the real
+// thermal (S) and outflow (N) sectors it was averaging between. Weighting by
+// each model's own wind speed lets the stronger, more consequential
+// readings dominate the average, which is both more physically sensible
+// (a 2kt breeze's direction is nearly noise) and a better match for what a
+// rider on the water would actually feel.
+function circularMeanDeg(degs, weights = null) {
   if (!degs.length) return null;
   let x = 0, y = 0;
-  for (const d of degs) { const r = d * Math.PI / 180; x += Math.cos(r); y += Math.sin(r); }
+  degs.forEach((d, i) => {
+    const w = weights ? (weights[i] ?? 1) : 1;
+    const r = d * Math.PI / 180;
+    x += Math.cos(r) * w; y += Math.sin(r) * w;
+  });
+  if (x === 0 && y === 0) return null; // weights canceled out exactly — no meaningful mean
   let ang = Math.atan2(y, x) * 180 / Math.PI;
   return ang < 0 ? ang + 360 : ang;
 }
@@ -141,6 +168,32 @@ function circularMeanDeg(degs) {
 export function pamRocksInflowComponent(speedKt, directionDeg, inflowAxisDeg = 200) {
   if (speedKt == null || directionDeg == null) return null;
   return speedKt * Math.cos((directionDeg - inflowAxisDeg) * Math.PI / 180);
+}
+
+// Clear-sky solar radiation estimate (W/m²) for a given latitude, day of
+// year and local hour — used to judge "how sunny is it *for this time of
+// day*" as a ratio, rather than against one flat number. A flat cutoff
+// (e.g. "sunny if radiation >= 250 W/m²") quietly assumes it's always close
+// to solar noon: a clear sky at 6pm in August only delivers ~180-240 W/m²
+// simply because the sun is low, not because it's cloudy — a flat cutoff
+// would wrongly call that "not sunny" and kill a prime evening thermal
+// session. Standard solar-elevation approximation; a heuristic like the
+// rest of this file, not a radiative-transfer model.
+function isLeapYear(y) { return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0; }
+const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+function dayOfYearFromParts(month, day, year) {
+  let doy = day;
+  for (let m = 0; m < month - 1; m++) doy += (m === 1 && isLeapYear(year)) ? 29 : DAYS_IN_MONTH[m];
+  return doy;
+}
+function clearSkyRadiationWm2(latDeg, doy, localHour) {
+  const declDeg = 23.45 * Math.sin((2 * Math.PI * (284 + doy)) / 365);
+  const declRad = declDeg * Math.PI / 180;
+  const latRad = latDeg * Math.PI / 180;
+  const hourAngleRad = (15 * (localHour - 12)) * Math.PI / 180;
+  const sinElev = Math.sin(latRad) * Math.sin(declRad) + Math.cos(latRad) * Math.cos(declRad) * Math.cos(hourAngleRad);
+  if (sinElev <= 0) return 0; // sun below the horizon
+  return Math.max(0, 990 * sinElev - 30);
 }
 
 // Classify one hour's regime for one spot, given the row of model values.
@@ -166,19 +219,28 @@ export function pamRocksInflowComponent(speedKt, directionDeg, inflowAxisDeg = 2
 // Returns { regime, reason, direction_deg, speed_kt, gust_kt, agreement }
 export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pressureGradients = null, overrideRecord = null, pamRocksNow = null) {
   const speedVals = Object.values(row.speeds).filter(v => v != null);
-  const dirVals = Object.values(row.dirs).filter(v => v != null);
   const cloudVals = Object.values(row.cloud).filter(v => v != null);
   const radiationVals = Object.values(row.radiation || {}).filter(v => v != null);
 
   const speed_kt = mean(speedVals);
   const gust_kt = mean(Object.values(row.gusts).filter(v => v != null));
-  const direction_deg = circularMeanDeg(dirVals);
+  // Weight each model's direction by that same model's speed (see
+  // circularMeanDeg) — a near-calm model shouldn't get an equal vote on
+  // "which way is the wind coming from" against a model showing real wind.
+  // Pair by model key so a model missing one of the two fields doesn't
+  // silently misalign against another model's value.
+  const dirPairs = Object.entries(row.dirs)
+    .filter(([, v]) => v != null)
+    .map(([k, v]) => ({ deg: v, weight: row.speeds[k] != null ? Math.max(row.speeds[k], 0.5) : 1 }));
+  const direction_deg = circularMeanDeg(dirPairs.map(p => p.deg), dirPairs.map(p => p.weight));
   const cloud_pct = mean(cloudVals);
   const radiation_wm2 = radiationVals.length ? mean(radiationVals) : null;
   const upperSpeedVals = Object.values(row.upperSpeeds || {}).filter(v => v != null);
-  const upperDirVals = Object.values(row.upperDirs || {}).filter(v => v != null);
+  const upperDirPairs = Object.entries(row.upperDirs || {})
+    .filter(([, v]) => v != null)
+    .map(([k, v]) => ({ deg: v, weight: (row.upperSpeeds || {})[k] != null ? Math.max(row.upperSpeeds[k], 0.5) : 1 }));
   const upper_speed_kt = upperSpeedVals.length ? mean(upperSpeedVals) : null;
-  const upper_direction_deg = upperDirVals.length ? circularMeanDeg(upperDirVals) : null;
+  const upper_direction_deg = upperDirPairs.length ? circularMeanDeg(upperDirPairs.map(p => p.deg), upperDirPairs.map(p => p.weight)) : null;
 
   // Model agreement: how tight is the spread relative to the mean? Used as
   // a confidence multiplier — synoptic/gradient events tend to show up on
@@ -193,12 +255,22 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   let regime = "calm", reason = "Light and variable — no clear driver.";
   // Shortwave radiation is a more direct read on "how hard is the sun
   // actually driving the thermal right now" than a flat cloud-cover cutoff —
-  // it already folds in cloud, sun angle and time of day. Prefer it when a
-  // model provides it; fall back to the cruder cloud threshold otherwise.
-  // ~250 W/m² is a rough "meaningfully sunny at Squamish midday" cutoff, a
-  // heuristic like the rest of this file, not a fitted value.
-  const SUNNY_RADIATION_WM2 = 250;
-  const sunny = radiation_wm2 != null ? radiation_wm2 >= SUNNY_RADIATION_WM2 : (cloud_pct != null ? cloud_pct < 55 : true);
+  // it already folds in cloud, sun angle and time of day. But it needs to be
+  // judged *relative to that hour's own clear-sky ceiling*, not a flat
+  // number: a clear evening naturally reads lower than a clear noon simply
+  // because the sun is lower, and a flat cutoff can't tell that apart from
+  // real cloud cover (see clearSkyRadiationWm2 above). Ratio-based when we
+  // have both a real radiation reading and a meaningful clear-sky ceiling;
+  // fall back to the cruder cloud threshold when either is unavailable, and
+  // treat "sun essentially down" (very low clear-sky ceiling) as not sunny.
+  const SUNNY_RADIATION_RATIO = 0.45;
+  const yearNum = Number(row.time.slice(0, 4));
+  const dayNum = Number(row.time.slice(8, 10));
+  const doy = dayOfYearFromParts(month, dayNum, yearNum);
+  const clearSkyWm2 = clearSkyRadiationWm2(spot.lat, doy, localHour);
+  const sunny = clearSkyWm2 <= 20
+    ? false
+    : (radiation_wm2 != null ? (radiation_wm2 / clearSkyWm2) >= SUNNY_RADIATION_RATIO : (cloud_pct != null ? cloud_pct < 55 : true));
   const inHourWindow = (w) => localHour >= w[0] && localHour <= w[1];
 
   const thermalCfg = spot.thermal;
@@ -452,6 +524,27 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   const UPPER_GUSTY_KT = 25;
   const gusty = upper_speed_kt != null && upper_speed_kt >= UPPER_GUSTY_KT && displaySpeed != null && displaySpeed >= 12;
 
+  // Plain-English one-liner for the UI. `reason` above is the detailed,
+  // meteorologist-facing trail (model spread, MSLP numbers, calibration
+  // factors, etc.) — useful for anyone digging in, but the app's mobile-first
+  // UI deliberately keeps technical jargon out of view. `summary` is a
+  // short, jargon-free version of the same underlying signal (what kind of
+  // wind, plus the two things a rider actually needs to know beyond speed:
+  // is the direction rideable, and should they expect it to be gusty) so the
+  // "why" behind a number is visible without reintroducing model names,
+  // pressure readings or calibration multipliers into the UI.
+  let summary;
+  switch (regime) {
+    case "thermal": summary = "Afternoon sea-breeze pattern — builds through the day, fades around sunset."; break;
+    case "outflow": summary = "Wind draining down the valley — can be strong and gusty, any time of day."; break;
+    case "synoptic": summary = "General regional wind, not tied to time of day."; break;
+    case "calm": summary = "Light and variable — not much going on."; break;
+    case "mixed": summary = "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual."; break;
+    default: summary = "Wind expected.";
+  }
+  if (favorable === false) summary += " Direction looks offshore or otherwise tricky here — use caution.";
+  if (gusty) summary += " Expect it to be gustier than the average speed alone suggests.";
+
   return {
     time: row.time,
     speed_kt: displaySpeed != null ? Math.round(displaySpeed * 10) / 10 : null,
@@ -464,6 +557,7 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     gusty,
     regime,
     reason,
+    summary,
     favorable_direction: favorable,
     model_agreement: Math.round(agreement * 100) / 100,
     fine_vs_coarse_gap: fine_vs_coarse_gap != null ? Math.round(fine_vs_coarse_gap * 10) / 10 : null,
@@ -511,23 +605,34 @@ export function probabilityInRange(hourResult, lo, hi) {
   const center = hourResult.speed_kt;
   if (center == null) return { probability: 0, confidence: 0 };
 
-  // Sigma (band width) needs two different treatments. For a *calibrated*
+  // Sigma (band width) needs a few different treatments. For a *calibrated*
   // hour (Squamish-family thermal), a big gap between the raw coarse models
   // and GEM/HRDPS is the expected signature of the phenomenon itself (see
   // calibrateSquamishThermal) — punishing that spread as "uncertainty" would
   // undercut exactly the events this calibration exists to call with
-  // confidence, and since the spread itself varies hour to hour it also
-  // re-introduces the jagged, cliff-y feel this function is meant to avoid.
-  // So calibrated hours get a fixed relative band (±~22% of the estimate)
-  // instead. Every other regime still widens with genuine raw-model
-  // disagreement, since there all models are on equal footing.
+  // confidence. Sizing the band relative to the *point estimate* (the old
+  // ±22%-of-center approach) had a hidden problem though: it made sigma grow
+  // with the estimate itself, so the flagship spot could never post "good
+  // odds" (>=65%) even on a picture-perfect thermal day, no matter which
+  // knot range a rider picked — the band was always wider than any
+  // reasonable preset. Sizing sigma relative to the *user's chosen range*
+  // instead fixes that directly: a well-centered estimate now reliably
+  // clears the green threshold regardless of range width, while an estimate
+  // near the edge of the range (genuinely more marginal) still correctly
+  // scores lower. Every other regime still widens with genuine raw-model
+  // disagreement, since there all models are on equal footing — except a
+  // trigger-fired hour (reference station / Pam Rocks threshold), which
+  // isn't really "multiple models agreeing," just a floor value substituted
+  // in — that gets a wider base sigma so it doesn't read as more certain
+  // than it actually is.
   let sigma;
   if (hourResult.calibrated) {
-    sigma = Math.max(2.5, center * 0.22);
+    sigma = Math.max(1.6, (hi - lo) / 4.5);
   } else {
     const rawVals = Object.values(hourResult.raw_models || {}).filter(v => v != null);
     const rawSpread = rawVals.length >= 2 ? Math.max(...rawVals) - Math.min(...rawVals) : 0;
-    const baseSigma = REGIME_BASE_SIGMA[hourResult.regime] ?? 3;
+    const triggered = hourResult.reference_triggered || hourResult.pam_rocks_triggered;
+    const baseSigma = triggered ? 4 : (REGIME_BASE_SIGMA[hourResult.regime] ?? 3);
     sigma = Math.max(baseSigma, rawSpread * 0.4, 1.5);
   }
 

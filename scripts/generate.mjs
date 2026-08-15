@@ -11,14 +11,46 @@ import path from "node:path";
 import { SPOTS, PRESSURE_REFERENCE, degToLabel } from "../assets/spots.js";
 import { buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch } from "../assets/rules.js";
 
+// Minutes between "now" and a Pacific-local "HH:MM" observation time, on the
+// (safe) assumption the observation is from earlier today — used to catch a
+// frozen sensor (EC / Squamish Windsports don't hand back an absolute
+// timestamp, just a wall-clock time) rather than trust any HH:MM as fresh.
+// Handles the midnight edge by treating a large negative gap (observation
+// reads *later* than now by more than 12h) as "just before midnight, now is
+// just after" rather than a bogus 23-hour-old reading.
+function minutesSincePacificHm(hhmm, now = new Date()) {
+  if (!hhmm) return null;
+  const [hh, mm] = hhmm.split(":").map(Number);
+  if (!isFinite(hh) || !isFinite(mm)) return null;
+  const fmt = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  const parts = Object.fromEntries(fmt.formatToParts(now).map(p => [p.type, p.value]));
+  const nowMinutes = Number(parts.hour) * 60 + Number(parts.minute);
+  const obsMinutes = hh * 60 + mm;
+  let diff = nowMinutes - obsMinutes;
+  if (diff < -720) diff += 1440; // observation just before midnight, "now" just after
+  if (diff < 0) diff = 0; // clock skew / same-minute rounding
+  return diff;
+}
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_PATH = path.join(__dirname, "..", "data", "forecast.json");
 const OVERRIDES_PATH = path.join(__dirname, "..", "data", "calibration-overrides.json");
 const LIVE_LOG_PATH = path.join(__dirname, "..", "data", "live-verification-log.json");
 const FORECAST_DAYS = 4; // "today" + 3 days ahead
-const LIVE_ERROR_THRESHOLD = 0.20; // 20% — per spec: flag + log any bigger gap than this
+const LIVE_ERROR_THRESHOLD = 0.20; // 20% — flag as a "mismatch" in the UI/console at this gap or bigger
 const LIVE_LOG_MAX_PER_SPOT = 40; // cap so the log file doesn't grow forever
-const LIVE_MIN_FORECAST_KT = 2; // skip the % comparison when forecast is near-zero (division blows up)
+// Skip the % comparison below this forecast speed. Originally 2kt, which let
+// near-calm hours dominate the log: the twice-daily runs land at ~5am/5pm, so
+// almost every comparison was a calm-hour reading where % error is mostly
+// noise (a 1kt miss on a 2kt forecast is "50% error"). Raised to 8kt so the
+// calibration loop only ever learns from hours with real wind to measure.
+const LIVE_MIN_FORECAST_KT = 8;
+// Ignore a live observation older than this when comparing against "right
+// now" — a frozen/stale sensor reading as unchanging for hours shouldn't be
+// treated as live corroboration or logged as a calibration data point. Same
+// cutoff igetwind observations already used; now applied uniformly to every
+// source (EC, Squamish Windsports, igetwind) via getLiveObservation.
+const MAX_LIVE_OBS_AGE_MIN = 180;
 
 // Same station Porteau Cove uses as its own live-check (see spots.js) —
 // reused here as a same-day nowcast input for any spot with pamRocksAware
@@ -144,7 +176,6 @@ async function fetchSquamishWindsportsObservation(station) {
 // unattended. `station.lat`/`station.lon` here are the STATION's own
 // coordinates (not the spot's), so the query reliably finds it regardless
 // of which spot references it, and the result is cached once per station.
-const MAX_IGETWIND_OBS_AGE_MIN = 180; // ignore anything older than 3h — stale reading, not "live"
 async function fetchIgetwindObservation(station) {
   const url = `https://igetwind.com/api/lw/stations/${station.lat}/${station.lon}/${station.radiusKm ?? 10}/0`;
   const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
@@ -157,8 +188,12 @@ async function fetchIgetwindObservation(station) {
     .filter((o) => o.type === "W" && o.val != null)
     .sort((a, b) => new Date(b.at) - new Date(a.at))[0];
   if (!windObs) return null;
-  const ageMin = (Date.now() - new Date(windObs.at.replace(" ", "T") + "Z").getTime()) / 60000; // "at" is "YYYY-MM-DD HH:MM:SS" UTC, unmarked
-  if (!isFinite(ageMin) || ageMin > MAX_IGETWIND_OBS_AGE_MIN) return null;
+  // "at" is "YYYY-MM-DD HH:MM:SS" UTC, unmarked — this is the one live
+  // source that hands back an absolute timestamp, so compute age precisely
+  // rather than via the HH:MM-guessing helper the other two sources use.
+  const atMs = new Date(windObs.at.replace(" ", "T") + "Z").getTime();
+  const ageMin = isFinite(atMs) ? (Date.now() - atMs) / 60000 : null;
+  if (ageMin == null || ageMin > MAX_LIVE_OBS_AGE_MIN) return null;
 
   const speedMs = parseFloat(windObs.val);
   if (!isFinite(speedMs)) return null;
@@ -168,7 +203,11 @@ async function fetchIgetwindObservation(station) {
   const dirDeg = dirObs ? parseFloat(dirObs.val) : NaN;
 
   return {
-    time: windObs.at,
+    // Previously passed through `windObs.at` (raw UTC) directly as the
+    // display time, which read as Pacific local and was off by 7-8 hours
+    // whenever it was actually shown — convert properly here instead.
+    time: new Date(atMs).toLocaleTimeString("en-US", { timeZone: "America/Los_Angeles", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }),
+    ageMin: Math.round(ageMin),
     speedKt: Math.round(speedMs * 1.943844 * 10) / 10,
     gustKt: isFinite(gustMs) ? Math.round(gustMs * 1.943844 * 10) / 10 : null,
     directionAbbr: null,
@@ -182,9 +221,21 @@ async function getLiveObservation(station) {
   const cacheKey = `${station.type || "ec"}:${station.code || station.windSrc || station.sid}`;
   if (liveObsCache[cacheKey]) return liveObsCache[cacheKey];
   try {
-    const parsed = station.type === "squamishwindsports" ? await fetchSquamishWindsportsObservation(station)
+    let parsed = station.type === "squamishwindsports" ? await fetchSquamishWindsportsObservation(station)
       : station.type === "igetwind" ? await fetchIgetwindObservation(station)
       : await fetchEcObservation(station);
+    // Staleness check, applied uniformly across all three source types. The
+    // igetwind fetcher already attaches a precise `ageMin` (it has a real
+    // timestamp); EC and Squamish Windsports only ever hand back an "HH:MM"
+    // wall-clock time with no date, so estimate age the same way the UI
+    // will eventually need to reason about it — a frozen sensor stuck
+    // reporting the same reading run after run would otherwise look "live"
+    // forever.
+    if (parsed && parsed.ageMin == null) parsed.ageMin = minutesSincePacificHm(parsed.time);
+    if (parsed && parsed.ageMin != null && parsed.ageMin > MAX_LIVE_OBS_AGE_MIN) {
+      console.log(`[live:${station.name}] observation is ${Math.round(parsed.ageMin)}min old — treating as stale, not live.`);
+      parsed = null;
+    }
     liveObsCache[cacheKey] = parsed;
     return parsed;
   } catch (err) {
@@ -223,10 +274,26 @@ async function fetchMarineBulletin(zone) {
     // Anchor on the ">Marine Forecast<" heading tag specifically (not the
     // "Marine Forecasts" breadcrumb link earlier in the page, which
     // `indexOf("Marine Forecast")` alone would match first and pull in a
-    // pile of nav/alert-banner text ahead of the actual bulletin), and stop
-    // at the next "Winds" heading.
+    // pile of nav/alert-banner text ahead of the actual bulletin). The end
+    // anchor previously looked for a literal ">Winds<" tag, which doesn't
+    // actually appear on EC's page — harmless while this text is never shown
+    // (the UI only ever displays the label + link, see index.html), but
+    // would show raw HTML-adjacent junk the moment it were. Look for the
+    // next heading tag or the "Extended Forecast" marker instead, whichever
+    // comes first — more robust to the page's actual structure than
+    // guessing one exact string. (Not independently re-verified against a
+    // live fetch this session — the sandbox this ran in blocks outbound
+    // requests to weather.gc.ca — so treat this as a best-effort robustness
+    // fix, not a confirmed-correct parse.)
     const headingIdx = html.indexOf(">Marine Forecast<");
-    const endIdx = headingIdx >= 0 ? html.indexOf(">Winds<", headingIdx) : -1;
+    let endIdx = -1;
+    if (headingIdx >= 0) {
+      const searchFrom = headingIdx + 20; // skip past the heading tag itself
+      const nextHeadingRel = html.slice(searchFrom).search(/<h[23][ >]/i);
+      const extendedIdx = html.indexOf("Extended Forecast", searchFrom);
+      const candidates = [nextHeadingRel >= 0 ? searchFrom + nextHeadingRel : -1, extendedIdx].filter((i) => i >= 0);
+      endIdx = candidates.length ? Math.min(...candidates) : -1;
+    }
     const section = headingIdx >= 0
       ? html.slice(headingIdx, endIdx > headingIdx ? endIdx : headingIdx + 3000)
       : html.split("Extended Forecast")[0];
@@ -374,10 +441,14 @@ async function main() {
     });
 
     // Live verification: compare the forecast for THIS hour against what
-    // the nearest EC station is actually observing right now. If they
-    // disagree by 20%+, log a reasoned mismatch — apply-feedback.mjs picks
-    // this log up on the next run and pools it with rider reports when
-    // computing that spot's calibration multiplier. See README.
+    // the nearest station is actually observing right now, and log EVERY
+    // qualifying comparison (not just 20%+ mismatches) to
+    // data/live-verification-log.json — apply-feedback.mjs pools that log
+    // with rider reports on the next run to compute each spot's calibration
+    // multiplier (see README). Previously only mismatches were logged, which
+    // meant the multiplier could never converge back toward 1.0 even once a
+    // spot's forecast was accurate — every data point that ever got recorded
+    // was, by definition, a bad one.
     let liveCheck = null;
     if (spot.liveStation) {
       try {
@@ -390,6 +461,7 @@ async function main() {
             checked_hour: nowHourStr,
             station: spot.liveStation.name,
             observed_local_time: obs.time,
+            observed_age_min: obs.ageMin != null ? Math.round(obs.ageMin) : null,
             forecasted_kt: forecastHour.speed_kt,
             live_kt: obs.speedKt,
             live_gust_kt: obs.gustKt ?? null,
@@ -401,19 +473,22 @@ async function main() {
           if (mismatch) {
             liveCheck.reasoning = explainMismatch(forecastHour, errorPct);
             console.log(`  [live:${spot.id}] MISMATCH — forecast ${forecastHour.speed_kt}kt vs live ${obs.speedKt}kt (${liveCheck.error_pct > 0 ? "+" : ""}${liveCheck.error_pct}%)`);
-            liveVerifications.push({
-              spot: spot.id,
-              time: nowHourStr,
-              forecasted: forecastHour.speed_kt,
-              actual: obs.speedKt,
-              ratio: obs.speedKt / forecastHour.speed_kt,
-              source: "live-station",
-              station: spot.liveStation.name,
-              regime: forecastHour.regime,
-              reasoning: liveCheck.reasoning,
-              checked_at: startedAt.toISOString(),
-            });
+          } else {
+            console.log(`  [live:${spot.id}] match — forecast ${forecastHour.speed_kt}kt vs live ${obs.speedKt}kt (${liveCheck.error_pct > 0 ? "+" : ""}${liveCheck.error_pct}%)`);
           }
+          liveVerifications.push({
+            spot: spot.id,
+            time: nowHourStr,
+            forecasted: forecastHour.speed_kt,
+            actual: obs.speedKt,
+            ratio: obs.speedKt / forecastHour.speed_kt,
+            source: "live-station",
+            station: spot.liveStation.name,
+            regime: forecastHour.regime,
+            mismatch,
+            reasoning: mismatch ? liveCheck.reasoning : null,
+            checked_at: startedAt.toISOString(),
+          });
         }
       } catch (err) {
         console.log(`[${spot.id}] live verification failed: ${err.message}`);
@@ -436,12 +511,28 @@ async function main() {
     await new Promise((r) => setTimeout(r, 300));
   }
 
-  // Merge this run's new mismatches into the persisted live-verification
+  // If Open-Meteo rate-limits or errors out mid-run, individual spot
+  // fetches fail and get skipped above (spotsOut just ends up shorter than
+  // SPOTS) — previously that silently proceeded to overwrite
+  // data/forecast.json with a partial snapshot anyway. Abort instead of
+  // publishing anything if too many spots came back empty; a stale-but-
+  // complete forecast already on GitHub Pages is a better failure mode than
+  // a confusing partial one, and the Action step failing is itself a signal
+  // (GitHub emails the repo owner on a failed scheduled workflow run).
+  const MIN_SUCCESS_RATE = 0.7;
+  const successRate = spotsOut.length / SPOTS.length;
+  if (successRate < MIN_SUCCESS_RATE) {
+    console.error(`\nOnly ${spotsOut.length}/${SPOTS.length} spots fetched successfully (${Math.round(successRate * 100)}%) — aborting without writing data/forecast.json to avoid publishing a partial snapshot.`);
+    process.exit(1);
+  }
+
+  // Merge this run's new comparisons into the persisted live-verification
   // log, capped per spot so it doesn't grow forever. apply-feedback.mjs
   // reads this file on the NEXT run (it runs before generate.mjs in the
   // Action) and pools it with rider reports — see README "Live verification".
   if (liveVerifications.length) {
-    console.log(`\n${liveVerifications.length} live mismatch(es) this run.`);
+    const mismatchCount = liveVerifications.filter((e) => e.mismatch).length;
+    console.log(`\n${liveVerifications.length} live comparison(s) this run (${mismatchCount} mismatch(es)).`);
   }
   const existingLog = await loadLiveLog();
   const bySpotLog = {};

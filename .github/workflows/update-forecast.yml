@@ -2,10 +2,15 @@ name: Update wind forecast
 
 on:
   schedule:
-    # 5:00am and 5:00pm Pacific Daylight Time (UTC-7).
-    # In winter (PST, UTC-8) these land at 4am/4pm local — an hour early.
-    # Adjust to "0 13 * * *" / "0 1 * * *" around November if you want it exact.
+    # 5:00am, 1:00pm and 5:00pm Pacific Daylight Time (UTC-7). The midday run
+    # was added because the original 5am/5pm-only schedule meant every
+    # live-verification data point came from the two calmest hours of the
+    # day — a poor sample for calibrating what a spot does at 1-2pm mid-
+    # thermal. In winter (PST, UTC-8) these land an hour early (4am/12pm/4pm
+    # local). Adjust to "0 13 * * *" / "0 20 * * *" / "0 1 * * *" around
+    # November if you want it exact.
     - cron: "0 12 * * *"
+    - cron: "0 20 * * *"
     - cron: "0 0 * * *"
   workflow_dispatch: {}   # lets you trigger a run manually from the Actions tab
 

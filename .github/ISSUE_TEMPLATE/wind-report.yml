@@ -9,6 +9,9 @@ body:
         Thanks for reporting! This feeds directly into the calibration —
         `scripts/apply-feedback.mjs` reads these reports and nudges that
         spot's forecast up or down to better match reality over time.
+
+        Note: this report will be a public GitHub issue, visible to anyone,
+        and tied to your GitHub username.
   - type: dropdown
     id: spot
     attributes:

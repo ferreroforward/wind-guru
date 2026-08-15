@@ -26,6 +26,21 @@ const REPO = "wind-guru";
 const MIN_SAMPLES = 2; // don't adjust a spot on a single report
 const MAX_REPORTS_PER_SPOT = 20; // weight toward recent reports
 const MULTIPLIER_CLAMP = [0.75, 1.5]; // never let one bad/joke report send this wild
+// Automated live-station checks now run 2-3x/day/spot (see generate.mjs H4)
+// and log EVERY comparison, not just mismatches — within the 20-sample
+// recency window that would drown out human rider reports within about a
+// week, even though a rider's own eyes-on-the-water report is a stronger
+// signal than an automated station comparison (which can itself be skewed
+// by the station's own exposure/siting). Weight rider reports higher so
+// they don't get silently outvoted by volume.
+const RIDER_REPORT_WEIGHT = 3;
+const LIVE_STATION_WEIGHT = 1;
+// Loose sanity bounds on rider-submitted numbers — this app's forecast
+// range tops out well under these, so anything past them is almost
+// certainly a typo (e.g. "actual: 300") rather than a real BC coastal
+// wind reading.
+const MAX_PLAUSIBLE_KT = 80;
+const RATIO_SANITY_RANGE = [0.05, 20];
 
 function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -47,7 +62,14 @@ async function fetchReports() {
   const headers = { "User-Agent": "wind-guru-agent/1.0", "Accept": "application/vnd.github+json" };
   if (process.env.GITHUB_TOKEN) headers["Authorization"] = `Bearer ${process.env.GITHUB_TOKEN}`;
 
-  const url = `https://api.github.com/repos/${OWNER}/${REPO}/issues?labels=wind-report&state=all&per_page=100`;
+  // state=open (was state=all): closing a bogus/joke report used to be the
+  // only way to flag it as not-usable, but the calibration pipeline read
+  // every issue regardless of state — so closing one did nothing to remove
+  // it from the pool. Now closing an issue is how you retire it from
+  // calibration; combined with the sanity bounds below (which catch garbage
+  // values automatically) that gives two independent ways to keep bad data
+  // out.
+  const url = `https://api.github.com/repos/${OWNER}/${REPO}/issues?labels=wind-report&state=open&per_page=100`;
   const res = await fetch(url, { headers });
   if (!res.ok) {
     console.error(`GitHub API fetch failed: ${res.status} ${res.statusText}`);
@@ -67,13 +89,35 @@ async function loadLiveVerifications() {
   }
 }
 
+function sourceWeight(source) { return source === "rider-report" ? RIDER_REPORT_WEIGHT : LIVE_STATION_WEIGHT; }
+
+// Weighted geometric mean of a set of forecasted/actual ratios. Geometric
+// (not arithmetic) mean, because ratios are multiplicative — two equal-and-
+// opposite misses (e.g. one hour at 0.5x, one at 2x) should cancel out to a
+// "no adjustment needed" 1.0x, but an arithmetic mean of the same two points
+// gives 1.25x, a real upward bias baked in from nothing but symmetric noise.
+// Weighted by source (see RIDER_REPORT_WEIGHT/LIVE_STATION_WEIGHT) so the
+// now-much-more-numerous automated live-station points don't drown out
+// human rider reports. Each ratio is clamped into a sane range before
+// logging so one wild data point can't blow up the log-sum.
+function weightedGeometricMean(points) {
+  let weightedLogSum = 0, totalWeight = 0;
+  for (const p of points) {
+    const clamped = Math.min(RATIO_SANITY_RANGE[1], Math.max(RATIO_SANITY_RANGE[0], p.ratio));
+    const w = sourceWeight(p.source);
+    weightedLogSum += w * Math.log(clamped);
+    totalWeight += w;
+  }
+  return totalWeight ? Math.exp(weightedLogSum / totalWeight) : 1;
+}
+
 // Turns a pool of { ratio, source } data points into one override bucket
 // (sample_size/rider_reports/live_checks/avg_ratio/multiplier/note), or null
 // if there aren't enough points yet. Shared by the "general" (all-data,
 // backward-compatible) bucket and the per-regime buckets below.
 function summarize(recent, label) {
   if (recent.length < MIN_SAMPLES) return null;
-  const avgRatio = recent.reduce((sum, r) => sum + r.ratio, 0) / recent.length;
+  const avgRatio = weightedGeometricMean(recent);
   const multiplier = Math.max(MULTIPLIER_CLAMP[0], Math.min(MULTIPLIER_CLAMP[1], avgRatio));
   const riderCount = recent.filter((r) => r.source === "rider-report").length;
   const liveCount = recent.filter((r) => r.source === "live-station").length;
@@ -83,7 +127,7 @@ function summarize(recent, label) {
     live_checks: liveCount,
     avg_ratio: Math.round(avgRatio * 100) / 100,
     multiplier: Math.round(multiplier * 100) / 100,
-    note: `Based on ${recent.length} ${label} data point${recent.length === 1 ? "" : "s"} (${riderCount} rider report${riderCount === 1 ? "" : "s"}, ${liveCount} live-station check${liveCount === 1 ? "" : "s"}): actual wind averaged ${Math.round(avgRatio * 100)}% of what was forecasted.`,
+    note: `Based on ${recent.length} ${label} data point${recent.length === 1 ? "" : "s"} (${riderCount} rider report${riderCount === 1 ? "" : "s"}, ${liveCount} live-station check${liveCount === 1 ? "" : "s"}): actual wind averaged ${Math.round(avgRatio * 100)}% of what was forecasted (rider reports weighted ${RIDER_REPORT_WEIGHT}x a station check).`,
   };
 }
 
@@ -113,7 +157,16 @@ async function main() {
       console.log(`  Skipping issue #${issue.number} — couldn't parse spot/forecasted/actual.`);
       continue;
     }
-    (bySpotGeneral[spot] ||= []).push({ date: issue.created_at, forecasted, actual, ratio: actual / forecasted, source: "rider-report" });
+    // Sanity bounds: catch typos (e.g. "actual: 300") before they reach the
+    // calibration pool rather than relying solely on the multiplier clamp
+    // downstream, which would still let one bad point drag the ratio pool.
+    const ratio = actual / forecasted;
+    if (forecasted > MAX_PLAUSIBLE_KT || actual < 0 || actual > MAX_PLAUSIBLE_KT ||
+        ratio < RATIO_SANITY_RANGE[0] || ratio > RATIO_SANITY_RANGE[1]) {
+      console.log(`  Skipping issue #${issue.number} — forecasted=${forecasted}kt actual=${actual}kt is outside plausible bounds.`);
+      continue;
+    }
+    (bySpotGeneral[spot] ||= []).push({ date: issue.created_at, forecasted, actual, ratio, source: "rider-report" });
   }
   for (const e of liveEntries) {
     if (!e.spot || !isFinite(e.forecasted) || !isFinite(e.actual) || e.forecasted <= 0) continue;
