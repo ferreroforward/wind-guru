@@ -34,6 +34,7 @@ export const SPOTS = [
     favorable_deg: [[150, 260]], // S–SW thermal inflow, or N outflow (handled separately as outflow regime)
     outflow_favorable_deg: [[300, 40]],
     pressureGradientAware: true, // factor in MSLP gradient — see rules.js
+    pamRocksAware: true, // use the live Pam Rocks nowcast on the current hour — see rules.js
     // Live wind meter at the Spit itself, published by Squamish Windsports
     // Society (squamishwindsports.com/conditions/wind) — genuinely observed,
     // not forecast, data, and per local rider feedback a far better read on
@@ -88,6 +89,7 @@ export const SPOTS = [
     level: "intermediate",
     favorable_deg: [[300, 40], [150, 260]],
     pressureGradientAware: true,
+    pamRocksAware: true, // same Howe Sound thermal system as Squamish Spit — see rules.js
     // Same approximation caveat as Porteau Cove above.
     liveStation: { type: "squamishwindsports", windSrc: "spit", name: "Squamish Spit wind meter" },
     thermal: {

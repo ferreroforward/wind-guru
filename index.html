@@ -52,6 +52,7 @@
   .bet-info{flex:1;min-width:0;}
   .bet-info .name{font-weight:600;font-size:1.1rem;}
   .bet-info .detail{color:var(--muted);font-size:0.92rem;margin-top:3px;}
+  .gusty-tag{display:inline-block;margin-left:6px;background:#fdeecb;color:#9a6400;font-weight:700;font-size:0.76rem;padding:2px 7px;border-radius:8px;white-space:nowrap;cursor:help;}
 
   .spot-card{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;margin-bottom:16px;}
   .spot-card .head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
@@ -69,6 +70,7 @@
   .hour-cell .p{font-weight:700;font-size:1rem;margin:3px 0;}
   .hour-cell .d{font-size:0.74rem;color:rgba(27,36,56,0.65);white-space:nowrap;}
   .hour-cell .dir{font-size:0.7rem;color:rgba(27,36,56,0.5);}
+  .hour-cell .gusty-dot{position:absolute;top:2px;right:3px;font-size:0.65rem;line-height:1;}
   /* Tooltip is positioned in JS as a fixed-position element appended to
      <body> (see #globalTip) rather than nested + absolutely positioned
      inside .hour-cell — .hour-strip needs overflow-x:auto for horizontal
@@ -383,12 +385,13 @@ function renderBestBets() {
     div.className = "bet-card";
     const cls = tierClass(r.probability);
     const gustText = r.hour.gust_kt != null ? `–${Math.round(r.hour.gust_kt)}` : "";
+    const gustyTag = r.hour.gusty ? `<span class="gusty-tag" title="Strong upper-level wind riding over solid surface wind — expect a choppier, more gust-prone day than the average speed alone suggests.">💨 GUSTY</span>` : "";
     div.innerHTML = `
       <div class="bet-rank">${i + 1}</div>
       <div class="bet-badge ${cls}">${r.probability}%</div>
       <div class="bet-info">
         <div class="name">${r.spot.name} <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">· ${r.spot.region}</span></div>
-        <div class="detail">${r.hour.time.slice(11,16)} · ${r.hour.speed_kt != null ? Math.round(r.hour.speed_kt) : "–"}${gustText}kt ${r.hour.direction_label ?? ""} · ${regimeLabel(r.hour.regime)}</div>
+        <div class="detail">${r.hour.time.slice(11,16)} · ${r.hour.speed_kt != null ? Math.round(r.hour.speed_kt) : "–"}${gustText}kt ${r.hour.direction_label ?? ""} · ${regimeLabel(r.hour.regime)}${gustyTag}</div>
       </div>
     `;
     bestBetsEl.appendChild(div);
@@ -429,7 +432,7 @@ function scheduleHide() { cancelHide(); hideTimer = setTimeout(() => { if (!pinn
 
 function showTip(cellEl, h, spotId) {
   const speedText = h.speed_kt != null
-    ? `${Math.round(h.speed_kt)}${h.gust_kt != null ? `–${Math.round(h.gust_kt)}` : ""}kt ${h.direction_label ?? ""}`
+    ? `${Math.round(h.speed_kt)}${h.gust_kt != null ? `–${Math.round(h.gust_kt)}` : ""}kt ${h.direction_label ?? ""}${h.gusty ? " · 💨 gusty" : ""}`
     : "No data for this hour";
   globalTip.innerHTML = `<b>${regimeLabel(h.regime)}</b>${speedText}
     <a href="${reportUrl(spotId, h)}" target="_blank" rel="noopener">Report actual conditions →</a>`;
@@ -504,6 +507,7 @@ function renderSpotCards() {
         cellEl.className = `hour-cell ${cls}`;
         cellEl.tabIndex = 0; // keyboard/touch accessible, not just mouse hover
         cellEl.innerHTML = `
+          ${h.gusty ? `<div class="gusty-dot" title="Gusty — strong upper-level wind">💨</div>` : ""}
           <div class="t">${h.time.slice(11,16)}</div>
           <div class="p">${probability}%</div>
           <div class="d">${h.speed_kt != null ? Math.round(h.speed_kt) : "–"}${h.gust_kt != null ? `–${Math.round(h.gust_kt)}` : ""}kt</div>

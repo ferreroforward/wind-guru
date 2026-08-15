@@ -22,18 +22,31 @@ export const MODELS = [
 
 export function buildForecastUrl(lat, lon, days = 4) {
   const models = MODELS.map(m => m.param).join(",");
-  const hourly = ["wind_speed_10m", "wind_gusts_10m", "wind_direction_10m", "cloud_cover", "pressure_msl", "precipitation", "temperature_2m"].join(",");
+  // wind_speed_850hPa / wind_direction_850hPa: upper-level (~1500m) wind —
+  // used to catch synoptic SW flow strong enough to suppress the surface
+  // thermal, and to flag gusty conditions (see classifyHour).
+  // shortwave_radiation: actual solar loading (W/m²) reaching the ground —
+  // a continuous, more accurate stand-in for "is the sun really cooking
+  // the interior" than a flat cloud-cover percentage cutoff.
+  const hourly = [
+    "wind_speed_10m", "wind_gusts_10m", "wind_direction_10m", "cloud_cover",
+    "pressure_msl", "precipitation", "temperature_2m",
+    "wind_speed_850hPa", "wind_direction_850hPa", "shortwave_radiation",
+  ].join(",");
   return `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
     `&hourly=${hourly}&models=${models}&wind_speed_unit=kn&timezone=America%2FLos_Angeles&forecast_days=${days}`;
 }
 
 // Reshape Open-Meteo's multi-model response (one array per variable per
 // model, keyed like "wind_speed_10m_gem_seamless") into per-hour records:
-// [{ time, speeds:{gfs,ecmwf,icon,gem}, gusts:{...}, dirs:{...}, cloud:{...}, pressure:{...}, precip:{...}, temp:{...} }, ...]
+// [{ time, speeds:{gfs,ecmwf,icon,gem}, gusts:{...}, dirs:{...}, cloud:{...}, pressure:{...}, precip:{...}, temp:{...}, upperSpeeds:{...}, upperDirs:{...}, radiation:{...} }, ...]
 export function reshapeOpenMeteo(json) {
   const hourly = json.hourly || {};
   const time = hourly.time || [];
-  const rows = time.map((t) => ({ time: t, speeds: {}, gusts: {}, dirs: {}, cloud: {}, pressure: {}, precip: {}, temp: {} }));
+  const rows = time.map((t) => ({
+    time: t, speeds: {}, gusts: {}, dirs: {}, cloud: {}, pressure: {}, precip: {}, temp: {},
+    upperSpeeds: {}, upperDirs: {}, radiation: {},
+  }));
 
   for (const m of MODELS) {
     const sKey = `wind_speed_10m_${m.param}`;
@@ -43,7 +56,11 @@ export function reshapeOpenMeteo(json) {
     const pKey = `pressure_msl_${m.param}`;
     const rKey = `precipitation_${m.param}`;
     const tKey = `temperature_2m_${m.param}`;
+    const usKey = `wind_speed_850hPa_${m.param}`;
+    const udKey = `wind_direction_850hPa_${m.param}`;
+    const swKey = `shortwave_radiation_${m.param}`;
     const s = hourly[sKey], g = hourly[gKey], d = hourly[dKey], c = hourly[cKey], p = hourly[pKey], r = hourly[rKey], t = hourly[tKey];
+    const us = hourly[usKey], ud = hourly[udKey], sw = hourly[swKey];
     rows.forEach((row, i) => {
       if (s && s[i] != null) row.speeds[m.key] = s[i];
       if (g && g[i] != null) row.gusts[m.key] = g[i];
@@ -52,6 +69,9 @@ export function reshapeOpenMeteo(json) {
       if (p && p[i] != null) row.pressure[m.key] = p[i];
       if (r && r[i] != null) row.precip[m.key] = r[i];
       if (t && t[i] != null) row.temp[m.key] = t[i];
+      if (us && us[i] != null) row.upperSpeeds[m.key] = us[i];
+      if (ud && ud[i] != null) row.upperDirs[m.key] = ud[i];
+      if (sw && sw[i] != null) row.radiation[m.key] = sw[i];
     });
   }
   return rows;
@@ -112,6 +132,17 @@ function circularMeanDeg(degs) {
   return ang < 0 ? ang + 360 : ang;
 }
 
+// Component of a wind observation aligned with Howe Sound's SW up-sound
+// inflow axis (~200°) — i.e. how much of this wind is actually blowing the
+// "right way" to reach the Spit, not just how strong it is in any direction.
+// Positive = aligned with inflow, negative = opposing it. Used for the live
+// Pam Rocks nowcast (see classifyHour) — same idea as projecting one vector
+// onto another.
+export function pamRocksInflowComponent(speedKt, directionDeg, inflowAxisDeg = 200) {
+  if (speedKt == null || directionDeg == null) return null;
+  return speedKt * Math.cos((directionDeg - inflowAxisDeg) * Math.PI / 180);
+}
+
 // Classify one hour's regime for one spot, given the row of model values.
 // `refSpeedKt`, if provided, is the best-estimate wind speed at this same
 // hour from the spot's reference station (see spot.referenceStation) — used
@@ -121,18 +152,32 @@ function circularMeanDeg(degs) {
 // `pressureGradients`, if provided, is { largeScale, local } in hPa for
 // Howe Sound spots (see spot.pressureGradientAware) — positive favors
 // inflow/thermal, negative favors outflow.
-// `overrideMultiplier`, if provided, is a rider-feedback-learned correction
-// for this spot (see scripts/apply-feedback.mjs / data/calibration-overrides.json).
+// `overrideRecord`, if provided, is this spot's entry from
+// data/calibration-overrides.json — an object keyed by regime (plus a
+// "general" fallback), each holding a rider-feedback-learned multiplier
+// (see scripts/apply-feedback.mjs). Resolved against the regime this hour
+// actually classifies as, once that's known below.
+// `pamRocksNow`, if provided, is { speedKt, directionDeg } — the live Pam
+// Rocks buoy reading (Howe Sound's mouth), only ever passed for whichever
+// hour matches "right now" (see generate.mjs) since it's a live observation,
+// not a forecast time series. Used as a same-day nowcast booster for
+// Squamish-family thermal spots.
 // Returns { regime, reason, direction_deg, speed_kt, gust_kt, agreement }
-export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pressureGradients = null, overrideMultiplier = null) {
+export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pressureGradients = null, overrideRecord = null, pamRocksNow = null) {
   const speedVals = Object.values(row.speeds).filter(v => v != null);
   const dirVals = Object.values(row.dirs).filter(v => v != null);
   const cloudVals = Object.values(row.cloud).filter(v => v != null);
+  const radiationVals = Object.values(row.radiation || {}).filter(v => v != null);
 
   const speed_kt = mean(speedVals);
   const gust_kt = mean(Object.values(row.gusts).filter(v => v != null));
   const direction_deg = circularMeanDeg(dirVals);
   const cloud_pct = mean(cloudVals);
+  const radiation_wm2 = radiationVals.length ? mean(radiationVals) : null;
+  const upperSpeedVals = Object.values(row.upperSpeeds || {}).filter(v => v != null);
+  const upperDirVals = Object.values(row.upperDirs || {}).filter(v => v != null);
+  const upper_speed_kt = upperSpeedVals.length ? mean(upperSpeedVals) : null;
+  const upper_direction_deg = upperDirVals.length ? circularMeanDeg(upperDirVals) : null;
 
   // Model agreement: how tight is the spread relative to the mean? Used as
   // a confidence multiplier — synoptic/gradient events tend to show up on
@@ -145,7 +190,14 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   }
 
   let regime = "calm", reason = "Light and variable — no clear driver.";
-  const sunny = cloud_pct != null ? cloud_pct < 55 : true;
+  // Shortwave radiation is a more direct read on "how hard is the sun
+  // actually driving the thermal right now" than a flat cloud-cover cutoff —
+  // it already folds in cloud, sun angle and time of day. Prefer it when a
+  // model provides it; fall back to the cruder cloud threshold otherwise.
+  // ~250 W/m² is a rough "meaningfully sunny at Squamish midday" cutoff, a
+  // heuristic like the rest of this file, not a fitted value.
+  const SUNNY_RADIATION_WM2 = 250;
+  const sunny = radiation_wm2 != null ? radiation_wm2 >= SUNNY_RADIATION_WM2 : (cloud_pct != null ? cloud_pct < 55 : true);
   const inHourWindow = (w) => localHour >= w[0] && localHour <= w[1];
 
   const thermalCfg = spot.thermal;
@@ -190,7 +242,10 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
           ? " Only the high-res local model is showing this clearly — classic sign of a pure thermal that coarse global models miss. Treat as moderate confidence until closer in."
           : " Multiple models agree, which is a good sign for a thermal-driven day.")
       : "";
-    reason = `${thermalCfg.note.split(".")[0]}.${meshNote}`;
+    const radiationNote = radiation_wm2 != null
+      ? (radiation_wm2 >= 500 ? ` Solar loading is strong (~${Math.round(radiation_wm2)} W/m²) — good thermal driver.` : ` Solar loading is moderate (~${Math.round(radiation_wm2)} W/m²) — thermal may be a bit softer than a full-sun day.`)
+      : "";
+    reason = `${thermalCfg.note.split(".")[0]}.${meshNote}${radiationNote}`;
   } else if (looksSynoptic) {
     regime = "synoptic";
     reason = `General Strait/regional gradient wind from the ${degToLabel(direction_deg)}, agreed on by ${speedVals.length} model${speedVals.length === 1 ? "" : "s"}.`;
@@ -200,6 +255,20 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   } else {
     regime = "mixed";
     reason = `Wind expected (${degToLabel(direction_deg)}) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution.`;
+  }
+
+  // Upper-level (850hPa, ~1500m) SW flow strong enough can override or
+  // suppress the local sea-breeze circulation a thermal depends on — a
+  // caution the surface-only signals above can't see on their own. Only
+  // relevant once we've already called the hour a thermal.
+  const UPPER_SUPPRESSION_KT = 20;
+  let upperSuppression = null;
+  if (regime === "thermal" && upper_speed_kt != null) {
+    const alignedWithInflow = upper_direction_deg != null && inSector(upper_direction_deg, [150, 260]);
+    upperSuppression = upper_speed_kt >= UPPER_SUPPRESSION_KT && alignedWithInflow;
+    if (upperSuppression) {
+      reason += ` Caution: strong SW flow aloft (~${Math.round(upper_speed_kt)}kt at 850hPa) can override or suppress this thermal rather than reinforce it.`;
+    }
   }
 
   // Direction rideability flag. Outflow events at Howe Sound spots blow from
@@ -274,6 +343,24 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     }
   }
 
+  // Pam Rocks nowcast, Squamish-family spots only (spot.pamRocksAware).
+  // `pamRocksNow` is only ever passed for the hour matching "right now" —
+  // it's a live buoy reading at Howe Sound's mouth, not a forecast time
+  // series, so it can only corroborate/caution the current hour, not the
+  // rest of the forecast. Marine inflow reaching the mouth of the sound is
+  // a real-time leading indicator for the thermal reaching the Spit.
+  let pamRocksSupport = null;
+  if (spot.pamRocksAware && regime === "thermal" && pamRocksNow &&
+      pamRocksNow.speedKt != null && pamRocksNow.directionDeg != null) {
+    const component = pamRocksInflowComponent(pamRocksNow.speedKt, pamRocksNow.directionDeg);
+    if (component != null) {
+      pamRocksSupport = component >= 6;
+      reason += pamRocksSupport
+        ? ` Pam Rocks (sound's mouth) is reading ~${Math.round(pamRocksNow.speedKt)}kt from ${degToLabel(pamRocksNow.directionDeg)} right now — already showing strong SW inflow, a good real-time sign for this thermal.`
+        : ` Pam Rocks (sound's mouth) isn't yet showing strong SW inflow (~${Math.round(pamRocksNow.speedKt)}kt from ${degToLabel(pamRocksNow.directionDeg)}) — this thermal may not have fully kicked in yet.`;
+    }
+  }
+
   // Reference-station trigger: some spots are better predicted by whether a
   // nearby exposed gauge point is already reading above a threshold than by
   // their own local model output — e.g. Erwin Park (Point Roberts) tends to
@@ -309,9 +396,17 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   }
 
   // Rider-feedback calibration override (see scripts/apply-feedback.mjs):
-  // a per-spot multiplier learned from "Report actual conditions" issues,
-  // applied on top of everything above. Scales the model votes too, so
-  // probabilityInRange's weighted count reflects it automatically.
+  // a per-spot, per-REGIME multiplier learned from "Report actual
+  // conditions" issues and live-station mismatches, applied on top of
+  // everything above. A thermal-hour mismatch shouldn't nudge the outflow
+  // calibration for the same spot and vice versa, so we resolve against
+  // whichever regime this hour actually landed on, falling back to a
+  // "general" bucket for older/un-regime-tagged data points. Scales the
+  // model votes too, so probabilityInRange's weighted count reflects it
+  // automatically.
+  const overrideMultiplier = overrideRecord
+    ? (overrideRecord[regime]?.multiplier ?? overrideRecord.general?.multiplier ?? null)
+    : null;
   let feedbackAdjusted = false;
   if (overrideMultiplier != null && Math.abs(overrideMultiplier - 1) > 0.02) {
     feedbackAdjusted = true;
@@ -323,6 +418,14 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     reason += ` Adjusted ×${overrideMultiplier.toFixed(2)} based on rider-reported actual conditions at this spot (see the "Report actual conditions" link).`;
   }
 
+  // GUSTY flag: independent of regime — strong upper-level wind riding over
+  // a decent surface wind is the classic recipe for a gusty, mechanically-
+  // mixed day, worth flagging regardless of how confident we are in the
+  // headline speed. Checked against the final (calibrated/adjusted) speed,
+  // not the raw pre-calibration average.
+  const UPPER_GUSTY_KT = 25;
+  const gusty = upper_speed_kt != null && upper_speed_kt >= UPPER_GUSTY_KT && displaySpeed != null && displaySpeed >= 12;
+
   return {
     time: row.time,
     speed_kt: displaySpeed != null ? Math.round(displaySpeed * 10) / 10 : null,
@@ -330,6 +433,9 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     direction_deg: direction_deg != null ? Math.round(direction_deg) : null,
     direction_label: degToLabel(direction_deg),
     cloud_pct: cloud_pct != null ? Math.round(cloud_pct) : null,
+    radiation_wm2: radiation_wm2 != null ? Math.round(radiation_wm2) : null,
+    upper_speed_kt: upper_speed_kt != null ? Math.round(upper_speed_kt * 10) / 10 : null,
+    gusty,
     regime,
     reason,
     favorable_direction: favorable,
@@ -338,6 +444,8 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     calibrated,
     reference_triggered: referenceTriggered,
     pressure_support: pressureSupport,
+    upper_suppression: upperSuppression,
+    pam_rocks_support: pamRocksSupport,
     feedback_adjusted: feedbackAdjusted,
     models: displayModels,
     raw_models: row.speeds,
@@ -419,6 +527,9 @@ export function probabilityInRange(hourResult, lo, hi) {
   if (hourResult.reference_triggered) confidence = Math.max(confidence, 0.7);
   if (hourResult.pressure_support === true) confidence = Math.min(1, confidence + 0.12);
   if (hourResult.pressure_support === false) confidence *= 0.8;
+  if (hourResult.pam_rocks_support === true) confidence = Math.min(1, confidence + 0.1);
+  if (hourResult.pam_rocks_support === false) confidence *= 0.9;
+  if (hourResult.upper_suppression === true) confidence *= 0.75;
   if (!hourResult.favorable_direction) confidence *= 0.7;
 
   return {

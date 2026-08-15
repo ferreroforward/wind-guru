@@ -67,6 +67,26 @@ async function loadLiveVerifications() {
   }
 }
 
+// Turns a pool of { ratio, source } data points into one override bucket
+// (sample_size/rider_reports/live_checks/avg_ratio/multiplier/note), or null
+// if there aren't enough points yet. Shared by the "general" (all-data,
+// backward-compatible) bucket and the per-regime buckets below.
+function summarize(recent, label) {
+  if (recent.length < MIN_SAMPLES) return null;
+  const avgRatio = recent.reduce((sum, r) => sum + r.ratio, 0) / recent.length;
+  const multiplier = Math.max(MULTIPLIER_CLAMP[0], Math.min(MULTIPLIER_CLAMP[1], avgRatio));
+  const riderCount = recent.filter((r) => r.source === "rider-report").length;
+  const liveCount = recent.filter((r) => r.source === "live-station").length;
+  return {
+    sample_size: recent.length,
+    rider_reports: riderCount,
+    live_checks: liveCount,
+    avg_ratio: Math.round(avgRatio * 100) / 100,
+    multiplier: Math.round(multiplier * 100) / 100,
+    note: `Based on ${recent.length} ${label} data point${recent.length === 1 ? "" : "s"} (${riderCount} rider report${riderCount === 1 ? "" : "s"}, ${liveCount} live-station check${liveCount === 1 ? "" : "s"}): actual wind averaged ${Math.round(avgRatio * 100)}% of what was forecasted.`,
+  };
+}
+
 async function main() {
   console.log(`Fetching wind-report issues from ${OWNER}/${REPO}...`);
   const issues = await fetchReports();
@@ -75,7 +95,15 @@ async function main() {
   const liveEntries = await loadLiveVerifications();
   console.log(`Found ${liveEntries.length} logged live-verification mismatch(es).`);
 
-  const bySpot = {};
+  // Rider reports don't capture which wind regime was in effect (the issue
+  // form just asks forecasted-vs-actual), so they only ever feed the
+  // spot-wide "general" bucket. Live-station entries DO carry a regime (set
+  // by generate.mjs from the forecast hour they were checked against), so
+  // they feed both "general" (keeping today's pooled-average behavior as a
+  // fallback) and their own regime-specific bucket — a thermal-hour mismatch
+  // shouldn't nudge an outflow multiplier for the same spot, and vice versa.
+  const bySpotGeneral = {};
+  const bySpotRegime = {};
   for (const issue of issues) {
     const body = issue.body || "";
     const spot = extractField(body, "Spot");
@@ -85,35 +113,39 @@ async function main() {
       console.log(`  Skipping issue #${issue.number} — couldn't parse spot/forecasted/actual.`);
       continue;
     }
-    (bySpot[spot] ||= []).push({ date: issue.created_at, forecasted, actual, ratio: actual / forecasted, source: "rider-report" });
+    (bySpotGeneral[spot] ||= []).push({ date: issue.created_at, forecasted, actual, ratio: actual / forecasted, source: "rider-report" });
   }
   for (const e of liveEntries) {
     if (!e.spot || !isFinite(e.forecasted) || !isFinite(e.actual) || e.forecasted <= 0) continue;
-    (bySpot[e.spot] ||= []).push({ date: e.checked_at || e.time, forecasted: e.forecasted, actual: e.actual, ratio: e.ratio ?? (e.actual / e.forecasted), source: "live-station" });
+    const point = { date: e.checked_at || e.time, forecasted: e.forecasted, actual: e.actual, ratio: e.ratio ?? (e.actual / e.forecasted), source: "live-station" };
+    (bySpotGeneral[e.spot] ||= []).push(point);
+    if (e.regime) {
+      const key = `${e.spot}::${e.regime}`;
+      (bySpotRegime[key] ||= []).push(point);
+    }
   }
 
+  const recentOf = (list) => list.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, MAX_REPORTS_PER_SPOT);
+
   const overrides = {};
-  for (const [spot, reports] of Object.entries(bySpot)) {
-    const recent = reports
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
-      .slice(0, MAX_REPORTS_PER_SPOT);
-    if (recent.length < MIN_SAMPLES) {
+  for (const [spot, reports] of Object.entries(bySpotGeneral)) {
+    const recent = recentOf(reports);
+    const general = summarize(recent, "total");
+    if (!general) {
       console.log(`  ${spot}: only ${recent.length} data point(s), below minimum of ${MIN_SAMPLES} — no adjustment.`);
       continue;
     }
-    const avgRatio = recent.reduce((sum, r) => sum + r.ratio, 0) / recent.length;
-    const multiplier = Math.max(MULTIPLIER_CLAMP[0], Math.min(MULTIPLIER_CLAMP[1], avgRatio));
-    const riderCount = recent.filter((r) => r.source === "rider-report").length;
-    const liveCount = recent.filter((r) => r.source === "live-station").length;
-    overrides[spot] = {
-      sample_size: recent.length,
-      rider_reports: riderCount,
-      live_checks: liveCount,
-      avg_ratio: Math.round(avgRatio * 100) / 100,
-      multiplier: Math.round(multiplier * 100) / 100,
-      note: `Based on ${recent.length} data point${recent.length === 1 ? "" : "s"} (${riderCount} rider report${riderCount === 1 ? "" : "s"}, ${liveCount} live-station check${liveCount === 1 ? "" : "s"}): actual wind averaged ${Math.round(avgRatio * 100)}% of what was forecasted.`,
-    };
-    console.log(`  ${spot}: ${recent.length} data points (${riderCount} rider, ${liveCount} live), avg ratio ${avgRatio.toFixed(2)}, multiplier ${multiplier.toFixed(2)}`);
+    overrides[spot] = { general };
+    console.log(`  ${spot} [general]: ${general.sample_size} data points, avg ratio ${general.avg_ratio}, multiplier ${general.multiplier}`);
+  }
+  for (const [key, reports] of Object.entries(bySpotRegime)) {
+    const [spot, regime] = key.split("::");
+    const recent = recentOf(reports);
+    const bucket = summarize(recent, regime);
+    if (!bucket) continue; // not enough regime-specific data yet — the "general" bucket still applies as a fallback
+    overrides[spot] ||= {};
+    overrides[spot][regime] = bucket;
+    console.log(`  ${spot} [${regime}]: ${bucket.sample_size} data points, avg ratio ${bucket.avg_ratio}, multiplier ${bucket.multiplier}`);
   }
 
   const out = {

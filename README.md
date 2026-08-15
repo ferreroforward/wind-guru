@@ -42,8 +42,26 @@ numbers.
   *forecast* MSLP rather than kiteloop's live SWOB station observations, so
   treat it as an approximation of the same idea, not a reproduction of that
   site's exact numbers. See `classifyHour()` in `assets/rules.js`.
+- **Solar loading**: `shortwave_radiation` from Open-Meteo replaces a flat
+  cloud-cover-percent cutoff as the "is the sun actually driving the
+  thermal" gate — it already folds in cloud, sun angle and time of day, so
+  it's a more accurate continuous signal than a binary threshold. Falls back
+  to the cloud-cover cutoff when a model doesn't provide it.
+- **Upper-level (850hPa) wind**: fetched alongside the surface data. Strong
+  SW flow aloft during a thermal hour can override/suppress the local sea
+  breeze rather than reinforce it — flagged as a confidence-lowering caution.
+  Independent of regime, strong upper wind riding over a decent surface wind
+  is flagged as **GUSTY** in the UI (hour cells and best-bets list).
+- **Pam Rocks live nowcast**: for Squamish Spit and Furry Creek only
+  (`pamRocksAware: true`), the live Pam Rocks buoy reading (already fetched
+  for Porteau Cove's live-check — see "Live verification") is projected onto
+  Howe Sound's ~200° SW inflow axis and used to support or caution the
+  *current* hour's thermal confidence. Only ever applies to "right now,"
+  since it's a live observation, not a forecast time series.
 - **Rider feedback loop**: see "Rider feedback & self-calibration" below —
-  actual on-the-water reports nudge each spot's calibration over time.
+  actual on-the-water reports nudge each spot's calibration over time,
+  separately per wind regime (a thermal-hour mismatch no longer nudges that
+  spot's outflow calibration, and vice versa).
 - **Live verification**: see "Live verification" below — each run checks
   the forecast against a real observation from the nearest Environment
   Canada station and self-corrects when they disagree.
@@ -162,16 +180,30 @@ asking for the actual speed/direction and any notes on why it differed.
 Every run, `.github/workflows/update-forecast.yml` first runs
 `scripts/apply-feedback.mjs`, which:
 
-1. Pulls all `wind-report`-labeled issues via the GitHub API.
-2. Groups them by spot and computes `actual ÷ forecasted` for each report.
-3. Averages the most recent 20 reports per spot (needs at least 2 before it
-   adjusts anything, so one troll report or typo can't skew it), clamps the
-   result to 0.75x–1.5x, and writes `data/calibration-overrides.json`.
+1. Pulls all `wind-report`-labeled issues via the GitHub API, and pools in
+   `data/live-verification-log.json`'s auto-logged mismatches too (see "Live
+   verification" below).
+2. Groups them by spot and computes `actual ÷ forecasted` for each report —
+   both into a spot-wide **general** bucket (rider reports and live-station
+   entries alike), and, for live-station entries specifically (they carry a
+   `regime` tag from the forecast hour they were checked against), into a
+   **regime-specific** bucket (`thermal` / `outflow` / `synoptic` / ...) for
+   that spot. Rider reports don't record which regime was in effect, so they
+   only ever feed the general bucket.
+3. Averages the most recent 20 data points per bucket (needs at least 2
+   before it adjusts anything, so one troll report or typo can't skew it),
+   clamps the result to 0.75x–1.5x, and writes
+   `data/calibration-overrides.json` as `{ spot: { general: {...}, thermal:
+   {...}, ... } }`.
 
-`generate.mjs` reads that file and applies the multiplier for that spot on
-top of everything else (Squamish calibration, MSLP, reference stations),
-scaling both the displayed speed and the model votes used for probability.
-The reasoning text says explicitly when a report-based adjustment is active.
+`generate.mjs` reads that file and, once it knows which regime an hour
+classified as, resolves that regime's bucket for the spot — falling back to
+`general` if there's no regime-specific data yet — and applies its
+multiplier on top of everything else (Squamish calibration, MSLP, reference
+stations, Pam Rocks nowcast), scaling both the displayed speed and the model
+votes used for probability. A thermal-hour mismatch no longer nudges that
+spot's outflow calibration, and vice versa. The reasoning text says
+explicitly when a report-based adjustment is active.
 
 This is a running bias correction, not a trained model — it has no memory of
 what was forecasted for any specific past hour (the snapshot gets
@@ -279,9 +311,15 @@ systematic bias but won't catch a mismatch that starts and ends between runs.
   probability model — a good next step would be extracting its knot ranges
   for today/tonight and using them to directly anchor the Squamish estimate
   instead of (or blended with) the GFS-multiplier calibration.
-- The Squamish calibration multiplier is a single rider's field-tuned
-  average, not a regression against station data — treat it as a big
-  improvement over raw model output, not gospel.
+- The base Squamish 2.85x multiplier is still a single rider's field-tuned
+  average, not a regression against station data — the regime-aware
+  feedback override (see "Rider feedback & self-calibration") corrects it
+  over time as live-verification/rider data accumulates, but needs more
+  samples per regime before it meaningfully moves the number. Treat the base
+  multiplier as a big improvement over raw model output, not gospel.
+- The Pam Rocks nowcast and 850hPa suppression/GUSTY thresholds (6kt inflow
+  component, 20kt suppression, 25kt gusty) are reasonable starting guesses,
+  same caveat as the MSLP thresholds below — not fitted to anything yet.
 - The MSLP gradient thresholds (0.4hPa / 0.2hPa) are a reasonable starting
   guess, not fitted to anything — worth tightening once enough rider
   feedback accumulates to see which days it called right vs wrong.
