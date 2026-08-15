@@ -1,5 +1,5 @@
 {
-  "version": "0148862",
-  "message": "Move coffee-support section above the map for visibility",
-  "deployed_at": "2026-08-15T15:06:27Z"
+  "version": "8b24b5d",
+  "message": "Add Pam Rocks nowcast, 850hPa suppression/GUSTY flag, solar radiation gating, regime-aware calibration",
+  "deployed_at": "2026-08-15T15:44:22Z"
 }
