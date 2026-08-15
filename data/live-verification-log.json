@@ -1,4 +1,38 @@
 {
-  "updated_at": "2026-08-14T15:08:10.135Z",
-  "entries": []
+  "updated_at": "2026-08-15T03:05:00.396Z",
+  "entries": [
+    {
+      "spot": "boundary-bay",
+      "time": "2026-08-14T20:00",
+      "forecasted": 3.5,
+      "actual": 1,
+      "ratio": 0.2857142857142857,
+      "source": "live-station",
+      "station": "White Rock, BC",
+      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
+      "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "white-rock",
+      "time": "2026-08-14T20:00",
+      "forecasted": 2.9,
+      "actual": 1,
+      "ratio": 0.3448275862068966,
+      "source": "live-station",
+      "station": "White Rock, BC",
+      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
+      "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-08-14T20:00",
+      "forecasted": 3.8,
+      "actual": 1,
+      "ratio": 0.2631578947368421,
+      "source": "live-station",
+      "station": "White Rock, BC",
+      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
+      "checked_at": "2026-08-15T03:05:00.396Z"
+    }
+  ]
 }
