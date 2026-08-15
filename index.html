@@ -96,6 +96,16 @@
 
   .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:0.88rem;color:var(--muted);margin:10px 0 4px;}
   .legend span.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;}
+  .obs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
+  .obs-card{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:12px 14px;}
+  .obs-card .obs-name{font-weight:600;font-size:0.9rem;margin-bottom:4px;}
+  .obs-card .obs-reading{font-size:1.15rem;font-weight:700;}
+  .obs-card .obs-reading .unit{font-size:0.75rem;font-weight:400;color:var(--muted);}
+  .obs-card .obs-meta{font-size:0.78rem;color:var(--muted);margin-top:3px;}
+  .obs-note{font-size:0.85rem;color:var(--muted);margin:8px 0 14px;}
+  .links-list{font-size:0.95rem;color:var(--muted);line-height:1.9;}
+  .links-list a{color:var(--accent);font-weight:600;text-decoration:none;}
+  .links-list a:hover{text-decoration:underline;}
   .about{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;font-size:0.95rem;color:var(--muted);line-height:1.65;margin-top:30px;}
   .about b{color:var(--text);}
   .support{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;margin-top:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
@@ -121,6 +131,8 @@
     .bet-card{padding:12px 14px;gap:10px;}
     .spot-card{padding:14px 16px;}
     .hour-cell{width:62px;}
+    .obs-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;}
+    .obs-card{padding:10px 12px;}
   }
 </style>
 </head>
@@ -179,6 +191,12 @@
   <div id="spotCards"><div class="empty">Loading…</div></div>
   <div id="globalTip"></div>
 
+  <div id="obsSection" style="display:none;">
+    <h2 class="section">Live surface conditions around the region</h2>
+    <div class="obs-note">Real-time station readings, not a forecast — includes our own spot stations plus the wider regional picture from <a href="https://wtfbc.ca/swob.php" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">wtfbc.ca</a>.</div>
+    <div class="obs-grid" id="obsGrid"></div>
+  </div>
+
   <div class="about">
     <b>How this works.</b> We check the wind forecast for every spot and show your odds of getting your chosen wind speed, hour by hour. Green means good odds, yellow means maybe, red means unlikely.
     <br><br>
@@ -190,6 +208,22 @@
   </div>
 
   <div id="bulletinBox" style="display:none;background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:14px 16px;margin:16px 0;font-size:0.95rem;color:var(--muted);"></div>
+
+  <div class="about" style="margin-top:16px;">
+    <b>Explore more</b>
+    <div class="links-list" style="margin-top:8px;">
+      <div><a href="https://squamishwindsports.com/conditions/wind/" target="_blank" rel="noopener">Squamish Windsports Society</a> — live Squamish Spit wind meter</div>
+      <div><a href="https://wx.ikitesurf.com/spot/1436" target="_blank" rel="noopener">iKitesurf / Weatherflow</a> — subscription wind data for Squamish</div>
+      <div><a href="https://wtfbc.ca/swob.php" target="_blank" rel="noopener">Weather Talk For BC</a> — live surface conditions board across the region (see above)</div>
+      <div><a href="https://wtfbc.ca/" target="_blank" rel="noopener">wtfbc.ca forums</a> — BC windsports community talk, reports and photos</div>
+      <div><a href="https://igetwind.com/" target="_blank" rel="noopener">iGetwind</a> — wind/surf/tide forecasts and station data</div>
+      <div><a href="https://kiteloop.vercel.app/" target="_blank" rel="noopener">Kiteloop</a> — Squamish-focused pressure-gradient forecasting tool</div>
+      <div><a href="https://squamish-wind.lovelyco.de/" target="_blank" rel="noopener">Squamish Wind</a> — another independent Squamish forecast worth comparing</div>
+      <div><a href="https://www.westcoastwindsports.com/blogs/local-knowledge/forecasting-squamish-wind-with-jack-rieder" target="_blank" rel="noopener">West Coast Wind Sports</a> — Jack Rieder's Squamish forecasting field notes, the source for our thermal calibration</div>
+      <div><a href="https://jsca.bc.ca/" target="_blank" rel="noopener">Jericho Sailing Centre Association</a></div>
+      <div><a href="https://weather.gc.ca/marine/index_e.html?type=1" target="_blank" rel="noopener">Environment Canada Marine Forecasts</a></div>
+    </div>
+  </div>
 
 </main>
 
@@ -589,6 +623,39 @@ function renderMap() {
   });
 }
 
+// "Live surface conditions" board: real observed readings (not forecast) —
+// our own already-integrated live stations plus wtfbc.ca's wider regional
+// board (see generate.mjs's surface_observations). Server-side snapshot
+// only, same as the marine bulletin/MSLP data — wtfbc.ca doesn't offer CORS
+// for a browser fetch, so this section is simply absent on the "Refresh
+// live" client-side fallback path.
+function renderSurfaceObservations() {
+  const section = document.getElementById("obsSection");
+  const grid = document.getElementById("obsGrid");
+  const stations = forecast.surface_observations?.stations || [];
+  if (!stations.length) { section.style.display = "none"; return; }
+  section.style.display = "block";
+  grid.innerHTML = stations.map(s => {
+    const isCalm = s.direction_label === "calm" || (s.speed_kt === 0 && !s.direction_label);
+    const reading = isCalm
+      ? `Calm`
+      : `${s.direction_label ?? ""} ${Math.round(s.speed_kt)}${s.gust_kt != null ? `–${Math.round(s.gust_kt)}` : ""}<span class="unit">kt</span>`;
+    const metaBits = [];
+    if (s.observed_local_time) metaBits.push(s.observed_local_time);
+    if (s.temp_c != null) metaBits.push(`${s.temp_c}°C`);
+    const nameHtml = s.source_url
+      ? `<a href="${s.source_url}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;">${s.name}</a>`
+      : s.name;
+    return `
+      <div class="obs-card">
+        <div class="obs-name">${nameHtml}</div>
+        <div class="obs-reading">${reading}</div>
+        <div class="obs-meta">${metaBits.join(" · ")}</div>
+      </div>
+    `;
+  }).join("");
+}
+
 // Official Environment Canada marine bulletins for the two zones our spots
 // span. We fetch these server-side (see generate.mjs) since EC doesn't
 // allow CORS; shown as plain links at the bottom of the page rather than
@@ -648,6 +715,7 @@ function renderAll() {
   renderHeroSummary();
   renderBestBets();
   renderSpotCards();
+  renderSurfaceObservations();
   renderMap();
 }
 

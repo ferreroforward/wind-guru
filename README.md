@@ -381,6 +381,47 @@ returns. It only checks the current hour once
 per run (twice daily), not a continuous stream, so it can catch a
 systematic bias but won't catch a mismatch that starts and ends between runs.
 
+## Live surface conditions board
+
+Below the hour-by-hour spot cards, the page shows a grid of real-time
+station readings from around the region — not a forecast, just "what's the
+wind doing right now" at as many nearby stations as we can reasonably show.
+Two sources feed it, merged in `generate.mjs`:
+
+1. **Our own live stations** — every spot's `liveStation` (see "Live
+   verification" above), one card per unique station even where several
+   spots share one (e.g. Jericho and Spanish Banks both read "Vancouver
+   Harbour").
+2. **[wtfbc.ca/swob.php](https://wtfbc.ca/swob.php)** — "Weather Talk For
+   BC," a BC windsports community forum, runs a page that aggregates live
+   surface observations from ~11 stations across the region (mostly
+   Environment Canada SWOB stations, plus a couple of independent sources
+   like the White Rock city beach sensor and the Jericho Sailing Centre
+   Association's own instrument) into one clean, already-in-knots page —
+   confirmed by cross-checking its Pam Rocks reading against the raw EC
+   SWOB-ML XML feed for that station. One fetch here gets a much wider
+   regional picture — Tsawwassen, Sandheads, Vancouver International,
+   Point Atkinson, Squamish Airport, Whistler, Merritt, Nanaimo — than our
+   own per-spot stations alone cover.
+
+`parseSwobBoard()` in `generate.mjs` doesn't depend on wtfbc.ca's exact HTML
+structure — it normalizes the page to plain text and scans for the
+repeating 3-line pattern each station renders as (name[, temp], a
+distinctive date/time line, then direction + speed[+gust]), so it stays
+robust even if the surrounding markup changes. If it ever parses fewer than
+3 stations, it logs a warning and returns nothing rather than publishing a
+broken/partial board.
+
+The one overlap between the two sources — Pam Rocks, which is also our own
+Porteau Cove `liveStation` — is deduplicated in favor of our own reading
+(it already has staleness handling), so the same physical station never
+shows two slightly different numbers side by side.
+
+This board is server-side-only, like the marine bulletin and MSLP data
+(wtfbc.ca doesn't offer CORS for a browser fetch) — it's absent from the
+"Refresh live" client-side fallback path, and only updates on the regular
+twice(-now-thrice)-daily Action run.
+
 ## Known limitations / good next steps
 
 - Tide state (important at Boundary Bay and Iona) isn't factored in.
@@ -457,3 +498,14 @@ systematic bias but won't catch a mismatch that starts and ends between runs.
   a light summer morning northerly gets the same "can be strong and gusty"
   language as a genuine winter outflow event.
 - No "now" marker or dimming of past hours in the hour-by-hour strip.
+- The live surface conditions board depends on scraping a third-party
+  community forum page (wtfbc.ca) we don't control. The rendered content
+  and units were confirmed live (cross-checked wtfbc.ca's Pam Rocks reading
+  against the raw EC SWOB-ML XML for that station — they matched, confirming
+  the page reports pre-converted knots), and the parser is written
+  defensively (text-pattern based, not raw-HTML-structure based, with a
+  minimum-station-count sanity check) — but the sandbox this ran in
+  couldn't fetch the page's raw HTML source directly (only a rendered/
+  accessibility-tree view), so the parser's exact tag-level assumptions
+  weren't tested against the real markup. Worth a spot-check of the "Live
+  surface conditions" section after deploying.

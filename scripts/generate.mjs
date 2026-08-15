@@ -312,6 +312,101 @@ async function fetchMarineBulletin(zone) {
   }
 }
 
+// "Weather Talk For BC" (wtfbc.ca) — a BC windsports community forum — runs
+// a single page that aggregates live surface observations from ~11 stations
+// across the region (Environment Canada SWOB stations, plus a couple of
+// independent sources like the White Rock city beach sensor and the Jericho
+// Sailing Centre Association's own instrument) into one clean, already-in-
+// knots summary. Cross-checked against the raw EC SWOB-ML XML feed for Pam
+// Rocks (dd.weather.gc.ca/.../CWAS-AUTO-swob.xml) to confirm the units:
+// wtfbc.ca's page reports pre-converted knots, not km/h, and rounds to the
+// nearest whole knot. One request here gets us a much wider, regional
+// picture than our own per-spot live stations alone — riders like seeing
+// what's happening at nearby stations even outside our specific spot list.
+const SWOB_BOARD_URL = "https://wtfbc.ca/swob.php";
+
+// wtfbc.ca's markup isn't something we control or have a stable contract
+// with, so rather than depend on exact tag structure we normalize to plain
+// text (turning line-break-ish tags into newlines, stripping everything
+// else) and then scan for the repeating 3-line pattern each station's
+// entry renders as:
+//   "{Station Name}[ ... {Temp}°C]"
+//   "{Weekday} {Month} {Day} {H}:{MM} am/pm"
+//   "{DIR} {SPEED}[ g {GUST}]"  (or "Calm")
+// The date/time line is a strong, distinctive anchor unlikely to appear by
+// coincidence anywhere else on the page, so this stays robust even if
+// wtfbc.ca changes its surrounding HTML/CSS.
+function parseSwobBoard(html) {
+  const text = html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|li|tr|h[1-6])>/gi, "\n")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&deg;/gi, "°")
+    .replace(/&amp;/gi, "&")
+    .replace(/[ \t]+/g, " ")
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  // Best-effort station-name -> source-URL lookup from the raw markup, so
+  // each card can credit/link its underlying source where we can find one.
+  // Purely cosmetic — if this regex ever stops matching wtfbc.ca's actual
+  // link markup, stations just show without a source link, nothing breaks.
+  const hrefMap = {};
+  const linkRe = /<a[^>]+href="([^"]+)"[^>]*>([^<]+)<\/a>/gi;
+  let lm;
+  while ((lm = linkRe.exec(html))) {
+    const name = lm[2].replace(/&amp;/gi, "&").trim();
+    if (name) hrefMap[name] = lm[1];
+  }
+
+  const dateTimeRe = /^[A-Za-z]{3} [A-Za-z]{3} \d{1,2} \d{1,2}:\d{2} (am|pm)$/i;
+  const windRe = /^([NSEW]{1,3})\s+(\d+)(?:\s*g\s*(\d+))?$/i;
+
+  const stations = [];
+  for (let i = 0; i < text.length - 2; i++) {
+    if (!dateTimeRe.test(text[i + 1])) continue;
+    const windMatch = text[i + 2].match(windRe);
+    const isCalm = /^calm$/i.test(text[i + 2]);
+    if (!windMatch && !isCalm) continue;
+
+    const nameLine = text[i];
+    const tempMatch = nameLine.match(/^(.+?)\s*\.\.\.\s*(-?\d+)\s*°C$/);
+    const name = (tempMatch ? tempMatch[1] : nameLine).trim();
+    if (!name || name.length > 60) continue; // sanity guard against a mis-anchored match
+
+    stations.push({
+      name,
+      source_url: hrefMap[name] || null,
+      observed_local_time: text[i + 1].replace(/^[A-Za-z]{3} [A-Za-z]{3} \d{1,2} /, ""), // just the "H:MM am/pm" part
+      temp_c: tempMatch ? Number(tempMatch[2]) : null,
+      direction_label: isCalm ? "calm" : windMatch[1].toUpperCase(),
+      speed_kt: isCalm ? 0 : Number(windMatch[2]),
+      gust_kt: isCalm ? null : (windMatch[3] != null ? Number(windMatch[3]) : null),
+    });
+    i += 2; // skip past this entry's 3 lines
+  }
+  return stations;
+}
+
+async function fetchSwobBoard() {
+  try {
+    const res = await fetch(SWOB_BOARD_URL, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
+    if (!res.ok) { console.log(`[swob-board] fetch failed: ${res.status}`); return []; }
+    const html = await res.text();
+    const stations = parseSwobBoard(html);
+    if (stations.length < 3) {
+      console.log(`[swob-board] only parsed ${stations.length} station(s) — page structure may have changed, skipping.`);
+      return [];
+    }
+    return stations;
+  } catch (err) {
+    console.log(`[swob-board] fetch error: ${err.message}`);
+    return [];
+  }
+}
+
 // Reference-station data (e.g. Point Atkinson for Erwin Park, and the
 // pressure-gradient trio for Howe Sound spots) — fetched once per unique
 // coordinate and reused across any spot/feature pointing at it.
@@ -383,6 +478,10 @@ async function main() {
     const b = await fetchMarineBulletin(zone);
     if (b) bulletins[b.id] = b;
   }
+
+  console.log("Fetching wtfbc.ca surface observation board...");
+  const swobBoardStations = await fetchSwobBoard();
+  console.log(`  parsed ${swobBoardStations.length} station(s)`);
 
   for (const spot of SPOTS) {
     process.stdout.write(`Fetching ${spot.name}... `);
@@ -511,6 +610,52 @@ async function main() {
     await new Promise((r) => setTimeout(r, 300));
   }
 
+  // "Live surface conditions" board: our own already-fetched live stations
+  // (one entry per unique station, even though several spots can share one —
+  // e.g. jericho/spanish-banks both use "Vancouver Harbour") plus every
+  // additional station wtfbc.ca's board offers that we don't already have.
+  // Riders like seeing the wider regional picture, not just the handful of
+  // spots we actively forecast for. The one genuine overlap between the two
+  // sources is Pam Rocks (our own Porteau Cove liveStation *is* wtfbc.ca's
+  // "Howe Sound - Pam Rocks" entry) — skip wtfbc's copy there so the same
+  // physical station doesn't show two slightly different numbers side by
+  // side, which would look like a bug rather than just two snapshots taken
+  // moments apart.
+  console.log("Building live surface conditions board...");
+  const ownStations = [];
+  const seenStationKeys = new Set();
+  for (const spot of SPOTS) {
+    if (!spot.liveStation) continue;
+    const key = `${spot.liveStation.type || "ec"}:${spot.liveStation.code || spot.liveStation.windSrc || spot.liveStation.sid}`;
+    if (seenStationKeys.has(key)) continue;
+    seenStationKeys.add(key);
+    try {
+      const obs = await getLiveObservation(spot.liveStation); // cache hit in practice — already fetched above
+      if (!obs) continue;
+      ownStations.push({
+        name: spot.liveStation.name,
+        source_url: null,
+        observed_local_time: obs.time,
+        observed_age_min: obs.ageMin != null ? Math.round(obs.ageMin) : null,
+        temp_c: null,
+        direction_label: obs.directionLabel,
+        speed_kt: obs.speedKt,
+        gust_kt: obs.gustKt ?? null,
+        source: "wind-guru",
+      });
+    } catch (err) {
+      console.log(`[surface-board] ${spot.liveStation.name} failed: ${err.message}`);
+    }
+  }
+  const extraStations = swobBoardStations
+    .filter((s) => !/pam rocks/i.test(s.name))
+    .map((s) => ({ ...s, source: "wtfbc" }));
+  const surfaceObservations = {
+    updated_at: startedAt.toISOString(),
+    board_source_url: SWOB_BOARD_URL,
+    stations: [...ownStations, ...extraStations],
+  };
+
   // If Open-Meteo rate-limits or errors out mid-run, individual spot
   // fetches fail and get skipped above (spotsOut just ends up shorter than
   // SPOTS) — previously that silently proceeded to overwrite
@@ -558,6 +703,7 @@ async function main() {
     marine_bulletins: bulletins,
     calibration_overrides: overrides,
     live_verification_count: cappedEntries.length,
+    surface_observations: surfaceObservations,
     spots: spotsOut,
   };
 
