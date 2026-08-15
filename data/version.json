@@ -1,5 +1,5 @@
 {
-  "version": "9bc926b",
-  "message": "Remove redundant wind-range inputs, add PayPal donation section",
-  "deployed_at": "2026-08-15T15:03:17Z"
+  "version": "0148862",
+  "message": "Move coffee-support section above the map for visibility",
+  "deployed_at": "2026-08-15T15:06:27Z"
 }
