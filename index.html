@@ -5,99 +5,121 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wind Guru — Where to ride today</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#f4f6fb; --panel:#ffffff; --panel2:#eef1f8; --border:#dbe1ee;
-    --text:#1b2438; --muted:#5c6685; --accent:#2f7fe0;
-    --green:#189863; --green-bg:#e4f7ee; --yellow:#b3790e; --yellow-bg:#fbf0da; --red:#c93b56; --red-bg:#fbe6ea; --gray:#5c6685; --gray-bg:#eaedf5;
-    --shadow:0 1px 3px rgba(27,36,56,0.07), 0 1px 2px rgba(27,36,56,0.04);
+    /* Modernist palette: near-white ground, near-black ink, one red accent.
+       No blue, no green — odds/status are all communicated through a single
+       red hue ramped from light tint (low) to full saturation (high). */
+    --bg:#f3f2f2; --panel:#ffffff;
+    --text:#201e1d; --muted:#5c5956;
+    --border:#201e1d;
+    --accent:#ec3013; --accent-dark:#a5220d;
+    --tint-1:#fce0dc; --tint-2:#f58d7d; --tint-3:#ec3013;
+    --neutral-bg:#e6e4e2;
   }
   *{box-sizing:border-box;}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.5;}
+  body{margin:0;font-family:'Archivo',Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.5;}
+  h1,h2,h3,button,input{font-family:'Archivo',Arial,Helvetica,sans-serif;}
+  a{color:var(--accent);}
+  *:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
   header{padding:24px 20px 10px;max-width:1200px;margin:0 auto;}
-  header h1{margin:0 0 4px;font-size:1.7rem;font-weight:700;letter-spacing:-0.02em;}
-  header p.sub{margin:0;color:var(--muted);font-size:1rem;}
-  .hero-summary{font-size:1.4rem;font-weight:600;color:var(--text);line-height:1.5;margin-top:14px;}
-  .hero-summary b{color:var(--accent);}
-  .meta-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:12px;font-size:0.92rem;color:var(--muted);}
-  .meta-row button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:0.92rem;}
-  .meta-row button:hover{border-color:var(--accent);}
-  .update-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:0.9rem;border:1px solid var(--border);background:var(--panel);}
-  .update-badge .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
-  .update-badge.fresh{color:var(--green);border-color:rgba(24,152,99,0.3);} .update-badge.fresh .dot{background:var(--green);}
-  .update-badge.stale{color:var(--yellow);border-color:rgba(179,121,14,0.3);} .update-badge.stale .dot{background:var(--yellow);}
-  .update-badge.very-stale{color:var(--red);border-color:rgba(201,59,86,0.3);} .update-badge.very-stale .dot{background:var(--red);}
+  header h1{margin:0 0 4px;font-size:1.9rem;font-weight:900;letter-spacing:-0.03em;text-align:left;}
+  header p.sub{margin:0;color:var(--muted);font-size:1rem;text-align:left;font-weight:500;}
+  .hero-summary{font-size:1.4rem;font-weight:600;color:var(--text);line-height:1.5;margin-top:14px;text-align:left;}
+  .hero-summary b{color:var(--accent);font-weight:800;}
+  .meta-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px;font-size:0.92rem;color:var(--muted);}
+  .meta-row button{background:var(--accent);border:2px solid var(--accent);color:#fff;padding:9px 16px;cursor:pointer;font-size:0.82rem;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;text-align:left;border-radius:0;}
+  .meta-row button:hover{background:var(--accent-dark);border-color:var(--accent-dark);}
+  .meta-row button:disabled{opacity:0.55;cursor:default;}
+  .meta-row a{color:var(--accent);text-decoration:none;font-weight:700;border-bottom:2px solid transparent;}
+  .meta-row a:hover{border-bottom-color:var(--accent);}
+  .update-badge{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;font-size:0.82rem;font-weight:800;text-transform:uppercase;letter-spacing:0.03em;border:2px solid var(--text);background:var(--panel);border-radius:0;}
+  .update-badge .dot{width:8px;height:8px;flex:0 0 auto;background:var(--text);}
+  .update-badge.fresh{color:var(--text);border-color:var(--text);}
+  .update-badge.stale{color:var(--accent-dark);border-color:var(--accent);background:var(--tint-1);} .update-badge.stale .dot{background:var(--accent);}
+  .update-badge.very-stale{color:#fff;border-color:var(--accent-dark);background:var(--accent-dark);} .update-badge.very-stale .dot{background:#fff;}
   main{max-width:1200px;margin:0 auto;padding:0 20px 60px;}
 
-  .controls{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;margin:16px 0;display:flex;flex-wrap:wrap;gap:22px;align-items:flex-end;}
+  .controls{background:var(--panel);border:2px solid var(--border);border-radius:0;padding:18px 20px;margin:16px 0;display:flex;flex-wrap:wrap;gap:22px;align-items:flex-end;}
   .control-group{display:flex;flex-direction:column;gap:7px;}
-  .control-group label{font-size:0.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.04em;}
+  .control-group label{font-size:0.78rem;color:var(--text);font-weight:800;text-transform:uppercase;letter-spacing:0.06em;}
   .range-inputs{display:flex;align-items:center;gap:8px;}
-  .range-inputs input[type=number]{width:70px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:9px 10px;border-radius:8px;font-size:1.05rem;}
+  .range-inputs input[type=number]{width:70px;background:var(--panel);border:2px solid var(--text);color:var(--text);padding:9px 10px;border-radius:0;font-size:1.05rem;font-weight:700;}
   .presets{display:flex;gap:7px;flex-wrap:wrap;}
-  .presets button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:20px;cursor:pointer;font-size:0.9rem;}
-  .presets button.active{background:var(--accent);border-color:var(--accent);color:#ffffff;font-weight:600;}
+  .presets button{background:transparent;border:2px solid var(--text);color:var(--text);padding:8px 14px;cursor:pointer;font-size:0.82rem;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;text-align:left;border-radius:0;}
+  .presets button:hover{background:var(--tint-1);border-color:var(--accent);color:var(--accent-dark);}
+  .presets button.active{background:var(--accent);border-color:var(--accent);color:#ffffff;}
+  .presets button.active:hover{background:var(--accent-dark);border-color:var(--accent-dark);}
   .day-tabs{display:flex;gap:7px;flex-wrap:wrap;}
-  .day-tabs button{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:9px 16px;border-radius:8px;cursor:pointer;font-size:0.95rem;}
-  .day-tabs button.active{background:var(--accent);border-color:var(--accent);color:#ffffff;font-weight:600;}
+  .day-tabs button{background:transparent;border:2px solid var(--text);color:var(--text);padding:9px 16px;cursor:pointer;font-size:0.88rem;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;text-align:left;border-radius:0;}
+  .day-tabs button:hover{background:var(--tint-1);border-color:var(--accent);color:var(--accent-dark);}
+  .day-tabs button.active{background:var(--accent);border-color:var(--accent);color:#ffffff;}
+  .day-tabs button.active:hover{background:var(--accent-dark);border-color:var(--accent-dark);}
 
-  #map{height:340px;border-radius:14px;border:1px solid var(--border);box-shadow:var(--shadow);margin:16px 0;}
-  .leaflet-popup-content-wrapper{background:var(--panel);color:var(--text);}
-  .leaflet-popup-tip{background:var(--panel);}
+  #map{height:340px;border-radius:0;border:2px solid var(--border);margin:16px 0;}
 
-  h2.section{font-size:1.1rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin:30px 0 12px;}
+  h2.section{font-size:0.85rem;color:var(--text);text-transform:uppercase;letter-spacing:0.08em;font-weight:800;margin:34px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--text);text-align:left;}
 
-  .best-bets{display:flex;flex-direction:column;gap:10px;}
-  .bet-card{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:14px 18px;}
-  .bet-rank{font-size:1.2rem;font-weight:700;color:var(--muted);width:24px;text-align:center;}
-  .bet-badge{font-weight:700;font-size:1.15rem;border-radius:8px;padding:7px 11px;min-width:56px;text-align:center;}
+  .best-bets{display:flex;flex-direction:column;gap:12px;}
+  .bet-card{display:flex;align-items:center;gap:14px;background:var(--panel);border:2px solid var(--border);border-radius:0;padding:14px 18px;}
+  .bet-rank{font-size:1.2rem;font-weight:800;color:var(--text);width:24px;text-align:left;}
+  .bet-badge{font-weight:800;font-size:1.15rem;border:2px solid var(--text);border-radius:0;padding:7px 11px;min-width:56px;text-align:center;}
   .bet-info{flex:1;min-width:0;}
-  .bet-info .name{font-weight:600;font-size:1.1rem;}
-  .bet-info .detail{color:var(--muted);font-size:0.92rem;margin-top:3px;}
+  .bet-info .name{font-weight:800;font-size:1.1rem;}
+  .bet-info .detail{color:var(--muted);font-size:0.92rem;margin-top:3px;font-weight:500;}
 
-  .spot-card{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;margin-bottom:16px;}
+  .spot-card{background:var(--panel);border:2px solid var(--border);border-radius:0;padding:18px 20px;margin-bottom:16px;}
   .spot-card .head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
-  .spot-card .head .name{font-weight:700;font-size:1.15rem;}
-  .spot-card .head .region{color:var(--muted);font-size:0.88rem;}
-  .spot-card .sports{font-size:0.85rem;color:var(--muted);}
-  .live-check{font-size:0.85rem;padding:5px 10px;border-radius:8px;margin-bottom:10px;display:inline-block;}
-  .live-check.match{background:var(--green-bg);color:var(--green);}
-  .live-check.mismatch{background:var(--red-bg);color:var(--red);}
-  .report-link{display:inline-block;margin-bottom:12px;font-size:0.9rem;color:var(--accent);text-decoration:none;font-weight:600;padding:6px 0;}
-  .report-link:hover{text-decoration:underline;}
-  .hour-strip{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px;}
-  .hour-cell{flex:0 0 auto;width:72px;border-radius:8px;padding:7px 5px;text-align:center;font-size:0.8rem;cursor:pointer;position:relative;}
-  .hour-cell .t{color:rgba(27,36,56,0.6);font-size:0.76rem;}
-  .hour-cell .p{font-weight:700;font-size:1rem;margin:3px 0;}
-  .hour-cell .d{font-size:0.74rem;color:rgba(27,36,56,0.65);white-space:nowrap;}
-  .hour-cell .dir{font-size:0.7rem;color:rgba(27,36,56,0.5);}
+  .spot-card .head .name{font-weight:800;font-size:1.15rem;}
+  .spot-card .head .region{color:var(--muted);font-size:0.88rem;font-weight:600;}
+  .spot-card .sports{font-size:0.82rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.03em;}
+  .live-check{font-size:0.85rem;padding:6px 10px;border:2px solid var(--text);border-radius:0;margin-bottom:10px;display:inline-block;font-weight:700;}
+  .live-check.match{background:var(--tint-1);color:var(--text);}
+  .live-check.mismatch{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .report-link{display:inline-block;margin-bottom:12px;font-size:0.82rem;color:var(--accent);text-decoration:none;font-weight:800;text-transform:uppercase;letter-spacing:0.03em;padding:8px 14px;border:2px solid var(--accent);}
+  .report-link:hover{background:var(--accent);color:#fff;}
+  .hour-strip{display:flex;overflow-x:auto;border:2px solid var(--text);}
+  .hour-cell{flex:0 0 auto;width:72px;border-right:2px solid var(--text);padding:7px 5px;text-align:center;font-size:0.8rem;cursor:pointer;position:relative;background:var(--panel);}
+  .hour-cell:last-child{border-right:none;}
+  .hour-cell .t{color:rgba(32,30,29,0.62);font-size:0.76rem;font-weight:700;}
+  .hour-cell .p{font-weight:800;font-size:1rem;margin:3px 0;}
+  .hour-cell .d{font-size:0.74rem;color:rgba(32,30,29,0.7);white-space:nowrap;font-weight:700;}
+  .hour-cell .dir{font-size:0.7rem;color:rgba(32,30,29,0.55);font-weight:600;}
   /* Tooltip is positioned in JS as a fixed-position element appended to
      <body> (see #globalTip) rather than nested + absolutely positioned
      inside .hour-cell — .hour-strip needs overflow-x:auto for horizontal
      scrolling, which per the CSS spec silently forces overflow-y to auto
      too, clipping any absolutely-positioned child that pokes outside the
      row (like a tooltip above the cell). A body-level fixed element sidesteps
-     that entirely. Kept dark-on-light for a popover pop against the page. */
-  #globalTip{display:none;position:fixed;background:#1b2438;color:#fff;padding:10px 12px;border-radius:8px;font-size:0.85rem;width:220px;z-index:1000;text-align:left;box-shadow:0 6px 18px rgba(27,36,56,0.25);}
-  #globalTip b{display:block;margin-bottom:4px;}
-  #globalTip a{display:block;margin-top:7px;color:#8fc4ff;}
+     that entirely. Kept dark-on-light (ink-on-paper) for a flat popover
+     that still pops against the page. */
+  #globalTip{display:none;position:fixed;background:var(--text);color:#fff;padding:10px 12px;border-radius:0;font-size:0.85rem;width:220px;z-index:1000;text-align:left;border:2px solid var(--text);}
+  #globalTip b{display:block;margin-bottom:5px;color:#ff8a6f;text-transform:uppercase;letter-spacing:0.04em;font-size:0.72rem;font-weight:800;}
+  #globalTip a{display:block;margin-top:7px;color:#ff8a6f;font-weight:700;text-decoration:none;}
+  #globalTip a:hover{text-decoration:underline;}
 
-  .lvl-green{background:var(--green-bg);color:var(--green);}
-  .lvl-yellow{background:var(--yellow-bg);color:var(--yellow);}
-  .lvl-red{background:var(--red-bg);color:var(--red);}
-  .lvl-gray{background:var(--gray-bg);color:var(--gray);}
+  /* Single-hue red-tint ramp standing in for the old green/yellow/red tiers —
+     low odds get the lightest tint, high odds get the full accent red. */
+  .lvl-green{background:var(--tint-3);color:#ffffff;}
+  .lvl-yellow{background:var(--tint-2);color:var(--text);}
+  .lvl-red{background:var(--tint-1);color:var(--text);}
+  .lvl-gray{background:var(--neutral-bg);color:var(--muted);}
 
-  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:0.88rem;color:var(--muted);margin:10px 0 4px;}
-  .legend span.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;}
-  .about{background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:14px;padding:18px 20px;font-size:0.95rem;color:var(--muted);line-height:1.65;margin-top:30px;}
-  .about b{color:var(--text);}
-  footer{text-align:center;color:var(--muted);font-size:0.86rem;padding:22px 0 40px;}
-  .empty{color:var(--muted);font-size:1rem;padding:22px;text-align:center;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:0.85rem;color:var(--text);font-weight:600;margin:10px 0 4px;}
+  .legend span.dot{display:inline-block;width:10px;height:10px;border:1px solid var(--text);margin-right:6px;}
+  .about{background:var(--panel);border:2px solid var(--border);border-radius:0;padding:18px 20px;font-size:0.95rem;color:var(--text);line-height:1.65;margin-top:30px;}
+  .about b{color:var(--accent);}
+  footer{text-align:left;color:var(--muted);font-size:0.85rem;font-weight:600;padding:22px 20px 40px;border-top:2px solid var(--border);margin-top:8px;}
+  .empty{color:var(--muted);font-size:1rem;padding:22px;text-align:left;}
 
   button, a{touch-action:manipulation;}
   @media (max-width:600px){
     header{padding:18px 14px 6px;}
-    header h1{font-size:1.45rem;}
+    header h1{font-size:1.5rem;}
     .hero-summary{font-size:1.2rem;margin-top:12px;}
     main{padding:0 14px 48px;}
     .controls{padding:14px 16px;gap:16px;}
@@ -105,6 +127,7 @@
     .bet-card{padding:12px 14px;gap:10px;}
     .spot-card{padding:14px 16px;}
     .hour-cell{width:62px;}
+    footer{padding-left:14px;padding-right:14px;}
   }
 </style>
 </head>
@@ -150,10 +173,10 @@
 
   <div id="map"></div>
   <div class="legend">
-    <span><span class="dot" style="background:#1fb570"></span>Good odds (≥65%)</span>
-    <span><span class="dot" style="background:#e3b23c"></span>Maybe (35–64%)</span>
-    <span><span class="dot" style="background:#e0546b"></span>Unlikely (&lt;35%)</span>
-    <span><span class="dot" style="background:#4a5776"></span>No data / calm</span>
+    <span><span class="dot" style="background:#ec3013"></span>Good odds (≥65%)</span>
+    <span><span class="dot" style="background:#f58d7d"></span>Maybe (35–64%)</span>
+    <span><span class="dot" style="background:#fce0dc"></span>Unlikely (&lt;35%)</span>
+    <span><span class="dot" style="background:#e6e4e2"></span>No data / calm</span>
   </div>
 
   <h2 class="section" id="bestBetsHeading">Best bets for your range, today's window</h2>
@@ -164,7 +187,7 @@
   <div id="globalTip"></div>
 
   <div class="about">
-    <b>How this works.</b> We check the wind forecast for every spot and show your odds of getting your chosen wind speed, hour by hour. Green means good odds, yellow means maybe, red means unlikely.
+    <b>How this works.</b> We check the wind forecast for every spot and show your odds of getting your chosen wind speed, hour by hour. Darker red means good odds, lighter red means unlikely.
     <br><br>
     <b>Tuned by local knowledge.</b> Some spots have quirky local wind patterns that generic forecasts miss — we adjust for that using real reports from local riders and nearby live wind stations, so the numbers get more accurate over time. Tap "Report actual conditions" on any spot to help tune it further.
     <br><br>
@@ -173,7 +196,7 @@
     This is a forecasting aid, not a safety guarantee — always check current conditions, tides and marine warnings before heading out.
   </div>
 
-  <div id="bulletinBox" style="display:none;background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:14px 16px;margin:16px 0;font-size:0.95rem;color:var(--muted);"></div>
+  <div id="bulletinBox" style="display:none;background:var(--panel);border:2px solid var(--border);border-radius:0;padding:14px 16px;margin:16px 0;font-size:0.95rem;color:var(--text);"></div>
 
 </main>
 
@@ -528,9 +551,11 @@ function renderMap() {
     const spot = forecast.spots.find(s => s.id === sp.id);
     let pct = null;
     if (spot) { const b = bestWindowForSpot(spot); pct = b ? b.probability : null; }
-    const color = pct === null ? "#4a5776" : pct >= 65 ? "#1fb570" : pct >= 35 ? "#e3b23c" : "#e0546b";
+    // Single-hue red ramp — dark/full red for good odds down to a light
+    // tint for unlikely, matching the rest of the UI (see .lvl-* classes).
+    const fillColor = pct === null ? "#e6e4e2" : pct >= 65 ? "#ec3013" : pct >= 35 ? "#f58d7d" : "#fce0dc";
     const marker = L.circleMarker([sp.lat, sp.lon], {
-      radius: 9, color, fillColor: color, fillOpacity: 0.85, weight: 2,
+      radius: 9, color: "#201e1d", fillColor, fillOpacity: 0.9, weight: 2,
     }).addTo(markerLayer);
     marker.bindPopup(`<b>${sp.name}</b><br>${pct === null ? "no data" : pct + "% chance of " + minKt + "–" + maxKt + "kt"}`);
   });
