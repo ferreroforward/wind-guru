@@ -1,5 +1,5 @@
 {
-  "version": "4968204",
-  "message": "Accuracy pass: fix all 9 high-impact + medium/low findings from Opus review",
-  "deployed_at": "2026-08-15T18:06:25Z"
+  "version": "77b2f0e",
+  "message": "Add live surface conditions board (wtfbc.ca + our own live stations)",
+  "deployed_at": "2026-08-15T19:29:25Z"
 }
