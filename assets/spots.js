@@ -46,7 +46,10 @@ export const SPOTS = [
     // our list. Rather than model it as a fully separate spot with no local
     // knowledge of its own beyond "people launch there too," it's folded in
     // here: same thermal/outflow/pressure-gradient system, same Squamish
-    // corridor.
+    // corridor. Per the Van Kiteboard OSR Group chat, Nexen Beach itself
+    // tends to run a bit lighter and patchier ("a lot of holes") than the
+    // Spit proper, especially on marginal days — worth knowing even though
+    // they share one entry here.
     id: "squamish-spit",
     name: "Squamish (Spit & Nexen Beach)",
     region: "Howe Sound",
@@ -120,13 +123,21 @@ export const SPOTS = [
       months: [5,6,7,8,9],
       hourWindow: [11, 18],
       dirSector: [150, 260],
-      note: "Secondary thermal channel down-Sound from the Spit — weaker and less reliable than Squamish itself; best on strong-thermal days."
+      // Timing detail from the North Shore Wing Group chat (Chris, 2026-05-23):
+      // "Porteau is not easy to predict. But when it's good I'll choose it
+      // over Squamish every time. Tends to turn on around 11-noon this time
+      // of year, often there is a lull when the tide changes, and often
+      // surprise late day blow." Matches the hourWindow above; the tide-
+      // change lull and late-day surprise aren't modeled (no tide data) but
+      // worth knowing.
+      note: "Secondary thermal channel down-Sound from the Spit — weaker and less reliable than Squamish itself; best on strong-thermal days. A NW wind reportedly mutes the inflow here even on an otherwise decent-looking day."
     },
     outflow: {
       enabled: true,
       dirSector: [300, 40],
-      note: "Mid-Howe Sound outflow/gap-wind site — picks up the same north drainage flow as Squamish, usually a touch lighter and more consistent, less gusty than the Spit. Per local rider knowledge, a strong outflow here (25kt+) can be genuinely fun on its own, not just a lesser alternative to the thermal."
-    }
+      note: "Mid-Howe Sound outflow/gap-wind site — picks up the same north drainage flow as Squamish, usually a touch lighter and more consistent, less gusty than the Spit. Per local rider knowledge, a strong outflow here (25kt+) can be genuinely fun on its own, not just a lesser alternative to the thermal — chat history backs this up, with reported gusts over 40kt on a big outflow day."
+    },
+    tide_note: "A flooding tide can kill the swell here even when the wind itself is still working (per chat: \"flooding tide killed the swell today and made it tough to get on foil\") — not modeled (no tide data), but worth checking a tide table alongside the forecast."
   },
   {
     // Merged from two separate entries (Jericho Beach, Spanish Banks) into
@@ -163,7 +174,7 @@ export const SPOTS = [
     // captures the "epic wave day" pattern the thermal-only dirSector alone
     // would miss, mirroring how Boundary Bay's synoptic_note works.
     synoptic_note: "The best/most epic wave days here come from strong NW or W synoptic wind, not just the afternoon thermal sea breeze — bigger fetch, bigger waves. Check the synoptic regime tag on a windy NW/W day, not just the thermal one.",
-    tide_note: "Can foil at any tide, but it's a long walk to the water if the tide is lower than about 10ft."
+    tide_note: "Can foil at any tide, but it's a long walk to the water if the tide is lower than about 10ft. General principle from Guillermo (applies here and elsewhere): when the tide runs against the wind, waves get steeper — e.g. a W/NW wind against an outgoing tide makes for steeper, choppier waves than the same wind with the tide running the same direction. Duration matters too — wind blowing all night tends to build bigger waves by morning."
   },
   {
     // Replaced Iona Beach/Jetty (per local rider feedback — not a popular
@@ -260,7 +271,7 @@ export const SPOTS = [
       note: "Shallow bay warms fast and drives a modest SW-W afternoon sea breeze on its own, on top of whatever synoptic southerly is already blowing."
     },
     outflow: { enabled: false },
-    direction_note: "Good on E, SE, or S; excellent on SW or W. A strong NW forecast can also work here — it wraps around near 49.023707, -122.870935 and produces excellent side-shore conditions that a simple \"NW is offshore\" read would miss. Local judgment call, not modeled.",
+    direction_note: "Good on E, SE, or S; excellent on SW or W. Per Van Kiteboard OSR Group chat, SE specifically tends to run gustier and choppier here than a clean SW/W day, and is a more dangerous kite launch at high tide — treat \"good on SE\" as more marginal than \"excellent on SW/W,\" not equivalent. A strong NW forecast can also work here — it wraps around near 49.023707, -122.870935 and produces excellent side-shore conditions that a simple \"NW is offshore\" read would miss. Local judgment call, not modeled.",
     tide_note: "Kiting needs a tide under ~12ft — above that it's nearly impossible to launch. No problem for winging, parawinging, or windsurfing at any tide. Low tide isn't a concern either, just a longer walk to the water."
   },
   {
@@ -330,7 +341,16 @@ export const SPOTS = [
     lat: 49.338035, lon: -123.238878,
     sports: ["windsurf", "wingfoil", "kite"],
     level: "intermediate",
-    favorable_deg: [[90, 140]], // East through just past Southeast, per local rider knowledge
+    // East through just past Southeast is the primary, locally-confirmed
+    // pattern (and the only sector the Point Atkinson offset relationship
+    // below is validated for). A second sector added from a chat data point
+    // (Chris, 2025-10-11: "Erwin 22 knots. West. Heading") — a due-W wind is
+    // also a real go-signal here, confirmed by Guillermo, but kept separate
+    // and narrow since it's a single data point rather than a season of
+    // knowledge like the ESE pattern. Only affects the general favorable-
+    // direction flag, not the Point Atkinson offset estimate (referenceStation
+    // below), which still only applies within the ESE dirSector.
+    favorable_deg: [[90, 140], [260, 280]],
     // Point Atkinson's own live SWOB station — found via igetwind.com's
     // station-finder API, same pattern as Pam Rocks/White Rock (see README
     // "Live verification"). Far more relevant now that Erwin Park is
