@@ -1,5 +1,5 @@
 {
-  "version": "db2b30c",
-  "message": "Add offsetKt/dirSector reference-station logic (Erwin Park) — missed in previous commit",
-  "deployed_at": "2026-08-16T00:48:36Z"
+  "version": "53c0cc0",
+  "message": "Refine spot configs from full chat export review: Erwin West sector, Porteau timing/tide notes, White Rock SE caution, Jericho tide principle, Nexen note",
+  "deployed_at": "2026-08-16T01:10:12Z"
 }
