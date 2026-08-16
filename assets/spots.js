@@ -1,6 +1,8 @@
-// Wind Guru — spot database for the Strait of Georgia / Howe Sound / Metro Vancouver region.
-// Each spot encodes the local meteorology needed by rules.js to tell thermal wind
-// apart from synoptic/gradient wind, and to flag onshore vs offshore direction risk.
+// Wind Guru — spot database for the Strait of Georgia / Howe Sound / Metro
+// Vancouver region.
+// Each spot encodes the local meteorology needed by rules.js to tell thermal
+// wind apart from synoptic/gradient wind, and to flag onshore vs offshore
+// direction risk.
 //
 // regime types a spot can exhibit:
 //   "thermal"   — local heating-driven wind (sea breeze / valley inflow), needs sun + weak gradient
@@ -9,6 +11,18 @@
 //
 // favorable_deg: [start,end] compass sector(s) considered rideable / safe onshore-to-cross-shore.
 // Directions outside this sector are flagged as "offshore / not rideable" even if speed matches.
+//
+// Coordinates for every spot are the actual water-access/launch point Guillermo
+// uses, not necessarily the beach's official/park coordinates — confirmed
+// directly by him (Aug 2026), see individual spot comments for anything more
+// specific than that.
+//
+// A few spots also carry `tide_note`, `direction_note`, or `current_note`
+// fields — documentation-only local knowledge that isn't wired into
+// classifyHour() (this app doesn't track tide state or current at all yet —
+// see README "Known limitations"). They're captured here so a rider can
+// apply them manually and so the config is a complete record of what's
+// known, not just what the rule engine currently uses.
 
 // Reference points for the Howe Sound pressure-gradient check (see
 // rules.js). Inspired by kiteloop.vercel.app's "two independent gradients"
@@ -25,10 +39,18 @@ export const PRESSURE_REFERENCE = {
 
 export const SPOTS = [
   {
+    // Coordinates updated (Aug 2026) to Guillermo's actual water-access
+    // point, and the spot broadened to explicitly cover Nexen Beach — a
+    // separate, actively-used launch a short distance away that came up
+    // repeatedly in the North Shore Wing Group WhatsApp chat but wasn't in
+    // our list. Rather than model it as a fully separate spot with no local
+    // knowledge of its own beyond "people launch there too," it's folded in
+    // here: same thermal/outflow/pressure-gradient system, same Squamish
+    // corridor.
     id: "squamish-spit",
-    name: "Squamish Spit",
+    name: "Squamish (Spit & Nexen Beach)",
     region: "Howe Sound",
-    lat: 49.7168, lon: -123.1682,
+    lat: 49.682811, lon: -123.172443,
     sports: ["wingfoil", "kite", "windsurf"],
     level: "advanced",
     favorable_deg: [[150, 260]], // S–SW thermal inflow, or N outflow (handled separately as outflow regime)
@@ -61,11 +83,12 @@ export const SPOTS = [
     // Furry Creek used to be modeled as a separate spot, but it's right next
     // to Porteau Cove (~4km down-Sound, same exposure) — per local knowledge
     // they're effectively the same spot, so Furry Creek's thermal profile
-    // was merged in here rather than kept as its own entry.
+    // was merged in here rather than kept as its own entry. Coordinates
+    // refined (Aug 2026) to Guillermo's exact water-access point.
     id: "porteau-cove",
     name: "Porteau Cove",
     region: "Howe Sound",
-    lat: 49.5606, lon: -123.2394,
+    lat: 49.560074, lon: -123.239163,
     sports: ["windsurf", "wingfoil"],
     level: "intermediate",
     favorable_deg: [[300, 40], [135, 260]], // N outflow, or S–SE–SW inflow/gradient wind
@@ -102,136 +125,305 @@ export const SPOTS = [
     outflow: {
       enabled: true,
       dirSector: [300, 40],
-      note: "Mid-Howe Sound outflow/gap-wind site — picks up the same north drainage flow as Squamish, usually a touch lighter and more consistent, less gusty than the Spit."
+      note: "Mid-Howe Sound outflow/gap-wind site — picks up the same north drainage flow as Squamish, usually a touch lighter and more consistent, less gusty than the Spit. Per local rider knowledge, a strong outflow here (25kt+) can be genuinely fun on its own, not just a lesser alternative to the thermal."
     }
   },
   {
-    id: "jericho",
-    name: "Jericho Beach",
+    // Merged from two separate entries (Jericho Beach, Spanish Banks) into
+    // one spot, per Guillermo (Aug 2026): "when we say Jericho we refer to
+    // both Jericho and Spanish Banks, we usually get in the water where it
+    // looks better" — i.e. these are treated as one go/no-go decision on the
+    // water, not two independently-forecast spots. Coordinates are his
+    // actual access point between the two beaches. Splitting calibration
+    // history: this replaces the "jericho" and "spanish-banks" ids, so any
+    // accumulated rider-feedback/live-verification history under those old
+    // ids stops being read (a fresh id starts with no calibration bias,
+    // same as any brand-new spot).
+    id: "jericho-spanish-banks",
+    name: "Jericho - Spanish Banks",
     region: "English Bay",
-    lat: 49.2718, lon: -123.1934,
+    lat: 49.281646, lon: -123.235223,
     sports: ["windsurf", "wingfoil", "kite"],
     level: "beginner-friendly",
-    favorable_deg: [[230, 320]],
+    // Broadened from the old [230,320] westerly-thermal-only sector to
+    // fully include NW (per local knowledge below, strong NW/W synoptic
+    // wind — not just the afternoon sea breeze — produces the best waves
+    // here).
+    favorable_deg: [[230, 335]],
     liveStation: { code: "whc", name: "Vancouver Harbour" },
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],
       hourWindow: [11, 19],
       dirSector: [250, 300], // W/WNW sea breeze
-      note: "English Bay sea breeze: sunny days with a weak gradient draw a westerly thermal onshore in the afternoon. Sheltered, flatter water — good learning venue."
+      note: "English Bay sea breeze: sunny days with a weak gradient draw a westerly thermal onshore in the afternoon. Sheltered, flatter water on a typical thermal day — good learning venue."
     },
-    outflow: { enabled: false }
+    outflow: { enabled: false },
+    // Distinct from (and generally bigger than) the afternoon thermal above —
+    // captures the "epic wave day" pattern the thermal-only dirSector alone
+    // would miss, mirroring how Boundary Bay's synoptic_note works.
+    synoptic_note: "The best/most epic wave days here come from strong NW or W synoptic wind, not just the afternoon thermal sea breeze — bigger fetch, bigger waves. Check the synoptic regime tag on a windy NW/W day, not just the thermal one.",
+    tide_note: "Can foil at any tide, but it's a long walk to the water if the tide is lower than about 10ft."
   },
   {
-    id: "spanish-banks",
-    name: "Spanish Banks",
-    region: "English Bay",
-    lat: 49.2764, lon: -123.2042,
-    sports: ["windsurf", "wingfoil", "kite"],
-    level: "intermediate",
-    favorable_deg: [[230, 320]],
-    liveStation: { code: "whc", name: "Vancouver Harbour" },
-    thermal: {
-      enabled: true,
-      months: [4,5,6,7,8,9],
-      hourWindow: [11, 19],
-      dirSector: [250, 300],
-      note: "Same westerly sea breeze as Jericho next door, slightly more open water and current from the North Arm of the Fraser at low tide."
-    },
-    outflow: { enabled: false }
-  },
-  {
-    id: "iona",
-    name: "Iona Beach / Jetty",
+    // Replaced Iona Beach/Jetty (per local rider feedback — not a popular
+    // spot) with Steveston/Garry Point Park, a few km south at the mouth of
+    // the Fraser's South Arm. Coordinates refined (Aug 2026) to Guillermo's
+    // exact water-access point.
+    id: "garry-point",
+    name: "Steveston - Garry Point Park",
     region: "Fraser Delta",
-    lat: 49.2119, lon: -123.1994,
+    lat: 49.123665, lon: -123.196088,
     sports: ["kite", "windsurf", "wingfoil"],
     level: "intermediate",
-    favorable_deg: [[180, 300]],
-    liveStation: { code: "yvr", name: "Vancouver Int'l Airport" },
+    // Widened slightly from [180,300] to fully include NW (315°) — the
+    // strong-current note below specifically calls out W/NW/SW as the best
+    // directions here.
+    favorable_deg: [[180, 320]],
+    // Swapped from the YVR airport EC station to Sand Heads — the Coast
+    // Guard lightstation right at the mouth of the Fraser's South Arm, a few
+    // hundred meters offshore from this spot. Per North Shore Wing Group
+    // chat, local riders already use Sand Heads as their own go/no-go read
+    // for Steveston ("16kts at sandheads... probably the best call"), the
+    // same pattern as Pam Rocks for Porteau/Squamish — and it's a far more
+    // representative reading than an airport ~15km inland. Found via
+    // igetwind.com's station-finder API, same as our other igetwind
+    // stations; sid inferred from Sand Heads' Environment Canada station ID
+    // (CWVF) by the same "CW-" naming pattern as CWAS/CWWK/CWSB — not
+    // independently confirmed against a live igetwind response this
+    // session, so if it doesn't match, this live check just silently stays
+    // unavailable rather than breaking anything (same defensive fallback
+    // every igetwind station uses).
+    liveStation: { type: "igetwind", sid: "CWVF", lat: 49.1059, lon: -123.3033, name: "Sand Heads" },
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],
       hourWindow: [11, 19],
       dirSector: [260, 300],
-      note: "Picks up the same sea breeze as Jericho/Spanish Banks, but is more open to the Strait, so it also runs on general SW–W synoptic gradient wind, not just thermal."
+      note: "Open to the Strait at the mouth of the Fraser's South Arm — picks up the same sea breeze as Jericho/Spanish Banks, but more exposed, so it also runs on general SW–W synoptic gradient wind, not just thermal."
     },
-    outflow: { enabled: false }
+    outflow: { enabled: false },
+    // Not modeled (no current data source), but worth recording — this is
+    // the kind of local knowledge that explains why the same wind speed can
+    // look very different here from one session to the next.
+    current_note: "Strong currents here — waves can be very good when the wind opposes the current. West, NW, and SW are the best directions for this reason, independent of the general favorable-direction check above."
   },
   {
+    // Coordinates and direction/tide knowledge updated (Aug 2026) directly
+    // from Guillermo. The previous thermal dirSector (SW, 220-260°) is
+    // dropped here — his direct knowledge says SW is actually one of the
+    // *unfavorable* offshore directions at this spot (see favorable_deg
+    // below), which contradicts what that config assumed, so rather than
+    // carry forward a now-known-wrong thermal pattern it's left disabled
+    // pending better information. The existing synoptic_note already had
+    // the right idea (this spot's biggest days are gradient-driven, not
+    // thermal) — tightened to name SE specifically as the core direction.
     id: "boundary-bay",
     name: "Boundary Bay (Centennial Beach)",
     region: "South Delta",
-    lat: 49.0075, lon: -123.0505,
+    lat: 49.008345, lon: -123.034898,
     sports: ["kite", "wingfoil", "windsurf"],
     level: "beginner-friendly",
-    favorable_deg: [[150, 260]],
+    // SE is best; E, S and NE also work (NE tends to be cold). SW, NW and N
+    // are offshore here and not recommended (also very gusty) — so the
+    // favorable arc runs NE through S, explicitly excluding the SW–N range.
+    favorable_deg: [[45, 180]],
     // White Rock's own official METAR station — found via igetwind.com's
-    // station API (see README "Live verification") — is a few km closer to
-    // this spot than the Sand Heads Lightstation used previously.
+    // station API (see README "Live verification").
+    liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
+    thermal: { enabled: false },
+    outflow: { enabled: false },
+    synoptic_note: "Boundary Bay's biggest days are usually synoptic — a strong SE–S gradient wind ahead of an approaching frontal system funnels straight up the bay. Check the synoptic regime tag, not just the thermal one.",
+    tide_note: "Minimum ~10ft tide for foil sports (winging, kitefoiling, parawinging) — no concern for kiting or windsurfing at any tide."
+  },
+  {
+    // New spot (Aug 2026), split out from what used to be a single combined
+    // "White Rock / Crescent Beach" entry — Guillermo's direct knowledge
+    // makes clear these two beaches take different winds and have somewhat
+    // different tide behavior, so they're now independently forecastable.
+    id: "white-rock-east",
+    name: "White Rock - East Beach",
+    region: "South Delta",
+    lat: 49.015658, lon: -122.790661,
+    sports: ["kite", "wingfoil", "windsurf"],
+    level: "beginner-friendly",
+    // Good on E/SE/S, excellent on SW/W — one continuous arc from E through
+    // W covers all of it (the engine doesn't grade "good" vs "excellent",
+    // see direction_note for that texture).
+    favorable_deg: [[90, 270]],
     liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],
       hourWindow: [12, 19],
-      dirSector: [220, 260],
-      note: "Shallow bay warms fast and drives a modest SW afternoon sea breeze on its own, on top of whatever synoptic southerly is already blowing."
+      dirSector: [220, 270], // the "excellent" SW-W band specifically
+      note: "Shallow bay warms fast and drives a modest SW-W afternoon sea breeze on its own, on top of whatever synoptic southerly is already blowing."
     },
     outflow: { enabled: false },
-    synoptic_note: "Boundary Bay's biggest days are usually synoptic — a strong S–SSE gradient wind ahead of an approaching frontal system funnels straight up the bay. Check the synoptic regime tag, not just the thermal one."
+    direction_note: "Good on E, SE, or S; excellent on SW or W. A strong NW forecast can also work here — it wraps around near 49.023707, -122.870935 and produces excellent side-shore conditions that a simple \"NW is offshore\" read would miss. Local judgment call, not modeled.",
+    tide_note: "Kiting needs a tide under ~12ft — above that it's nearly impossible to launch. No problem for winging, parawinging, or windsurfing at any tide. Low tide isn't a concern either, just a longer walk to the water."
   },
   {
-    id: "white-rock",
-    name: "White Rock / Crescent Beach",
+    // New spot (Aug 2026) — see white-rock-east above for why this was
+    // split out on its own.
+    id: "crescent-beach",
+    name: "Crescent Beach",
     region: "South Delta",
-    lat: 49.0246, lon: -122.8047,
-    sports: ["kite", "wingfoil"],
+    lat: 49.057512, lon: -122.888188,
+    sports: ["kite", "wingfoil", "windsurf"],
     level: "beginner-friendly",
-    favorable_deg: [[150, 260]],
-    // White Rock's own official METAR station — found via igetwind.com's
-    // station API (see README "Live verification") — is a few km closer to
-    // this spot than the Sand Heads Lightstation used previously.
+    // Same wind pattern as Tsawwassen Ferry Terminal per local knowledge: W
+    // best when strong, SW also works well, N can work as long as it doesn't
+    // carry much East in it (i.e. due N, not NE).
+    favorable_deg: [[210, 280], [345, 10]],
+    // No dedicated nearby station — reusing the White Rock METAR (same
+    // South Delta cluster) as the closest available official reading,
+    // ~13km away. Distance caveat applies more here than at White Rock East
+    // itself, which is effectively co-located with this station.
     liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
-    thermal: {
-      enabled: true,
-      months: [4,5,6,7,8,9],
-      hourWindow: [12, 19],
-      dirSector: [220, 260],
-      note: "Same shallow south-facing exposure as Boundary Bay, a few km east — thermal and synoptic southerlies both work here."
-    },
-    outflow: { enabled: false }
+    // No confirmed thermal timing/season pattern from local knowledge yet —
+    // left disabled rather than assume it matches its South Delta
+    // neighbors, same reasoning as Erwin Park's thermal field.
+    thermal: { enabled: false },
+    outflow: { enabled: false },
+    direction_note: "West is best when strong; SW also works very well. North can work too, as long as it doesn't have much East in it (due N, not NE).",
+    tide_note: "Same tide concern as White Rock East Beach — kiting needs a tide under ~12ft; no problem for winging, parawinging, or windsurfing at any tide."
   },
   {
+    // New spot (Aug 2026). Only the south side of the causeway is modeled —
+    // per Guillermo, the north side has the opposite behavior (flat when
+    // the south side has waves and vice versa) and a higher tide minimum
+    // (12ft+ vs 8ft+ if foiling); he chose to model just the south side for
+    // now rather than add a second "north causeway" entry with the inverse
+    // rules. Revisit if the north side turns out to be worth its own spot.
+    id: "tsawwassen-south",
+    name: "Tsawwassen Ferry Terminal (South Causeway)",
+    region: "South Delta",
+    lat: 49.015191, lon: -123.114600,
+    sports: ["kite", "wingfoil", "windsurf"],
+    level: "intermediate",
+    // Flat water on NW/N; SW and S also work (bring more waves).
+    favorable_deg: [[160, 230], [300, 20]],
+    // No dedicated nearby station — reusing the White Rock METAR as the
+    // closest available official reading (~19km away, the roughest distance
+    // caveat of any spot in this cluster).
+    liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
+    thermal: { enabled: false },
+    outflow: { enabled: false },
+    direction_note: "South side of the causeway: NW or N gives flat-water conditions; SW brings more waves, S also works. (The north side of the causeway is the mirror image of this — flat when the south side is wavy and vice versa — but isn't separately modeled here.)",
+    tide_note: "South side isn't foilable below about 8ft of tide."
+  },
+  {
+    // Corrected location (was a placeholder guess at Point Roberts, ~45km
+    // south of here) — confirmed by the site owner to be right next to
+    // Point Atkinson in West Vancouver, a couple km away. Not the same
+    // exposure as Point Atkinson itself: Erwin Park is the actual water
+    // access point (wingfoil/windsurf always, kite only on a very low
+    // tide), and per local rider knowledge it typically reads about 4-5kt
+    // lighter than Point Atkinson and favors an East-to-Southeast wind —
+    // not the SW sea breeze this config wrongly assumed before the
+    // location was corrected. Coordinates refined again (Aug 2026) to
+    // Guillermo's exact water-access point.
     id: "erwin-park",
     name: "Erwin Park",
-    region: "Point Roberts",
-    lat: 48.9740, lon: -123.0850, // approximate — west side of the Point Roberts peninsula
+    region: "West Vancouver",
+    lat: 49.338035, lon: -123.238878,
     sports: ["windsurf", "wingfoil", "kite"],
     level: "intermediate",
-    favorable_deg: [[150, 280]],
-    // White Rock's own official METAR station — found via igetwind.com's
-    // station API (see README "Live verification") — is a few km closer to
-    // this spot than the Sand Heads Lightstation used previously.
-    liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
-    thermal: {
-      enabled: true,
-      months: [4,5,6,7,8,9],
-      hourWindow: [12, 19],
-      dirSector: [220, 260],
-      note: "Same south/southwest sea-breeze exposure as Boundary Bay and White Rock nearby."
-    },
+    favorable_deg: [[90, 140]], // East through just past Southeast, per local rider knowledge
+    // Point Atkinson's own live SWOB station — found via igetwind.com's
+    // station-finder API, same pattern as Pam Rocks/White Rock (see README
+    // "Live verification"). Far more relevant now that Erwin Park is
+    // confirmed to be right next to Point Atkinson, rather than sharing the
+    // White Rock METAR ~45km away. Not independently confirmed that
+    // igetwind's aggregator carries this specific station id — if it
+    // doesn't, this live check just silently stays unavailable rather than
+    // breaking anything (same defensive fallback every igetwind station
+    // uses).
+    liveStation: { type: "igetwind", sid: "CWSB", lat: 49.3300, lon: -123.2650, name: "Point Atkinson" },
+    // No local-knowledge basis for a thermal (sea-breeze) driver here,
+    // unlike the SW-facing spots further south — left disabled rather than
+    // guess at one. If Erwin Park does have a thermal component to its
+    // East/Southeast wind, let us know and this can be modeled properly.
+    thermal: { enabled: false },
     outflow: { enabled: false },
-    // Local rider rule of thumb: Erwin Park tends to turn on once Point
-    // Atkinson (the Strait of Georgia entrance station, a good gauge of
-    // broader synoptic push) is reading above roughly 16-18kt — often a
-    // better predictor than the spot's own local model output.
+    // Local rider rule of thumb: Erwin Park typically reads about 4-5kt
+    // lighter than Point Atkinson (its own reference point, ~2km away) when
+    // the wind is East-to-Southeast — an offset relationship, not just a
+    // "did it cross a threshold" trigger. `offsetKt` is added to Point
+    // Atkinson's reading to estimate this spot's speed; `dirSector` gates
+    // it to the direction this actually holds for. See classifyHour() in
+    // rules.js for how offsetKt is used differently from a plain
+    // thresholdKt-only referenceStation (e.g. Erwin Park's old config, or
+    // a future spot that only needs the simpler "did it cross X" check).
     referenceStation: {
       name: "Point Atkinson",
       lat: 49.3300, lon: -123.2650,
-      thresholdKt: 17,
-      note: "Typically means enough synoptic push in the Strait for Erwin Park to be working, even if the local forecast alone looks marginal."
-    }
+      offsetKt: -4.5,
+      dirSector: [90, 140],
+      note: "Point Atkinson is right next to Erwin Park, and typically reads a bit stronger than what you'll actually get at the water access here."
+    },
+    tide_note: "Tides aren't a concern for wing/foil/windsurf here, but kites can only be launched at low tide — this is a very small beach access."
+  },
+  {
+    // New spot (Aug 2026), added directly by Guillermo alongside the
+    // Ambleside refinement below — the two are "almost identical" per his
+    // description, sharing the same tide/wind mechanic (see current_note).
+    id: "dundarave-pier",
+    name: "Dundarave Pier Beach",
+    region: "West Vancouver",
+    lat: 49.332129, lon: -123.183767,
+    sports: ["windsurf", "wingfoil", "kite"],
+    level: "intermediate",
+    // Same westerly sector as Ambleside next door — see direction_note for
+    // the W-vs-NW nuance neither favorable_deg nor the engine's binary
+    // favorable check can represent on its own.
+    favorable_deg: [[230, 320]],
+    // No dedicated nearby station — reusing Ambleside's Vancouver Harbour EC
+    // station, ~2km away, the closest official reading available.
+    liveStation: { code: "whc", name: "Vancouver Harbour" },
+    thermal: { enabled: false },
+    outflow: { enabled: false },
+    current_note: "Big waves here when the tide in the channel is going out (ebb) combined with a NW or West wind — the wind opposing the outgoing current is what makes it work, the same mechanic as Steveston/Garry Point. NW and W are the best directions for this reason. Not modeled (no current data source), but worth applying manually.",
+    direction_note: "The more west in the wind, the better — a wind with a lot of north in it works less well here (see Ambleside Beach, which behaves almost identically; on a given day one spot can work better than the other).",
+    access_note: "Popular spot, often crowded — that makes kite launches difficult here (a people problem, not a tide/wind one). Wing, foil, and windsurf launches aren't affected."
+  },
+  {
+    // Added from North Shore Wing Group chat history rather than a direct
+    // rider conversation initially — coordinates and the fuller tide/current
+    // picture since confirmed directly by Guillermo (Aug 2026), who
+    // describes this spot as "almost identical" to Dundarave Pier Beach
+    // above (same ebb-tide + NW/W wave mechanic). The group's own mention
+    // ("Ambleside is on! 5.5, decent well") and Michael Thomas's original
+    // tide rule of thumb still stand as the earliest source for this spot,
+    // but there's still no season of direct local knowledge behind the
+    // thermal/direction config the way there is for e.g. Squamish or Erwin
+    // Park. Flag if this needs correcting.
+    id: "ambleside",
+    name: "Ambleside Beach",
+    region: "West Vancouver",
+    lat: 49.322244, lon: -123.151668,
+    sports: ["windsurf", "wingfoil"],
+    level: "intermediate",
+    // Right at the entrance to Burrard Inlet / First Narrows — same general
+    // English Bay opening as Jericho/Spanish Banks, so provisionally given
+    // the same westerly favorable sector rather than guessing a new one.
+    favorable_deg: [[230, 320]],
+    // Vancouver Harbour EC station — already used for Jericho/Spanish Banks
+    // and Dundarave Pier Beach next door, and if anything more directly
+    // representative here since Ambleside sits right at the harbour mouth.
+    liveStation: { code: "whc", name: "Vancouver Harbour" },
+    // No confirmed thermal pattern from local knowledge yet — left disabled
+    // rather than assume it shares Jericho's sea-breeze timing just because
+    // it's nearby. The tide/current rule the group and Guillermo both gave
+    // isn't something our thermal/outflow/synoptic model represents (this
+    // app doesn't factor in tide state at all yet — see README known
+    // limitations), so it's captured here as a note for a rider to apply
+    // manually rather than built into classifyHour.
+    thermal: { enabled: false },
+    outflow: { enabled: false },
+    current_note: "Big waves here when the tide in the channel is going out (ebb) combined with a NW or West wind — same mechanic as Dundarave Pier Beach next door. Per local rider knowledge (Michael Thomas, North Shore Wing Group): the last hour or two of falling tide before slack, still with a west wind, produces a notably good rip. Not modeled (this app doesn't track tide state yet); factor in manually against a tide table.",
+    direction_note: "The more west in the wind, the better — a wind with a lot of north in it works less well. Almost identical to Dundarave Pier Beach nearby; on a given day one spot can work better than the other."
   }
 ];
 

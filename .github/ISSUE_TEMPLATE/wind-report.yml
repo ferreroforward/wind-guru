@@ -19,12 +19,15 @@ body:
       options:
         - squamish-spit
         - porteau-cove
-        - jericho
-        - spanish-banks
-        - iona
+        - jericho-spanish-banks
+        - garry-point
         - boundary-bay
-        - white-rock
+        - white-rock-east
+        - crescent-beach
+        - tsawwassen-south
         - erwin-park
+        - dundarave-pier
+        - ambleside
     validations:
       required: true
   - type: input

@@ -225,13 +225,36 @@ other file needs to change.
 
 A spot can also define a `referenceStation` instead of (or alongside) its
 own thermal/outflow config, for cases where a nearby exposed gauge point
-predicts it better than local models do — e.g. Erwin Park (Point Roberts)
-tends to turn on once Point Atkinson is reading above ~17kt. `generate.mjs`
-and the live-refresh path both fetch the reference station once and pass its
-speed into `classifyHour`; see `assets/rules.js`.
+predicts it better than local models do. Two modes, both in
+`classifyHour()` (`assets/rules.js`):
+
+- **`thresholdKt`** — a plain "did the reference station cross X" check: once
+  it does, a calm/mixed hour gets upgraded (or, if the spot's own signals
+  already found something, just gets a corroborating note).
+- **`offsetKt` + `dirSector`** (used by Erwin Park) — for spots that move
+  *with* the reference station at a fairly fixed offset rather than a simple
+  on/off threshold. Erwin Park sits right next to Point Atkinson but, per
+  local rider knowledge, typically reads about 4.5kt lighter than it on an
+  East–Southeast wind — so this spot's estimate is `refSpeedKt + offsetKt`,
+  gated to `dirSector` (the offset only holds for the direction it was
+  observed under), and only overrides a calm/mixed regime once the estimate
+  itself clears a 5kt floor.
+
+`generate.mjs` and the live-refresh path both fetch the reference station
+once and pass its speed into `classifyHour`.
 
 Set `pressureGradientAware: true` on a Howe Sound spot to factor in the MSLP
 gradient check described above.
+
+Several spots also carry a `tide_note`, `current_note`, `direction_note`, or
+`access_note` — documentation-only local knowledge (tide minimums, wind-vs-
+current wave mechanics, graded favorability beyond the binary
+`favorable_deg` check, launch-logistics caveats) that isn't wired into
+`classifyHour()`, since this app doesn't track tide state or current at all.
+They exist so the config is a complete record of what's known about a spot,
+not just what the rule engine currently acts on — a rider is expected to
+read and apply these manually. Good candidates for a future "does this spot
+need tide data" pass.
 
 ## Rider feedback & self-calibration
 
@@ -307,10 +330,11 @@ genuinely *observed* wind, not a forecast. Three source types:
   per local rider feedback is far more representative of the corridor than
   Environment Canada's Squamish Airport station, which sits in a wind
   shadow and is no longer used for anything.
-- **`type: "igetwind"`** (Porteau Cove, Boundary Bay, White Rock, Erwin
-  Park): [igetwind.com](https://igetwind.com/)'s station-finder API
-  (`igetwind.com/api/lw/stations/{lat}/{lon}/{radiusKm}/0`), also found by
-  inspecting network requests — public, no key needed, aggregates METAR
+- **`type: "igetwind"`** (Porteau Cove, Boundary Bay, White Rock East,
+  Crescent Beach, Tsawwassen South, Erwin Park, Garry Point):
+  [igetwind.com](https://igetwind.com/)'s station-finder API
+  (`igetwind.com/api/lw/stations/{lat}/{lon}/{radiusKm}/0`), also found
+  by inspecting network requests — public, no key needed, aggregates METAR
   airports, marine buoys, and citizen weather stations. We pin a *specific*
   known-good `sid` per spot rather than auto-picking "nearest" every run
   (a lot of what it returns is unstaffed citizen hardware not worth
@@ -318,17 +342,37 @@ genuinely *observed* wind, not a forecast. Three source types:
   - Porteau Cove → **Pam Rocks** (`CWAS`), a Coast Guard station right at
     the Howe Sound entrance — a better read on Porteau's more open exposure
     than the Spit meter would be, even though it's ~10km away.
-  - Boundary Bay / White Rock / Erwin Park → **White Rock, BC** (`CWWK`),
-    the official METAR station, a few km closer to this cluster than the
-    Sand Heads Lightstation used previously.
+  - White Rock East → **White Rock, BC** (`CWWK`), the official METAR
+    station — effectively co-located with this spot.
+  - Boundary Bay, Crescent Beach, and Tsawwassen South also reuse the same
+    White Rock station as the nearest available official reading, since
+    there's nothing closer confirmed yet — a rougher approximation for these
+    three the further they sit from White Rock itself (Tsawwassen South is
+    the roughest, ~19km away). See "Known limitations" below.
+  - Erwin Park → **Point Atkinson** (`CWSB`), a couple km away — swapped in
+    once Erwin Park's location was corrected to be right next to Point
+    Atkinson (it previously, incorrectly, shared the White Rock station
+    ~45km/~23km away from where it was thought/actually located). Doubles as
+    the `referenceStation` used for Erwin Park's offset-based estimate — see
+    "Editing the spot list" above.
+  - Garry Point → **Sand Heads** (`CWVF`), the Coast Guard lightstation right
+    at the mouth of the Fraser's South Arm, a few hundred meters offshore —
+    swapped in from the YVR airport EC station per North Shore Wing Group
+    local knowledge (riders there already use Sand Heads as their own
+    go/no-go read for this spot). `sid` inferred from the "CW-" station-ID
+    naming pattern shared by the other igetwind stations above, not
+    independently confirmed against a live igetwind response — if it doesn't
+    match, this live check just silently stays unavailable, same defensive
+    fallback every igetwind station uses.
   - Speeds arrive in m/s and get converted to knots (`×1.943844`). The
     observation time was previously passed through as raw UTC and displayed
     as if it were Pacific local — off by 7-8 hours whenever it was actually
     shown; now converted properly.
-- **`type: "ec"` (default)** (Jericho, Spanish Banks, Iona): the nearest
-  Environment Canada station with a
+- **`type: "ec"` (default)** (Jericho - Spanish Banks, Dundarave Pier Beach,
+  Ambleside): the nearest Environment Canada station with a
   [Past 24 Hour Conditions](https://weather.gc.ca/past_conditions/index_e.html)
-  page.
+  page — all three currently share the same Vancouver Harbour station
+  (`whc`).
 
 Each run, `generate.mjs`:
 
@@ -383,14 +427,16 @@ a stale station, a parsing hiccup) can't swing the whole spot.
 Limitations: station locations are the *nearest available* observation
 point, not co-located with the spot itself (see each spot's `liveStation`
 comment in `spots.js`) — treat the comparison as an approximation, most
-trustworthy for the Squamish Spit and Porteau Cove (both on-site or
-near-on-site instruments) and roughest for Erwin Park (~23km from the White
-Rock METAR it shares with Boundary Bay/White Rock). igetwind's citizen-station data also isn't independently
-audited — we only pin two specific `sid`s from it (Pam Rocks, White Rock
-METAR), both official government stations, not the amateur ones it also
-returns. It only checks the current hour once
-per run (twice daily), not a continuous stream, so it can catch a
-systematic bias but won't catch a mismatch that starts and ends between runs.
+trustworthy for the Squamish Spit, Porteau Cove, White Rock East, Garry
+Point, and Erwin Park (all on-site or near-on-site instruments) and
+roughest for Tsawwassen South (~19km from the White Rock METAR it, Boundary
+Bay, and Crescent Beach all currently share — see "Live verification"
+above). igetwind's citizen-station data also isn't independently audited —
+we only pin official government stations from it (Pam Rocks, White Rock
+METAR, Point Atkinson, Sand Heads), not the amateur ones it also returns. It
+only checks the current hour once per run (twice daily), not a continuous
+stream, so it can catch a systematic bias but won't catch a mismatch that
+starts and ends between runs.
 
 ## Live surface conditions board
 
@@ -401,8 +447,8 @@ Two sources feed it, merged in `generate.mjs`:
 
 1. **Our own live stations** — every spot's `liveStation` (see "Live
    verification" above), one card per unique station even where several
-   spots share one (e.g. Jericho and Spanish Banks both read "Vancouver
-   Harbour").
+   spots share one (e.g. Jericho - Spanish Banks, Dundarave Pier Beach, and
+   Ambleside all read "Vancouver Harbour").
 2. **[wtfbc.ca/swob.php](https://wtfbc.ca/swob.php)** — "Weather Talk For
    BC," a BC windsports community forum, runs a page that aggregates live
    surface observations from ~11 stations across the region (mostly
@@ -435,7 +481,14 @@ twice(-now-thrice)-daily Action run.
 
 ## Known limitations / good next steps
 
-- Tide state (important at Boundary Bay and Iona) isn't factored in.
+- Tide state and current isn't factored in, even though it matters a lot at
+  several spots — see each spot's `tide_note`/`current_note` in
+  `spots.js` for the specifics (White Rock East and Crescent Beach both need
+  a tide under ~12ft to kite-launch; Boundary Bay needs 10ft+ for foil
+  sports; Tsawwassen South needs 8ft+; Garry Point, Dundarave Pier Beach, and
+  Ambleside all get their best waves when the wind opposes an ebbing
+  current). All currently have to be applied manually against a tide table
+  rather than by the model.
 - The EC bulletin is shown as a link, not yet parsed into the probability
   model — a good next step would be extracting its knot ranges for
   today/tonight and using them to directly anchor the Squamish estimate
@@ -466,11 +519,16 @@ twice(-now-thrice)-daily Action run.
   hour only — it still can't check how a forecast made 3 days out held up.
 - Live-station comparisons use the nearest EC/igetwind station, not a
   station at the spot itself — see "Live verification" above for which
-  spots share a station and how far it might be. Boundary Bay, White Rock
-  and Erwin Park all currently share the same White Rock METAR station
-  (up to ~23km away) — one bad or unusual reading there skews all three
+  spots share a station and how far it might be. White Rock East, Boundary
+  Bay, Crescent Beach, and Tsawwassen South all currently share the same
+  White Rock METAR station (co-located for White Rock East, up to ~19km away
+  for Tsawwassen South) — one bad or unusual reading there skews all four
   spots' live checks at once. Splitting or weighting that shared station is
-  a good next step.
+  a good next step. Jericho - Spanish Banks, Dundarave Pier Beach, and
+  Ambleside likewise all share the Vancouver Harbour EC station. (Erwin Park
+  and Garry Point don't share a station with anything else — they use Point
+  Atkinson and Sand Heads respectively, per their corrected/refined
+  locations.)
 - A trigger-fired hour (reference-station or Pam Rocks threshold) shows a
   fixed floor value, not a real per-hour model estimate — `probabilityInRange`
   now uses a wider base sigma for these hours so they don't read as more

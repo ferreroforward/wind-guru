@@ -612,7 +612,8 @@ async function main() {
 
   // "Live surface conditions" board: our own already-fetched live stations
   // (one entry per unique station, even though several spots can share one —
-  // e.g. jericho/spanish-banks both use "Vancouver Harbour") plus every
+  // e.g. Jericho - Spanish Banks, Dundarave Pier Beach, and Ambleside all
+  // use "Vancouver Harbour") plus every
   // additional station wtfbc.ca's board offers that we don't already have.
   // Riders like seeing the wider regional picture, not just the handful of
   // spots we actively forecast for. The one genuine overlap between the two
