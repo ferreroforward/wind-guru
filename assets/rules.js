@@ -482,25 +482,53 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     }
   }
 
-  // Reference-station trigger: some spots are better predicted by whether a
-  // nearby exposed gauge point is already reading above a threshold than by
-  // their own local model output — e.g. Erwin Park (Point Roberts) tends to
-  // turn on once Point Atkinson, the Strait of Georgia entrance station, is
-  // above ~16-18kt, per local rider knowledge. Only steps in when the
-  // ordinary classification came up empty (calm/mixed); if the spot's own
-  // thermal/outflow/synoptic logic already found something, we just add a
-  // corroborating note rather than override it.
+  // Reference-station trigger: some spots are better predicted by a nearby
+  // exposed gauge point than by their own local model output. Two modes:
+  //   - thresholdKt (original): a plain "did the reference station cross X"
+  //     check, e.g. a spot that only turns on once a nearby entrance station
+  //     is blowing hard enough to matter.
+  //   - offsetKt (added for Erwin Park): the reference station and this spot
+  //     move together, but consistently offset by a fixed amount — e.g.
+  //     Erwin Park typically reads ~4.5kt lighter than Point Atkinson right
+  //     next to it. Rather than a binary crossed/didn't-cross check, this
+  //     estimates the spot's own speed as refSpeedKt + offsetKt, gated to
+  //     dirSector (the offset only holds for the direction it was observed
+  //     under — see spot.referenceStation in spots.js). Only overrides a
+  //     calm/mixed regime once the estimate itself clears a meaningful floor
+  //     (5kt) — a light Point Atkinson reading shouldn't get dressed up as a
+  //     "synoptic" hour here just because the arithmetic ran.
+  // Either mode only steps in when the ordinary classification came up empty
+  // (calm/mixed); if the spot's own thermal/outflow/synoptic logic already
+  // found something, we just add a corroborating note rather than override it.
   let referenceTriggered = false;
-  if (spot.referenceStation && refSpeedKt != null && refSpeedKt >= spot.referenceStation.thresholdKt) {
-    referenceTriggered = true;
+  if (spot.referenceStation && refSpeedKt != null) {
     const rs = spot.referenceStation;
-    if (regime === "calm" || regime === "mixed") {
-      regime = "synoptic";
-      displaySpeed = Math.max(displaySpeed ?? 0, rs.thresholdKt);
-      displayGust = displaySpeed * 1.3;
-      reason = `${rs.name} is reading ~${Math.round(refSpeedKt)}kt, above this spot's ${rs.thresholdKt}kt trigger. ${rs.note}`;
-    } else {
-      reason += ` Also corroborated by ${rs.name} reading ~${Math.round(refSpeedKt)}kt, above its ${rs.thresholdKt}kt trigger for this spot.`;
+    if (rs.offsetKt != null) {
+      const dirOk = rs.dirSector ? inSector(direction_deg, rs.dirSector) : true;
+      if (dirOk) {
+        const estSpeed = Math.max(0, refSpeedKt + rs.offsetKt);
+        const offsetLabel = `${Math.abs(rs.offsetKt)}kt ${rs.offsetKt < 0 ? "lighter" : "stronger"}`;
+        if ((regime === "calm" || regime === "mixed") && estSpeed >= 5) {
+          referenceTriggered = true;
+          regime = "synoptic";
+          displaySpeed = estSpeed;
+          displayGust = displaySpeed * 1.3;
+          reason = `${rs.name} is reading ~${Math.round(refSpeedKt)}kt from a favorable direction for this spot, which typically runs about ${offsetLabel} — estimated ~${Math.round(estSpeed)}kt here. ${rs.note}`;
+        } else if (regime !== "calm" && regime !== "mixed") {
+          referenceTriggered = true;
+          reason += ` Also corroborated by ${rs.name} reading ~${Math.round(refSpeedKt)}kt from a favorable direction (this spot typically runs about ${offsetLabel}, ~${Math.round(estSpeed)}kt estimated). ${rs.note}`;
+        }
+      }
+    } else if (rs.thresholdKt != null && refSpeedKt >= rs.thresholdKt) {
+      referenceTriggered = true;
+      if (regime === "calm" || regime === "mixed") {
+        regime = "synoptic";
+        displaySpeed = Math.max(displaySpeed ?? 0, rs.thresholdKt);
+        displayGust = displaySpeed * 1.3;
+        reason = `${rs.name} is reading ~${Math.round(refSpeedKt)}kt, above this spot's ${rs.thresholdKt}kt trigger. ${rs.note}`;
+      } else {
+        reason += ` Also corroborated by ${rs.name} reading ~${Math.round(refSpeedKt)}kt, above its ${rs.thresholdKt}kt trigger for this spot.`;
+      }
     }
   }
 
