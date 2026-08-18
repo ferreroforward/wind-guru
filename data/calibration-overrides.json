@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-17T21:00:35.278Z",
+  "generated_at": "2026-08-18T03:11:49.554Z",
   "min_samples": 2,
   "spots": {
     "boundary-bay": {
@@ -34,20 +34,20 @@
     },
     "porteau-cove": {
       "general": {
-        "sample_size": 3,
+        "sample_size": 4,
         "rider_reports": 0,
-        "live_checks": 3,
-        "avg_ratio": 0.83,
-        "multiplier": 0.83,
-        "note": "Based on 3 total data points (0 rider reports, 3 live-station checks): actual wind averaged 83% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 4,
+        "avg_ratio": 0.75,
+        "multiplier": 0.75,
+        "note": "Based on 4 total data points (0 rider reports, 4 live-station checks): actual wind averaged 75% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "thermal": {
-        "sample_size": 3,
+        "sample_size": 4,
         "rider_reports": 0,
-        "live_checks": 3,
-        "avg_ratio": 0.83,
-        "multiplier": 0.83,
-        "note": "Based on 3 thermal data points (0 rider reports, 3 live-station checks): actual wind averaged 83% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 4,
+        "avg_ratio": 0.75,
+        "multiplier": 0.75,
+        "note": "Based on 4 thermal data points (0 rider reports, 4 live-station checks): actual wind averaged 75% of what was forecasted (rider reports weighted 3x a station check)."
       }
     }
   }
