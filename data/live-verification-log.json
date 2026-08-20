@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-20T14:10:11.295Z",
+  "updated_at": "2026-08-20T21:03:17.105Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -66,6 +66,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "porteau-cove",
+      "time": "2026-08-20T14:00",
+      "forecasted": 8.4,
+      "actual": 8.9,
+      "ratio": 1.0595238095238095,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "thermal",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-08-20T21:03:17.105Z"
     },
     {
       "spot": "porteau-cove",
