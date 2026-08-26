@@ -1,5 +1,5 @@
 {
-  "version": "53c0cc0",
-  "message": "Refine spot configs from full chat export review: Erwin West sector, Porteau timing/tide notes, White Rock SE caution, Jericho tide principle, Nexen note",
-  "deployed_at": "2026-08-16T01:10:12Z"
+  "version": "c46a3a2",
+  "message": "Fix Erwin miss: parse EC marine bulletin as forecast anchor, add live Point Atkinson trigger, enable outflow at Erwin",
+  "deployed_at": "2026-08-26T16:32:30Z"
 }
