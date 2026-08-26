@@ -128,6 +128,138 @@ function calibratedGustMultiplier(directionDeg) {
   return 1.21 + driftFromAxisToward270 * 0.15;
 }
 
+// ---------------------------------------------------------------------------
+// Environment Canada marine bulletin parsing.
+//
+// EC's marine forecasts are written by human forecasters and — critically —
+// they name the mesoscale pattern explicitly ("southerly inflow 10 to 20",
+// "northeasterly outflow 5 to 15"). That's exactly the signal coarse global
+// models routinely miss, and it's why a rider checking EC will beat a rider
+// checking raw model output on a gradient day.
+//
+// Worked example this was built against (Aug 26 2026): the Strait of Georgia
+// bulletin issued the previous morning called "southeast 15 to 20 near
+// midnight then diminishing to southeast 10 to 15 early Wednesday morning."
+// Riders scored a 4m/5m session at Erwin Park (which favors E-SE) at 6am that
+// Wednesday and reported it fading — matching EC almost exactly, while our
+// model-only estimate for the same hour was ~6kt. We were already fetching
+// this page and only ever rendering it as a link.
+// ---------------------------------------------------------------------------
+
+const DIR_WORD_DEG = {
+  north: 0, northeast: 45, east: 90, southeast: 135,
+  south: 180, southwest: 225, west: 270, northwest: 315,
+  northerly: 0, northeasterly: 45, easterly: 90, southeasterly: 135,
+  southerly: 180, southwesterly: 225, westerly: 270, northwesterly: 315,
+};
+// Longest-first so "northeasterly" matches before "north", "southeast" before
+// "south" — otherwise a substring match would silently mis-assign direction.
+const DIR_WORDS = Object.keys(DIR_WORD_DEG).sort((a, b) => b.length - a.length);
+
+// Timing phrase -> [startHour, endHour] local. A window whose start is greater
+// than its end wraps through midnight (see hourInWindow below).
+const TIMING_WINDOWS = [
+  [/\blate (?:this )?(?:tonight|evening)\b/i, [21, 23]],
+  [/\bnear midnight\b/i,                      [22, 2]],
+  [/\bovernight\b/i,                          [21, 5]],
+  [/\bearly (?:this )?evening\b/i,            [17, 20]],
+  [/\bthis evening\b/i,                       [17, 22]],
+  [/\btonight\b/i,                            [20, 5]],
+  [/\bearly\s+\w+day morning\b/i,             [4, 9]],
+  [/\bearly (?:this )?morning\b/i,            [4, 9]],
+  [/\b\w+day morning\b/i,                     [6, 11]],
+  [/\bthis morning\b/i,                       [6, 11]],
+  [/\bnear noon\b/i,                          [11, 14]],
+  [/\bthis afternoon\b/i,                     [12, 17]],
+  [/\blate in the day\b/i,                    [15, 20]],
+  [/\b\w+day evening\b/i,                     [17, 22]],
+  [/\b\w+day afternoon\b/i,                   [12, 17]],
+];
+
+function hourInWindow(hour, [start, end]) {
+  return start <= end ? (hour >= start && hour <= end) : (hour >= start || hour <= end);
+}
+
+// Turn an EC marine wind paragraph into structured segments.
+// Returns null if nothing parseable was found — callers must treat the whole
+// EC anchor as simply unavailable in that case rather than guessing.
+export function parseMarineWindText(text) {
+  if (!text) return null;
+  const clean = String(text).replace(/\s+/g, " ").trim();
+
+  // Split on the transition markers EC uses to chain conditions through a day.
+  const parts = clean.split(/\b(?:then|becoming|increasing to|diminishing to|rising to|easing to)\b/i);
+
+  const segments = [];
+  for (const rawPart of parts) {
+    // "southeast 10 to 15 early this evening except southwest 15 to 20 over
+    // southern sections" — everything before "except" is the zone's main
+    // forecast; the tail is a sub-area caveat. Split so the main value isn't
+    // wrongly discarded, and mark the tail so callers can ignore it.
+    const pieces = rawPart.split(/\bexcept\b/i);
+    for (let pi = 0; pi < pieces.length; pi++) {
+      const chunk = pieces[pi].trim();
+      if (!chunk) continue;
+
+      // "light" with no number is a real EC value meaning near-calm.
+      const isLight = /\blight\b/i.test(chunk) && !/\d/.test(chunk);
+
+      let loKt = null, hiKt = null;
+      const range = chunk.match(/\b(\d{1,2})\s+to\s+(\d{1,3})\b/);
+      const single = chunk.match(/\b(\d{1,3})\s*knots?\b/);
+      if (range) { loKt = Number(range[1]); hiKt = Number(range[2]); }
+      else if (single) { loKt = hiKt = Number(single[1]); }
+      else if (isLight) { loKt = 0; hiKt = 5; }
+      if (loKt == null) continue;
+
+      let directionLabel = null, directionDeg = null;
+      for (const w of DIR_WORDS) {
+        if (new RegExp(`\\b${w}\\b`, "i").test(chunk)) {
+          directionLabel = w; directionDeg = DIR_WORD_DEG[w]; break;
+        }
+      }
+
+      const regime = /\boutflow\b/i.test(chunk) ? "outflow"
+        : /\binflow\b/i.test(chunk) ? "inflow" : null;
+
+      let timing = null, hourWindow = null;
+      for (const [re, win] of TIMING_WINDOWS) {
+        const m = chunk.match(re);
+        if (m) { timing = m[0].toLowerCase(); hourWindow = win; break; }
+      }
+
+      segments.push({
+        raw: chunk, loKt, hiKt, directionLabel, directionDeg,
+        regime, timing, hourWindow, isException: pi > 0,
+      });
+    }
+  }
+
+  if (!segments.length) return null;
+  const main = segments.filter(s => !s.isException);
+  if (!main.length) return null;
+  return {
+    segments,
+    maxKt: Math.max(...main.map(s => s.hiKt)),
+    minKt: Math.min(...main.map(s => s.loKt)),
+    hasOutflow: segments.some(s => s.regime === "outflow"),
+    hasInflow: segments.some(s => s.regime === "inflow"),
+  };
+}
+
+// Pick the EC segment that applies to a given local hour. Prefers an explicit
+// timing window; falls back to the first untimed segment (EC's opening clause,
+// which describes conditions from issue time onward). Exception clauses
+// ("except ... over southern sections") are never returned — they describe a
+// different part of the zone than the one our spots sit in.
+export function marineAnchorForHour(parsed, localHour) {
+  if (!parsed || !parsed.segments) return null;
+  const usable = parsed.segments.filter(s => !s.isException);
+  const timed = usable.filter(s => s.hourWindow && hourInWindow(localHour, s.hourWindow));
+  if (timed.length) return timed[timed.length - 1]; // latest matching clause wins
+  return usable.find(s => !s.hourWindow) || null;
+}
+
 function mean(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null; }
 
 // time -> value lookup from a reshaped row array, for whichever field
@@ -236,7 +368,14 @@ function clearSkyRadiationWm2(latDeg, doy, localHour) {
 // an SW-inflow-projection thermal nowcast (spot.pamRocksAware) and a plain
 // threshold+direction trigger (spot.pamRocksTrigger, Porteau Cove).
 // Returns { regime, reason, direction_deg, speed_kt, gust_kt, agreement }
-export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pressureGradients = null, overrideRecord = null, pamRocksNow = null) {
+// `marineAnchor`, if provided, is the EC marine-bulletin segment applicable to
+// this hour (see parseMarineWindText / marineAnchorForHour above), for spots
+// that declare a `marineZone`. Used to catch gradient events the raw models
+// under-read — see the anchor block in the body.
+// `liveRefNow`, if provided, is { speedKt, directionDeg } from the spot's own
+// reference station's LIVE observation (not its forecast), only ever passed for
+// the hour matching "right now" — same live-observation caveat as pamRocksNow.
+export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pressureGradients = null, overrideRecord = null, pamRocksNow = null, marineAnchor = null, liveRefNow = null) {
   const speedVals = Object.values(row.speeds).filter(v => v != null);
   const cloudVals = Object.values(row.cloud).filter(v => v != null);
   const radiationVals = Object.values(row.radiation || {}).filter(v => v != null);
@@ -391,6 +530,34 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   // used for probability with the calibrated estimate, and keep the raw
   // per-model numbers available in `raw_models` for transparency.
   let displaySpeed = speed_kt, displayGust = gust_kt, displayModels = row.speeds, calibrated = false;
+
+  // Outflow under-read correction. Same physics problem as the Squamish
+  // thermal: a shallow, terrain-channelled drainage flow is below what a
+  // ~13km global grid can resolve, so coarse models flatten it. The mechanism
+  // is here and works, but is deliberately NOT enabled on any spot yet —
+  // unlike the Squamish thermal (which has a 12-year rider's field notes
+  // behind its 2.85x), we have no validated multiplier for any outflow spot,
+  // and inventing one is exactly the kind of guess that produces a confidently
+  // wrong forecast. Set `outflow: { calibrated: true, multiplier: N }` on a
+  // spot once there's real data to justify N.
+  //
+  // In the meantime the empirical path is already open: the regime-aware
+  // feedback loop (apply-feedback.mjs) buckets by regime, so now that Erwin
+  // Park actually classifies its easterly mornings as "outflow" rather than
+  // calm/mixed, live-verification data will accumulate in an Erwin/outflow
+  // bucket and learn this multiplier from observations instead of a guess.
+  if (regime === "outflow" && spot.outflow && spot.outflow.calibrated &&
+      spot.outflow.multiplier != null && coarseMean != null) {
+    const est = coarseMean * spot.outflow.multiplier;
+    if (est > (displaySpeed ?? 0)) {
+      calibrated = true;
+      displaySpeed = row.speeds.gem != null ? Math.max(est, row.speeds.gem) : est;
+      displayGust = displaySpeed * 1.3;
+      displayModels = { calibrated: displaySpeed, gem_local: row.speeds.gem ?? displaySpeed };
+      reason += ` Field-calibrated for outflow: raw coarse-model wind (~${Math.round(coarseMean)}kt) scaled ~${spot.outflow.multiplier}x, since coarse models under-resolve shallow drainage flow here.`;
+    }
+  }
+
   if (regime === "thermal" && spot.thermal && spot.thermal.calibrated && coarseMean != null) {
     const calibratedSpeed = calibrateSquamishThermal(coarseMean);
     if (calibratedSpeed != null) {
@@ -557,6 +724,78 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     }
   }
 
+  // Live reference-station trigger (Erwin Park / Point Atkinson). Distinct
+  // from the forecast-based referenceStation offset above: this reads the
+  // station's ACTUAL current wind, which is how riders genuinely make this
+  // call — verbatim from the North Shore Wing Group chat: "Point Atkinson
+  // 21kts now, will head to Erwin if it holds", "Head to Erwin once it hits 20
+  // knots", "Erwin must be on. Point Atkinson is 23kts", "Will try Erwin
+  // later. Once it stays above 19 knots." Four independent reports converging
+  // on ~19-21kt, which is where the threshold in spots.js comes from.
+  //
+  // Only ever fires on the hour matching "right now" (generate.mjs only passes
+  // liveRefNow for that hour), same as the Pam Rocks trigger. The forecast-
+  // based offset above can be badly wrong on exactly the gradient mornings
+  // this is meant to catch, because the reference station's own forecast is
+  // under-read by the same coarse models — so a live reading is strictly
+  // better information when it's available.
+  let liveRefTriggered = false;
+  if (spot.liveReferenceTrigger && liveRefNow && liveRefNow.speedKt != null) {
+    const t = spot.liveReferenceTrigger;
+    const dirOk = t.dirSector == null || liveRefNow.directionDeg == null
+      ? true
+      : inSector(liveRefNow.directionDeg, t.dirSector);
+    if (dirOk && liveRefNow.speedKt >= t.thresholdKt) {
+      liveRefTriggered = true;
+      const estSpeed = Math.max(0, liveRefNow.speedKt + (t.offsetKt ?? 0));
+      if (estSpeed > (displaySpeed ?? 0)) {
+        displaySpeed = estSpeed;
+        displayGust = displaySpeed * 1.3;
+      }
+      if (regime === "calm" || regime === "mixed") regime = "synoptic";
+      reason += ` ${t.name} is reading ~${Math.round(liveRefNow.speedKt)}kt right now, above this spot's ${t.thresholdKt}kt live trigger — estimated ~${Math.round(estSpeed)}kt here. ${t.note}`;
+    }
+  }
+
+  // Environment Canada marine bulletin anchor. EC's forecasters name the
+  // pattern explicitly and routinely catch gradient/inflow/outflow events that
+  // coarse global models flatten — so when EC's zone forecast calls for wind
+  // from a direction this spot actually works on, and our model average is
+  // below even EC's conservative low end, treat EC's low end as a floor rather
+  // than publishing a number we have specific reason to doubt.
+  //
+  // Deliberately one-directional (only ever raises, never lowers): an EC zone
+  // forecast describes open water across a whole marine area, so a sheltered
+  // beach legitimately reading lighter than EC is normal and not evidence of a
+  // model error. The reverse — a spot exposed to the forecast direction
+  // reading far *below* EC — is the signature we're trying to catch.
+  // `marineAnchorFactor` lets a spot that consistently runs lighter than open
+  // water scale the floor down (default 1.0 = take EC's low end as-is).
+  let marineAnchored = false, marineNote = null;
+  if (marineAnchor && marineAnchor.loKt != null && spot.marineZone) {
+    const anchorDirOk = marineAnchor.directionDeg != null &&
+      (spot.favorable_deg || []).some(s => inSector(marineAnchor.directionDeg, s));
+    // Anchor on the MIDPOINT of EC's range, not its low end. EC publishes a
+    // sustained open-water range; the low end alone is so conservative that it
+    // barely moves a badly under-read model hour (which defeats the point of
+    // anchoring at all), while the midpoint is a fair reading of "what the
+    // forecaster actually expects." Verified against the Aug 26 2026 Erwin
+    // miss: EC "southeast 10 to 15", riders on 4m/5m — the low end alone would
+    // have left the spot below the display threshold.
+    const ecMidKt = (marineAnchor.loKt + marineAnchor.hiKt) / 2;
+    const floorKt = ecMidKt * (spot.marineAnchorFactor ?? 1);
+    if (anchorDirOk && floorKt >= 5 && (displaySpeed == null || displaySpeed < floorKt)) {
+      marineAnchored = true;
+      displaySpeed = floorKt;
+      displayGust = Math.max(displayGust ?? 0, floorKt * 1.3);
+      if (regime === "calm" || regime === "mixed") regime = "synoptic";
+      reason += ` Environment Canada's marine forecast for this area calls for ${marineAnchor.directionLabel} ${marineAnchor.loKt}${marineAnchor.hiKt !== marineAnchor.loKt ? `-${marineAnchor.hiKt}` : ""}kt${marineAnchor.timing ? ` ${marineAnchor.timing}` : ""}${marineAnchor.regime ? ` (${marineAnchor.regime})` : ""}, from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten.`;
+    } else if (anchorDirOk) {
+      marineNote = `EC marine forecast for this area: ${marineAnchor.directionLabel} ${marineAnchor.loKt}-${marineAnchor.hiKt}kt${marineAnchor.timing ? ` ${marineAnchor.timing}` : ""}.`;
+      reason += ` ${marineNote}`;
+    }
+  }
+
   // Quick qualitative flags from a 12-year local rider's notes: rain kills
   // it, cloud alone doesn't, and an extreme heat forecast tends to suppress
   // the thermal (or make it very short-lived).
@@ -639,6 +878,8 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     fine_vs_coarse_gap: fine_vs_coarse_gap != null ? Math.round(fine_vs_coarse_gap * 10) / 10 : null,
     calibrated,
     reference_triggered: referenceTriggered,
+    live_reference_triggered: liveRefTriggered,
+    marine_anchored: marineAnchored,
     pam_rocks_triggered: pamRocksTriggered,
     pressure_support: pressureSupport,
     upper_suppression: upperSuppression,
@@ -709,7 +950,8 @@ export function probabilityInRange(hourResult, lo, hi) {
   } else {
     const rawVals = Object.values(hourResult.raw_models || {}).filter(v => v != null);
     const rawSpread = rawVals.length >= 2 ? Math.max(...rawVals) - Math.min(...rawVals) : 0;
-    const triggered = hourResult.reference_triggered || hourResult.pam_rocks_triggered;
+    const triggered = hourResult.reference_triggered || hourResult.pam_rocks_triggered ||
+      hourResult.live_reference_triggered || hourResult.marine_anchored;
     const baseSigma = triggered ? 4 : (REGIME_BASE_SIGMA[hourResult.regime] ?? 3);
     sigma = Math.max(baseSigma, rawSpread * 0.4, 1.5);
   }
@@ -735,6 +977,14 @@ export function probabilityInRange(hourResult, lo, hi) {
     confidence = 0.35 + hourResult.model_agreement * 0.2;
   }
   if (hourResult.reference_triggered || hourResult.pam_rocks_triggered) confidence = Math.max(confidence, 0.7);
+  // A live reading at a nearby station is the strongest single signal we have
+  // for "right now" — stronger than any model agreement, since it's an actual
+  // observation rather than a forecast.
+  if (hourResult.live_reference_triggered) confidence = Math.max(confidence, 0.8);
+  // EC's forecasters explicitly identifying the pattern is worth more than
+  // model consensus on a gradient day, but it's still a zone-wide forecast
+  // rather than a spot-specific one — a solid floor, not near-certainty.
+  if (hourResult.marine_anchored) confidence = Math.max(confidence, 0.72);
   if (hourResult.pressure_support === true) confidence = Math.min(1, confidence + 0.12);
   if (hourResult.pressure_support === false) confidence *= 0.8;
   if (hourResult.pam_rocks_support === true) confidence = Math.min(1, confidence + 0.1);

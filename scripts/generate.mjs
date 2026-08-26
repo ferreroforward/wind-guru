@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 import { SPOTS, PRESSURE_REFERENCE, degToLabel } from "../assets/spots.js";
-import { buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch } from "../assets/rules.js";
+import { buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch, parseMarineWindText, marineAnchorForHour } from "../assets/rules.js";
 
 // Minutes between "now" and a Pacific-local "HH:MM" observation time, on the
 // (safe) assumption the observation is from earlier today — used to catch a
@@ -260,10 +260,54 @@ async function fetchSpot(spot) {
 // wind, more trustworthy for today's magnitude than any raw model output.
 // We can't fetch it client-side (no CORS), so it only shows up in the
 // twice-daily snapshot, not the live-refresh fallback.
+// Zone ids here are what a spot's `marineZone` field in spots.js points at —
+// keep them in sync.
 const MARINE_ZONES = [
   { id: "howe_sound", label: "Howe Sound", siteID: "06400" },
   { id: "strait_of_georgia_south", label: "Strait of Georgia (south of Nanaimo)", siteID: "14305" },
 ];
+
+// Pull the "Winds" section out of an EC marine forecast page. EC's page has
+// distinct "Marine Forecast" (wind + weather + visibility combined), "Winds",
+// "Weather & Visibility" and "Extended Forecast" sections; the Winds one is
+// the cleanest input for parseMarineWindText since it has no sky/fog prose
+// mixed in to confuse the speed/direction regexes.
+//
+// Deliberately text-based rather than tag-based (same approach as
+// parseSwobBoard): we don't control EC's markup and have no contract with it,
+// but the section headings and the "Issued <time>" line are stable, distinctive
+// text anchors. Verified against live fetches of both zone pages, Aug 2026.
+function extractMarineSection(html, heading, stopHeadings) {
+  const text = html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|li|tr|h[1-6])>/gi, "\n")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/[ \t]+/g, " ");
+
+  const startRe = new RegExp(`\\n\\s*${heading}\\s*\\n`, "i");
+  const startM = text.match(startRe);
+  if (!startM) return null;
+  let body = text.slice(startM.index + startM[0].length);
+
+  let cut = body.length;
+  for (const stop of stopHeadings) {
+    const m = body.match(new RegExp(`\\n\\s*${stop}\\s*\\n`, "i"));
+    if (m && m.index < cut) cut = m.index;
+  }
+  body = body.slice(0, cut);
+
+  // Drop the "Issued 04:00 AM PDT 26 August 2026" line and the
+  // "Today Tonight and Thursday." period label — neither carries wind data,
+  // and the date digits would otherwise be misread as knot values.
+  const issuedM = body.match(/Issued\s+[\d:]+\s*(?:AM|PM)?\s*[A-Z]{3,4}\s+\d{1,2}\s+\w+\s+\d{4}/i);
+  const issued = issuedM ? issuedM[0].replace(/^Issued\s+/i, "") : null;
+  body = body.replace(/Issued\s+[\d:]+\s*(?:AM|PM)?\s*[A-Z]{3,4}\s+\d{1,2}\s+\w+\s+\d{4}/gi, " ");
+
+  const cleaned = body.replace(/\s+/g, " ").trim();
+  return cleaned ? { text: cleaned, issued } : null;
+}
 
 async function fetchMarineBulletin(zone) {
   const url = `https://weather.gc.ca/marine/forecast_e.html?mapID=02&siteID=${zone.siteID}`;
@@ -271,41 +315,20 @@ async function fetchMarineBulletin(zone) {
     const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
     if (!res.ok) return null;
     const html = await res.text();
-    // Anchor on the ">Marine Forecast<" heading tag specifically (not the
-    // "Marine Forecasts" breadcrumb link earlier in the page, which
-    // `indexOf("Marine Forecast")` alone would match first and pull in a
-    // pile of nav/alert-banner text ahead of the actual bulletin). The end
-    // anchor previously looked for a literal ">Winds<" tag, which doesn't
-    // actually appear on EC's page — harmless while this text is never shown
-    // (the UI only ever displays the label + link, see index.html), but
-    // would show raw HTML-adjacent junk the moment it were. Look for the
-    // next heading tag or the "Extended Forecast" marker instead, whichever
-    // comes first — more robust to the page's actual structure than
-    // guessing one exact string. (Not independently re-verified against a
-    // live fetch this session — the sandbox this ran in blocks outbound
-    // requests to weather.gc.ca — so treat this as a best-effort robustness
-    // fix, not a confirmed-correct parse.)
-    const headingIdx = html.indexOf(">Marine Forecast<");
-    let endIdx = -1;
-    if (headingIdx >= 0) {
-      const searchFrom = headingIdx + 20; // skip past the heading tag itself
-      const nextHeadingRel = html.slice(searchFrom).search(/<h[23][ >]/i);
-      const extendedIdx = html.indexOf("Extended Forecast", searchFrom);
-      const candidates = [nextHeadingRel >= 0 ? searchFrom + nextHeadingRel : -1, extendedIdx].filter((i) => i >= 0);
-      endIdx = candidates.length ? Math.min(...candidates) : -1;
+    // Prefer the dedicated "Winds" section — no sky/fog prose to confuse the
+    // speed and direction regexes. Fall back to the combined "Marine Forecast"
+    // section if EC ever drops or renames the Winds one.
+    const winds = extractMarineSection(html, "Winds", ["Weather & Visibility", "Extended Forecast", "Stay connected"])
+      || extractMarineSection(html, "Marine Forecast", ["Winds", "Weather & Visibility", "Extended Forecast", "Stay connected"]);
+    const text = winds ? winds.text.slice(0, 900) : "";
+    const parsed = winds ? parseMarineWindText(winds.text) : null;
+    if (parsed) {
+      console.log(`  [marine:${zone.id}] parsed ${parsed.segments.length} segment(s), ${parsed.minKt}-${parsed.maxKt}kt${parsed.hasOutflow ? ", OUTFLOW named" : ""}${parsed.hasInflow ? ", INFLOW named" : ""}`);
+    } else {
+      console.log(`  [marine:${zone.id}] no parseable wind text — anchoring disabled for this zone this run.`);
     }
-    const section = headingIdx >= 0
-      ? html.slice(headingIdx, endIdx > headingIdx ? endIdx : headingIdx + 3000)
-      : html.split("Extended Forecast")[0];
-    const text = section
-      .replace(/<[^>]+>/g, " ")
-      .replace(/&nbsp;/g, " ")
-      .replace(/\s+/g, " ")
-      .replace(/^\s*Marine Forecast\s*/, "")
-      .trim()
-      .slice(0, 900);
     const warning = /strong wind warning|gale warning|storm warning|small craft warning/i.test(html);
-    return { id: zone.id, label: zone.label, url, text, warning };
+    return { id: zone.id, label: zone.label, url, text, issued: winds?.issued ?? null, warning, parsed };
   } catch (err) {
     console.error(`[${zone.id}] marine bulletin fetch failed: ${err.message}`);
     return null;
@@ -513,9 +536,26 @@ async function main() {
       }
     }
 
+    // Live reading from this spot's own reference station, for the
+    // liveReferenceTrigger path (Erwin Park / Point Atkinson). Reuses the
+    // liveStation fetch cache where the two point at the same station, which
+    // they do for Erwin — so this costs no extra request.
+    let liveRefObs = null;
+    if (spot.liveReferenceTrigger && spot.liveStation) {
+      try {
+        liveRefObs = await getLiveObservation(spot.liveStation);
+      } catch (err) {
+        console.log(`[${spot.id}] live reference fetch failed: ${err.message}`);
+      }
+    }
+
+    const zoneBulletin = spot.marineZone ? bulletins[spot.marineZone] : null;
+    const marineParsed = zoneBulletin?.parsed ?? null;
+
     const hours = rows.map((row) => {
       const { hour, month } = localHourAndMonth(row.time);
       const refSpeedKt = refMap ? refMap[row.time] : null;
+      const marineAnchor = marineParsed ? marineAnchorForHour(marineParsed, hour) : null;
 
       let pressureGradients = null;
       if (gm) {
@@ -536,7 +576,13 @@ async function main() {
         ? { speedKt: pamRocksObs.speedKt, directionDeg: pamRocksObs.directionDeg }
         : null;
 
-      return classifyHour(spot, row, hour, month, refSpeedKt, pressureGradients, overrideRecord, pamRocksNow);
+      // Live station readings only ever describe "right now", never a future
+      // hour — same rule as pamRocksNow above.
+      const liveRefNow = (liveRefObs && row.time === nowHourStr)
+        ? { speedKt: liveRefObs.speedKt, directionDeg: liveRefObs.directionDeg }
+        : null;
+
+      return classifyHour(spot, row, hour, month, refSpeedKt, pressureGradients, overrideRecord, pamRocksNow, marineAnchor, liveRefNow);
     });
 
     // Live verification: compare the forecast for THIS hour against what

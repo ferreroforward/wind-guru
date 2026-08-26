@@ -54,6 +54,7 @@ export const SPOTS = [
     name: "Squamish (Spit & Nexen Beach)",
     region: "Howe Sound",
     lat: 49.682811, lon: -123.172443,
+    marineZone: "howe_sound",
     sports: ["wingfoil", "kite", "windsurf"],
     level: "advanced",
     favorable_deg: [[150, 260]], // S–SW thermal inflow, or N outflow (handled separately as outflow regime)
@@ -92,6 +93,7 @@ export const SPOTS = [
     name: "Porteau Cove",
     region: "Howe Sound",
     lat: 49.560074, lon: -123.239163,
+    marineZone: "howe_sound",
     sports: ["windsurf", "wingfoil"],
     level: "intermediate",
     favorable_deg: [[300, 40], [135, 260]], // N outflow, or S–SE–SW inflow/gradient wind
@@ -154,6 +156,8 @@ export const SPOTS = [
     name: "Jericho - Spanish Banks",
     region: "English Bay",
     lat: 49.281646, lon: -123.235223,
+    marineZone: "strait_of_georgia_south",
+    marineAnchorFactor: 0.85,
     sports: ["windsurf", "wingfoil", "kite"],
     level: "beginner-friendly",
     // Broadened from the old [230,320] westerly-thermal-only sector to
@@ -185,6 +189,8 @@ export const SPOTS = [
     name: "Steveston - Garry Point Park",
     region: "Fraser Delta",
     lat: 49.123665, lon: -123.196088,
+    marineZone: "strait_of_georgia_south",
+    marineAnchorFactor: 0.9,
     sports: ["kite", "windsurf", "wingfoil"],
     level: "intermediate",
     // Widened slightly from [180,300] to fully include NW (315°) — the
@@ -233,6 +239,8 @@ export const SPOTS = [
     name: "Boundary Bay (Centennial Beach)",
     region: "South Delta",
     lat: 49.008345, lon: -123.034898,
+    marineZone: "strait_of_georgia_south",
+    marineAnchorFactor: 0.8,
     sports: ["kite", "wingfoil", "windsurf"],
     level: "beginner-friendly",
     // SE is best; E, S and NE also work (NE tends to be cold). SW, NW and N
@@ -256,6 +264,8 @@ export const SPOTS = [
     name: "White Rock - East Beach",
     region: "South Delta",
     lat: 49.015658, lon: -122.790661,
+    marineZone: "strait_of_georgia_south",
+    marineAnchorFactor: 0.8,
     sports: ["kite", "wingfoil", "windsurf"],
     level: "beginner-friendly",
     // Good on E/SE/S, excellent on SW/W — one continuous arc from E through
@@ -281,6 +291,8 @@ export const SPOTS = [
     name: "Crescent Beach",
     region: "South Delta",
     lat: 49.057512, lon: -122.888188,
+    marineZone: "strait_of_georgia_south",
+    marineAnchorFactor: 0.8,
     sports: ["kite", "wingfoil", "windsurf"],
     level: "beginner-friendly",
     // Same wind pattern as Tsawwassen Ferry Terminal per local knowledge: W
@@ -311,6 +323,8 @@ export const SPOTS = [
     name: "Tsawwassen Ferry Terminal (South Causeway)",
     region: "South Delta",
     lat: 49.015191, lon: -123.114600,
+    marineZone: "strait_of_georgia_south",
+    marineAnchorFactor: 0.9,
     sports: ["kite", "wingfoil", "windsurf"],
     level: "intermediate",
     // Flat water on NW/N; SW and S also work (bring more waves).
@@ -361,12 +375,39 @@ export const SPOTS = [
     // breaking anything (same defensive fallback every igetwind station
     // uses).
     liveStation: { type: "igetwind", sid: "CWSB", lat: 49.3300, lon: -123.2650, name: "Point Atkinson" },
+    // Erwin sits right at the mouth of Howe Sound but faces east, so the
+    // Strait of Georgia zone (which is what actually drives its E/SE days) is
+    // the right marine bulletin to anchor against, not Howe Sound.
+    marineZone: "strait_of_georgia_south",
+    // Left at the default 1.0 (no scale-down) deliberately. Erwin's -4.5kt
+    // offset is relative to POINT ATKINSON — a headland that reads high — not
+    // relative to the open-water zone forecast, so the two shouldn't be
+    // stacked. Evidence from the Aug 26 2026 morning: EC called southeast
+    // 10-15kt for the zone and riders here were on 4m/5m gear, i.e. Erwin was
+    // running at or above EC's range, not below it.
+    marineAnchorFactor: 1.0,
     // No local-knowledge basis for a thermal (sea-breeze) driver here,
     // unlike the SW-facing spots further south — left disabled rather than
     // guess at one. If Erwin Park does have a thermal component to its
     // East/Southeast wind, let us know and this can be modeled properly.
     thermal: { enabled: false },
-    outflow: { enabled: false },
+    // Erwin's signature wind is an easterly, and a good share of its sessions
+    // are early-morning offshore-drainage days — chat history is emphatic:
+    // "PA wind meter is being influenced by the out flow. Erwin OSR, ESE,
+    // 15-20kts" (Luke Penner), "Hoping for easterly tomorrow morning at Erwin
+    // 20-30", "Easterly at Erwin", and Erwin chatter peaks hard at 6-9am
+    // (37% of all mentions fall in the 5-9am window, peaking at 7am) with
+    // "dawn patrol at Erwin" a recurring phrase. This was previously left
+    // disabled, which made the drainage regime literally unreachable for the
+    // one spot whose signature wind it is.
+    outflow: {
+      enabled: true,
+      dirSector: [70, 150], // ENE through SE — the offshore drainage arc here
+      note: "Offshore drainage/outflow easterly at the mouth of Howe Sound — typically an early-morning event that fades as the day heats up, which is why so many sessions here are dawn patrols. Coarse global models under-resolve shallow drainage flow over this shoreline, so treat a light model reading with suspicion on a clear, cold morning."
+    },
+    // Same drainage arc as the outflow sector — an easterly here is rideable,
+    // not offshore-and-dangerous, because the beach faces into it.
+    outflow_favorable_deg: [[70, 150]],
     // Local rider rule of thumb: Erwin Park typically reads about 4-5kt
     // lighter than Point Atkinson (its own reference point, ~2km away) when
     // the wind is East-to-Southeast — an offset relationship, not just a
@@ -383,6 +424,21 @@ export const SPOTS = [
       dirSector: [90, 140],
       note: "Point Atkinson is right next to Erwin Park, and typically reads a bit stronger than what you'll actually get at the water access here."
     },
+    // The live counterpart to referenceStation above, and the one that matches
+    // how riders actually decide. Threshold comes from four independent chat
+    // reports converging on ~19-21kt on the live Point Atkinson meter:
+    // "Point Atkinson 21kts now, will head to Erwin if it holds" (Luke),
+    // "Head to Erwin once it hits 20 knots", "Erwin must be on. Point Atkinson
+    // is 23kts", "Will try Erwin later. Once it stays above 19 knots" (Julia).
+    // No dirSector: riders quote the PA number regardless of direction, and
+    // the reports above span both the easterly-drainage and westerly days.
+    // Only ever applies to the current hour — see classifyHour.
+    liveReferenceTrigger: {
+      name: "Point Atkinson",
+      thresholdKt: 19,
+      offsetKt: -4.5,
+      note: "This is the same call local riders make off the live Point Atkinson meter."
+    },
     tide_note: "Tides aren't a concern for wing/foil/windsurf here, but kites can only be launched at low tide — this is a very small beach access."
   },
   {
@@ -393,6 +449,8 @@ export const SPOTS = [
     name: "Dundarave Pier Beach",
     region: "West Vancouver",
     lat: 49.332129, lon: -123.183767,
+    marineZone: "strait_of_georgia_south",
+    marineAnchorFactor: 0.8,
     sports: ["windsurf", "wingfoil", "kite"],
     level: "intermediate",
     // Same westerly sector as Ambleside next door — see direction_note for
@@ -423,6 +481,8 @@ export const SPOTS = [
     name: "Ambleside Beach",
     region: "West Vancouver",
     lat: 49.322244, lon: -123.151668,
+    marineZone: "strait_of_georgia_south",
+    marineAnchorFactor: 0.8,
     sports: ["windsurf", "wingfoil"],
     level: "intermediate",
     // Right at the entrance to Burrard Inlet / First Narrows — same general

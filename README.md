@@ -256,6 +256,73 @@ not just what the rule engine currently acts on — a rider is expected to
 read and apply these manually. Good candidates for a future "does this spot
 need tide data" pass.
 
+## Environment Canada marine anchor
+
+Added after a real miss on 26 August 2026: riders scored a 4m/5m session at
+Erwin Park at 6am and the app had shown ~6kt for that hour, well below the
+display threshold, so the spot never appeared. The forecast that *did* call it
+was Environment Canada's — the Strait of Georgia bulletin issued the previous
+morning read **"southeast 15 to 20 near midnight then diminishing to southeast
+10 to 15 early Wednesday morning"**, which matches both the direction Erwin
+works on (E–SE) and the riders' "it won't last too long". We had been fetching
+that exact page since early on and only ever rendering it as a link.
+
+EC marine forecasts are written by human forecasters and name the mesoscale
+pattern explicitly — "southerly **inflow** 10 to 20", "northeasterly
+**outflow** 5 to 15". That is precisely the signal a ~13km global model
+flattens, which is why a rider checking EC beats a rider checking raw model
+output on a gradient day.
+
+How it works:
+
+1. `extractMarineSection()` in `generate.mjs` pulls the page's dedicated
+   **Winds** section (cleaner than the combined "Marine Forecast" section,
+   which mixes in sky/fog prose that would confuse the number regexes). It's
+   text-anchored rather than tag-anchored, same philosophy as the wtfbc.ca
+   parser — verified against live fetches of both zone pages.
+2. `parseMarineWindText()` in `assets/rules.js` splits the paragraph on EC's
+   transition markers (`then`, `becoming`, `increasing to`, `diminishing to`)
+   into segments, each carrying direction, knot range, `inflow`/`outflow`
+   regime, and a timing phrase mapped to an hour window. `except ... over
+   southern sections` sub-area caveats are split out and never used as the
+   zone's main value.
+3. `marineAnchorForHour()` picks the segment covering a given hour.
+4. `classifyHour()` applies it **only when EC's direction falls inside that
+   spot's own `favorable_deg`**, and **only ever upward**. An EC zone forecast
+   describes open water across a whole marine area, so a sheltered beach
+   reading lighter than EC is normal and not evidence of an error; a spot
+   *exposed* to the forecast direction reading far below EC is the signature
+   worth catching. The anchor value is the **midpoint** of EC's range (its low
+   end alone is too conservative to move a badly under-read hour), scaled by an
+   optional per-spot `marineAnchorFactor` for spots that genuinely run lighter
+   than open water.
+
+Each spot declares which zone it belongs to via `marineZone`
+(`howe_sound` or `strait_of_georgia_south`).
+
+Anchored hours are tagged `marine_anchored` and get a confidence floor of 72% —
+higher than model consensus on a gradient day, but below a live observation,
+since it's still a zone-wide forecast rather than a spot-specific one.
+
+## Live reference-station trigger
+
+Also added after the Erwin miss. The `referenceStation` mechanism described
+above reads Point Atkinson's *forecast*, which on a gradient morning is
+under-read by exactly the same coarse models that under-read the spot itself.
+Riders don't do that — they read the live meter:
+
+> "Point Atkinson 21kts now, will head to Erwin if it holds" · "Head to Erwin
+> once it hits 20 knots" · "Erwin must be on. Point Atkinson is 23kts" · "Will
+> try Erwin later. Once it stays above 19 knots"
+
+Four independent reports converging on ~19–21kt, which is where Erwin Park's
+`liveReferenceTrigger.thresholdKt` comes from. We were already fetching Point
+Atkinson's live reading (it's Erwin's `liveStation`) but only using it for the
+verification badge and the calibration log — it had no path to lift the
+forecast. Now it does, for the current hour only, same caveat as the Pam Rocks
+trigger. Tagged `live_reference_triggered`, confidence floor 80% — the highest
+of any signal, because it's an actual observation rather than a forecast.
+
 ## Rider feedback & self-calibration
 
 Hovering any hour cell on the site shows a **"Report actual conditions"**
@@ -489,14 +556,12 @@ twice(-now-thrice)-daily Action run.
   Ambleside all get their best waves when the wind opposes an ebbing
   current). All currently have to be applied manually against a tide table
   rather than by the model.
-- The EC bulletin is shown as a link, not yet parsed into the probability
-  model — a good next step would be extracting its knot ranges for
-  today/tonight and using them to directly anchor the Squamish estimate
-  instead of (or blended with) the GFS-multiplier calibration. Its
-  end-of-section HTML parsing boundary was hardened this session but hasn't
-  been independently re-verified against a live fetch of the actual EC page
-  (this ran in a sandbox that blocks outbound requests to weather.gc.ca) —
-  worth a manual check after deploying.
+- The EC marine bulletin is now parsed and used as a forecast anchor (see
+  "Environment Canada marine anchor" above), not just linked. Remaining gap:
+  the anchor is applied per-hour from EC's timing phrases ("near noon", "early
+  Wednesday morning"), which is a best-effort mapping of prose to hour windows
+  — an unusual phrasing EC hasn't used before will simply not match any window
+  and fall back to the opening clause, rather than being mis-timed.
 - The base Squamish 2.85x multiplier (now capped/tapered above 32kt, see
   above) is still a single rider's field-tuned average, not a regression
   against station data — the regime-aware feedback override (see "Rider
