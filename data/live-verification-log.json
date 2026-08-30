@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-08-30T12:07:05.722Z",
+  "updated_at": "2026-08-30T20:08:29.330Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -105,6 +105,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "porteau-cove",
+      "time": "2026-08-30T13:00",
+      "forecasted": 11.3,
+      "actual": 0,
+      "ratio": 0,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 84%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-08-30T20:08:29.330Z"
     },
     {
       "spot": "porteau-cove",
@@ -329,6 +342,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-08-30T13:00",
+      "forecasted": 9,
+      "actual": 9.9,
+      "ratio": 1.1,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-08-30T20:08:29.330Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-08-29T05:00",
       "forecasted": 15.8,
       "actual": 20,
@@ -339,6 +365,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 0%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-29T12:07:32.837Z"
+    },
+    {
+      "spot": "tsawwassen-south",
+      "time": "2026-08-30T13:00",
+      "forecasted": 9,
+      "actual": 4.1,
+      "ratio": 0.4555555555555555,
+      "source": "live-station",
+      "station": "White Rock, BC",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 63%, so spread between models likely explains some of the gap.",
+      "checked_at": "2026-08-30T20:08:29.330Z"
     },
     {
       "spot": "tsawwassen-south",
