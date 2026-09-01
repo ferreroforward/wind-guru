@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-31T20:08:20.394Z",
+  "generated_at": "2026-09-01T00:22:38.289Z",
   "min_samples": 2,
   "spots": {
     "boundary-bay": {
@@ -86,12 +86,12 @@
     },
     "garry-point": {
       "general": {
-        "sample_size": 2,
+        "sample_size": 3,
         "rider_reports": 0,
-        "live_checks": 2,
-        "avg_ratio": 1.18,
-        "multiplier": 1.18,
-        "note": "Based on 2 total data points (0 rider reports, 2 live-station checks): actual wind averaged 118% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 3,
+        "avg_ratio": 1.05,
+        "multiplier": 1.05,
+        "note": "Based on 3 total data points (0 rider reports, 3 live-station checks): actual wind averaged 105% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 2,
