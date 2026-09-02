@@ -1,6 +1,19 @@
 {
-  "updated_at": "2026-09-02T00:22:19.583Z",
+  "updated_at": "2026-09-02T12:17:00.414Z",
   "entries": [
+    {
+      "spot": "boundary-bay",
+      "time": "2026-09-02T05:00",
+      "forecasted": 15,
+      "actual": 2.9,
+      "ratio": 0.19333333333333333,
+      "source": "live-station",
+      "station": "White Rock, BC",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 9%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-02T12:17:00.414Z"
+    },
     {
       "spot": "boundary-bay",
       "time": "2026-08-15T06:00",
@@ -44,6 +57,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-09-02T05:00",
+      "forecasted": 18.8,
+      "actual": 20,
+      "ratio": 1.0638297872340425,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "outflow",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-09-02T12:17:00.414Z"
     },
     {
       "spot": "erwin-park",
@@ -118,6 +144,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "porteau-cove",
+      "time": "2026-09-02T05:00",
+      "forecasted": 13.5,
+      "actual": 14,
+      "ratio": 1.037037037037037,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-09-02T12:17:00.414Z"
     },
     {
       "spot": "porteau-cove",
@@ -378,6 +417,19 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-08-15T19:33:55.536Z"
+    },
+    {
+      "spot": "white-rock-east",
+      "time": "2026-09-02T05:00",
+      "forecasted": 15,
+      "actual": 2.9,
+      "ratio": 0.19333333333333333,
+      "source": "live-station",
+      "station": "White Rock, BC",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 7%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-02T12:17:00.414Z"
     },
     {
       "spot": "white-rock-east",
