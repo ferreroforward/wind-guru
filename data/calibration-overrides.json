@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T20:16:06.683Z",
+  "generated_at": "2026-09-02T00:22:19.487Z",
   "min_samples": 2,
   "spots": {
     "boundary-bay": {
@@ -42,12 +42,20 @@
     },
     "porteau-cove": {
       "general": {
-        "sample_size": 18,
+        "sample_size": 19,
         "rider_reports": 0,
-        "live_checks": 18,
-        "avg_ratio": 0.5,
+        "live_checks": 19,
+        "avg_ratio": 0.44,
         "multiplier": 0.75,
-        "note": "Based on 18 total data points (0 rider reports, 18 live-station checks): actual wind averaged 50% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 19 total data points (0 rider reports, 19 live-station checks): actual wind averaged 44% of what was forecasted (rider reports weighted 3x a station check)."
+      },
+      "thermal": {
+        "sample_size": 15,
+        "rider_reports": 0,
+        "live_checks": 15,
+        "avg_ratio": 0.48,
+        "multiplier": 0.75,
+        "note": "Based on 15 thermal data points (0 rider reports, 15 live-station checks): actual wind averaged 48% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 4,
@@ -56,14 +64,6 @@
         "avg_ratio": 0.34,
         "multiplier": 0.75,
         "note": "Based on 4 synoptic data points (0 rider reports, 4 live-station checks): actual wind averaged 34% of what was forecasted (rider reports weighted 3x a station check)."
-      },
-      "thermal": {
-        "sample_size": 14,
-        "rider_reports": 0,
-        "live_checks": 14,
-        "avg_ratio": 0.56,
-        "multiplier": 0.75,
-        "note": "Based on 14 thermal data points (0 rider reports, 14 live-station checks): actual wind averaged 56% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "white-rock-east": {
