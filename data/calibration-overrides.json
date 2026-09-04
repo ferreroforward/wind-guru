@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-03T20:15:28.035Z",
+  "generated_at": "2026-09-04T00:21:07.433Z",
   "min_samples": 2,
   "spots": {
     "boundary-bay": {
@@ -32,12 +32,20 @@
     },
     "erwin-park": {
       "general": {
-        "sample_size": 9,
+        "sample_size": 10,
         "rider_reports": 0,
-        "live_checks": 9,
-        "avg_ratio": 0.67,
+        "live_checks": 10,
+        "avg_ratio": 0.69,
         "multiplier": 0.75,
-        "note": "Based on 9 total data points (0 rider reports, 9 live-station checks): actual wind averaged 67% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 10 total data points (0 rider reports, 10 live-station checks): actual wind averaged 69% of what was forecasted (rider reports weighted 3x a station check)."
+      },
+      "synoptic": {
+        "sample_size": 5,
+        "rider_reports": 0,
+        "live_checks": 5,
+        "avg_ratio": 0.72,
+        "multiplier": 0.75,
+        "note": "Based on 5 synoptic data points (0 rider reports, 5 live-station checks): actual wind averaged 72% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "outflow": {
         "sample_size": 3,
@@ -46,14 +54,6 @@
         "avg_ratio": 1.04,
         "multiplier": 1.04,
         "note": "Based on 3 outflow data points (0 rider reports, 3 live-station checks): actual wind averaged 104% of what was forecasted (rider reports weighted 3x a station check)."
-      },
-      "synoptic": {
-        "sample_size": 4,
-        "rider_reports": 0,
-        "live_checks": 4,
-        "avg_ratio": 0.7,
-        "multiplier": 0.75,
-        "note": "Based on 4 synoptic data points (0 rider reports, 4 live-station checks): actual wind averaged 70% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "porteau-cove": {
