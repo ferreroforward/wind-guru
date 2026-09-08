@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-08T00:23:58.880Z",
+  "updated_at": "2026-09-08T12:17:40.460Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -641,6 +641,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-09-08T05:00",
+      "forecasted": 12.3,
+      "actual": 6,
+      "ratio": 0.4878048780487805,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 29%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-08T12:17:40.460Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-09-07T05:00",
       "forecasted": 11.8,
       "actual": 15,
@@ -742,6 +755,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 0%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-29T12:07:32.837Z"
+    },
+    {
+      "spot": "tsawwassen-south",
+      "time": "2026-09-08T05:00",
+      "forecasted": 11.8,
+      "actual": 0,
+      "ratio": 0,
+      "source": "live-station",
+      "station": "White Rock, BC",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 57%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-08T12:17:40.460Z"
     },
     {
       "spot": "tsawwassen-south",
