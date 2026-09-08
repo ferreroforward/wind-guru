@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-07T20:16:19.725Z",
+  "generated_at": "2026-09-08T00:23:58.767Z",
   "min_samples": 2,
   "spots": {
     "boundary-bay": {
@@ -61,17 +61,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.39,
+        "avg_ratio": 0.37,
         "multiplier": 0.75,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 39% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 37% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "thermal": {
-        "sample_size": 18,
+        "sample_size": 19,
         "rider_reports": 0,
-        "live_checks": 18,
-        "avg_ratio": 0.43,
+        "live_checks": 19,
+        "avg_ratio": 0.42,
         "multiplier": 0.75,
-        "note": "Based on 18 thermal data points (0 rider reports, 18 live-station checks): actual wind averaged 43% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 19 thermal data points (0 rider reports, 19 live-station checks): actual wind averaged 42% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 8,
