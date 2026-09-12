@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T15:12:19.108Z",
+  "generated_at": "2026-09-12T22:08:20.287Z",
   "min_samples": 2,
   "spots": {
     "boundary-bay": {
@@ -61,17 +61,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.36,
+        "avg_ratio": 0.37,
         "multiplier": 0.75,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 36% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 37% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
-        "sample_size": 10,
+        "sample_size": 11,
         "rider_reports": 0,
-        "live_checks": 10,
-        "avg_ratio": 0.45,
+        "live_checks": 11,
+        "avg_ratio": 0.44,
         "multiplier": 0.75,
-        "note": "Based on 10 synoptic data points (0 rider reports, 10 live-station checks): actual wind averaged 45% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 11 synoptic data points (0 rider reports, 11 live-station checks): actual wind averaged 44% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "thermal": {
         "sample_size": 20,
@@ -102,20 +102,20 @@
     },
     "garry-point": {
       "general": {
-        "sample_size": 15,
+        "sample_size": 16,
         "rider_reports": 0,
-        "live_checks": 15,
+        "live_checks": 16,
         "avg_ratio": 0.7,
         "multiplier": 0.75,
-        "note": "Based on 15 total data points (0 rider reports, 15 live-station checks): actual wind averaged 70% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 16 total data points (0 rider reports, 16 live-station checks): actual wind averaged 70% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
-        "sample_size": 10,
+        "sample_size": 11,
         "rider_reports": 0,
-        "live_checks": 10,
-        "avg_ratio": 0.61,
+        "live_checks": 11,
+        "avg_ratio": 0.62,
         "multiplier": 0.75,
-        "note": "Based on 10 synoptic data points (0 rider reports, 10 live-station checks): actual wind averaged 61% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 11 synoptic data points (0 rider reports, 11 live-station checks): actual wind averaged 62% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "thermal": {
         "sample_size": 4,
@@ -128,20 +128,20 @@
     },
     "tsawwassen-south": {
       "general": {
+        "sample_size": 15,
+        "rider_reports": 0,
+        "live_checks": 15,
+        "avg_ratio": 0.15,
+        "multiplier": 0.75,
+        "note": "Based on 15 total data points (0 rider reports, 15 live-station checks): actual wind averaged 15% of what was forecasted (rider reports weighted 3x a station check)."
+      },
+      "synoptic": {
         "sample_size": 14,
         "rider_reports": 0,
         "live_checks": 14,
-        "avg_ratio": 0.16,
+        "avg_ratio": 0.14,
         "multiplier": 0.75,
-        "note": "Based on 14 total data points (0 rider reports, 14 live-station checks): actual wind averaged 16% of what was forecasted (rider reports weighted 3x a station check)."
-      },
-      "synoptic": {
-        "sample_size": 13,
-        "rider_reports": 0,
-        "live_checks": 13,
-        "avg_ratio": 0.15,
-        "multiplier": 0.75,
-        "note": "Based on 13 synoptic data points (0 rider reports, 13 live-station checks): actual wind averaged 15% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 14 synoptic data points (0 rider reports, 14 live-station checks): actual wind averaged 14% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "crescent-beach": {
