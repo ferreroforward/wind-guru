@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-12T22:08:20.402Z",
+  "updated_at": "2026-09-13T04:05:24.195Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -83,6 +83,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-09-12T21:00",
+      "forecasted": 13,
+      "actual": 7,
+      "ratio": 0.5384615384615384,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "outflow",
+      "mismatch": true,
+      "reasoning": "Forecast called outflow that came in weaker than shown — outflow events can relax faster than models show once the synoptic pattern eases. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-13T04:05:24.195Z"
     },
     {
       "spot": "erwin-park",
@@ -209,6 +222,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "porteau-cove",
+      "time": "2026-09-12T21:00",
+      "forecasted": 11.3,
+      "actual": 4.1,
+      "ratio": 0.3628318584070796,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 36%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-13T04:05:24.195Z"
     },
     {
       "spot": "porteau-cove",
