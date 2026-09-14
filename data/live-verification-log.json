@@ -1,6 +1,19 @@
 {
-  "updated_at": "2026-09-13T22:17:29.596Z",
+  "updated_at": "2026-09-14T04:13:00.391Z",
   "entries": [
+    {
+      "spot": "boundary-bay",
+      "time": "2026-09-13T21:00",
+      "forecasted": 9,
+      "actual": 4.1,
+      "ratio": 0.4555555555555555,
+      "source": "live-station",
+      "station": "White Rock, BC",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 15%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-14T04:13:00.391Z"
+    },
     {
       "spot": "boundary-bay",
       "time": "2026-09-03T05:00",
@@ -83,6 +96,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-09-13T21:00",
+      "forecasted": 13.4,
+      "actual": 15,
+      "ratio": 1.1194029850746268,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "outflow",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-09-14T04:13:00.391Z"
     },
     {
       "spot": "erwin-park",
@@ -690,6 +716,19 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-08-15T19:33:55.536Z"
+    },
+    {
+      "spot": "white-rock-east",
+      "time": "2026-09-13T21:00",
+      "forecasted": 9,
+      "actual": 4.1,
+      "ratio": 0.4555555555555555,
+      "source": "live-station",
+      "station": "White Rock, BC",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 37%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-14T04:13:00.391Z"
     },
     {
       "spot": "white-rock-east",
