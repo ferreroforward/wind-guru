@@ -1,23 +1,23 @@
 {
-  "generated_at": "2026-09-14T04:13:00.271Z",
+  "generated_at": "2026-09-14T17:53:13.930Z",
   "min_samples": 2,
   "spots": {
     "boundary-bay": {
       "general": {
-        "sample_size": 5,
+        "sample_size": 6,
         "rider_reports": 0,
-        "live_checks": 5,
-        "avg_ratio": 0.29,
+        "live_checks": 6,
+        "avg_ratio": 0.31,
         "multiplier": 0.75,
-        "note": "Based on 5 total data points (0 rider reports, 5 live-station checks): actual wind averaged 29% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 6 total data points (0 rider reports, 6 live-station checks): actual wind averaged 31% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
-        "sample_size": 2,
+        "sample_size": 3,
         "rider_reports": 0,
-        "live_checks": 2,
-        "avg_ratio": 0.23,
+        "live_checks": 3,
+        "avg_ratio": 0.29,
         "multiplier": 0.75,
-        "note": "Based on 2 synoptic data points (0 rider reports, 2 live-station checks): actual wind averaged 23% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 3 synoptic data points (0 rider reports, 3 live-station checks): actual wind averaged 29% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "white-rock": {
@@ -32,20 +32,20 @@
     },
     "erwin-park": {
       "general": {
-        "sample_size": 11,
+        "sample_size": 12,
         "rider_reports": 0,
-        "live_checks": 11,
-        "avg_ratio": 0.67,
+        "live_checks": 12,
+        "avg_ratio": 0.7,
         "multiplier": 0.75,
-        "note": "Based on 11 total data points (0 rider reports, 11 live-station checks): actual wind averaged 67% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 12 total data points (0 rider reports, 12 live-station checks): actual wind averaged 70% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "outflow": {
-        "sample_size": 4,
+        "sample_size": 5,
         "rider_reports": 0,
-        "live_checks": 4,
-        "avg_ratio": 0.89,
-        "multiplier": 0.89,
-        "note": "Based on 4 outflow data points (0 rider reports, 4 live-station checks): actual wind averaged 89% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 5,
+        "avg_ratio": 0.93,
+        "multiplier": 0.93,
+        "note": "Based on 5 outflow data points (0 rider reports, 5 live-station checks): actual wind averaged 93% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 5,
@@ -84,20 +84,20 @@
     },
     "white-rock-east": {
       "general": {
+        "sample_size": 6,
+        "rider_reports": 0,
+        "live_checks": 6,
+        "avg_ratio": 0.28,
+        "multiplier": 0.75,
+        "note": "Based on 6 total data points (0 rider reports, 6 live-station checks): actual wind averaged 28% of what was forecasted (rider reports weighted 3x a station check)."
+      },
+      "synoptic": {
         "sample_size": 5,
         "rider_reports": 0,
         "live_checks": 5,
         "avg_ratio": 0.26,
         "multiplier": 0.75,
-        "note": "Based on 5 total data points (0 rider reports, 5 live-station checks): actual wind averaged 26% of what was forecasted (rider reports weighted 3x a station check)."
-      },
-      "synoptic": {
-        "sample_size": 4,
-        "rider_reports": 0,
-        "live_checks": 4,
-        "avg_ratio": 0.22,
-        "multiplier": 0.75,
-        "note": "Based on 4 synoptic data points (0 rider reports, 4 live-station checks): actual wind averaged 22% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 5 synoptic data points (0 rider reports, 5 live-station checks): actual wind averaged 26% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "garry-point": {
