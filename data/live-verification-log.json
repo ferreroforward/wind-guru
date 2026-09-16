@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-16T04:08:52.459Z",
+  "updated_at": "2026-09-16T16:22:53.905Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -248,6 +248,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "porteau-cove",
+      "time": "2026-09-16T09:00",
+      "forecasted": 11.3,
+      "actual": 17.1,
+      "ratio": 1.513274336283186,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 48%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-16T16:22:53.905Z"
     },
     {
       "spot": "porteau-cove",
@@ -757,19 +770,6 @@
       "checked_at": "2026-08-16T20:51:37.626Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-08-15T13:00",
-      "forecasted": 14.4,
-      "actual": 9.9,
-      "ratio": 0.6875,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "thermal",
-      "mismatch": true,
-      "reasoning": "Forecast called a thermal that came in weaker than shown — possible early suppression (heat, high cloud) or the gradient not fully developing. MSLP had already flagged this hour as uncertain. This hour already had the Squamish field calibration applied.",
-      "checked_at": "2026-08-15T20:53:35.643Z"
-    },
-    {
       "spot": "white-rock-east",
       "time": "2026-09-13T21:00",
       "forecasted": 9,
@@ -846,6 +846,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-09-16T09:00",
+      "forecasted": 11.8,
+      "actual": 9.9,
+      "ratio": 0.8389830508474576,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-09-16T16:22:53.905Z"
     },
     {
       "spot": "garry-point",
@@ -1080,6 +1093,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 0%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-29T12:07:32.837Z"
+    },
+    {
+      "spot": "tsawwassen-south",
+      "time": "2026-09-16T09:00",
+      "forecasted": 11.8,
+      "actual": 0,
+      "ratio": 0,
+      "source": "live-station",
+      "station": "White Rock, BC",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 18%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-16T16:22:53.905Z"
     },
     {
       "spot": "tsawwassen-south",
