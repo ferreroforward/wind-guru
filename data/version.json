@@ -1,5 +1,5 @@
 {
-  "version": "14c8788",
-  "message": "Merge staging: open-ended probability model, report popup + accuracy badge, live surface conditions improvements",
-  "deployed_at": "2026-09-18T16:22:21Z"
+  "version": "f5fb1e1",
+  "message": "Merge staging: Guillermo's daily take feature + surface conditions dedupe",
+  "deployed_at": "2026-09-18T16:59:57Z"
 }
