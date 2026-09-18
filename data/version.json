@@ -1,5 +1,5 @@
 {
-  "version": "c46a3a2",
-  "message": "Fix Erwin miss: parse EC marine bulletin as forecast anchor, add live Point Atkinson trigger, enable outflow at Erwin",
-  "deployed_at": "2026-08-26T16:32:30Z"
+  "version": "14c8788",
+  "message": "Merge staging: open-ended probability model, report popup + accuracy badge, live surface conditions improvements",
+  "deployed_at": "2026-09-18T16:22:21Z"
 }
