@@ -50,6 +50,11 @@
 
   h2.section{font-size:1.1rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin:30px 0 12px;}
 
+  .windiest-card{background:linear-gradient(135deg,#eaf3ff,#f4f6fb);border:1.5px solid var(--accent);box-shadow:var(--shadow);border-radius:14px;padding:16px 20px;margin:16px 0;}
+  .windiest-eyebrow{font-size:0.78rem;font-weight:700;letter-spacing:0.05em;color:var(--accent);text-transform:uppercase;margin-bottom:6px;}
+  .windiest-body{font-size:1.2rem;font-weight:600;color:var(--text);}
+  .windiest-body .sub{display:block;font-size:0.88rem;font-weight:400;color:var(--muted);margin-top:5px;line-height:1.4;}
+
   .best-bets{display:flex;flex-direction:column;gap:10px;}
   .bet-card{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:14px 18px;}
   .bet-rank{font-size:1.2rem;font-weight:700;color:var(--muted);width:24px;text-align:center;}
@@ -88,6 +93,24 @@
   #globalTip{display:none;position:fixed;background:#1b2438;color:#fff;padding:10px 12px;border-radius:8px;font-size:0.85rem;width:220px;z-index:1000;text-align:left;box-shadow:0 6px 18px rgba(27,36,56,0.25);}
   #globalTip b{display:block;margin-bottom:4px;}
   #globalTip a{display:block;margin-top:7px;color:#8fc4ff;}
+  button.report-trigger{background:none;border:none;font:inherit;cursor:pointer;text-align:left;}
+  #globalTip .report-trigger{display:block;margin-top:7px;padding:0;color:#8fc4ff;}
+
+  .report-modal-backdrop{position:fixed;inset:0;background:rgba(27,36,56,0.5);z-index:1100;display:flex;align-items:center;justify-content:center;padding:16px;}
+  .report-modal{background:var(--panel);border-radius:14px;box-shadow:0 12px 32px rgba(27,36,56,0.3);padding:22px 24px;width:100%;max-width:360px;}
+  .report-modal h3{margin:0 0 6px;font-size:1.15rem;}
+  .report-modal-context{color:var(--muted);font-size:0.88rem;margin-bottom:16px;line-height:1.4;}
+  .report-field{display:block;font-size:0.88rem;color:var(--muted);margin-bottom:14px;}
+  .report-field .optional{font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0;font-size:0.8rem;}
+  .report-field input{display:block;width:100%;margin-top:5px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:1rem;color:var(--text);background:var(--panel);}
+  .report-field input:focus{outline:2px solid var(--accent);outline-offset:1px;}
+  .report-modal-msg{font-size:0.85rem;min-height:1.3em;margin-bottom:6px;}
+  .report-modal-msg.error{color:var(--red);}
+  .report-modal-msg.success{color:var(--green);}
+  .report-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:6px;}
+  .report-modal-actions button{padding:9px 16px;border-radius:8px;font-size:0.92rem;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:#fff;font-weight:600;}
+  .report-modal-actions button.secondary{background:var(--panel);color:var(--text);border-color:var(--border);font-weight:400;}
+  .report-modal-actions button:disabled{opacity:0.6;cursor:default;}
 
   .lvl-green{background:var(--green-bg);color:var(--green);}
   .lvl-yellow{background:var(--yellow-bg);color:var(--yellow);}
@@ -144,6 +167,7 @@
   <div class="hero-summary" id="heroSummary">Loading…</div>
   <div class="meta-row">
     <span id="genLabel">Loading forecast…</span>
+    <span id="accuracyBadge"></span>
     <button id="refreshBtn">Refresh live</button>
     <a href="https://squamishwindsports.com/conditions/wind/" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">Live Squamish wind meter ↗</a>
     <a href="https://wx.ikitesurf.com/spot/1436" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">iKitesurf (subscription) ↗</a>
@@ -156,10 +180,10 @@
     <div class="control-group">
       <label>Quick picks</label>
       <div class="presets" id="presets">
-        <button data-lo="8" data-hi="14" aria-pressed="false">8–14 Light</button>
-        <button data-lo="12" data-hi="20" class="active" aria-pressed="true">12–20 Sweet spot</button>
-        <button data-lo="18" data-hi="28" aria-pressed="false">18–28 Powered</button>
-        <button data-lo="25" data-hi="99" aria-pressed="false">25+ Full send</button>
+        <button data-lo="8" aria-pressed="false">8+ Light</button>
+        <button data-lo="12" class="active" aria-pressed="true">12+ Sweet spot</button>
+        <button data-lo="18" aria-pressed="false">18+ Powered</button>
+        <button data-lo="25" aria-pressed="false">25+ Full send</button>
       </div>
     </div>
     <div class="control-group">
@@ -184,12 +208,35 @@
     <span><span class="dot" style="background:#4a5776"></span>No data / calm</span>
   </div>
 
+  <div class="windiest-card" id="windiestCard" style="display:none;">
+    <div class="windiest-eyebrow">💨 Windiest good bet, <span id="windiestWhen"></span> — any spot, any speed</div>
+    <div class="windiest-body" id="windiestBody"></div>
+  </div>
+
   <h2 class="section" id="bestBetsHeading">Best bets for your range, today's window</h2>
   <div class="best-bets" id="bestBets"><div class="empty">Loading…</div></div>
 
   <h2 class="section">All spots — hour by hour</h2>
   <div id="spotCards"><div class="empty">Loading…</div></div>
   <div id="globalTip"></div>
+
+  <div class="report-modal-backdrop" id="reportModalBackdrop" style="display:none;">
+    <div class="report-modal" role="dialog" aria-modal="true" aria-labelledby="reportModalTitle">
+      <h3 id="reportModalTitle">Report actual conditions</h3>
+      <div class="report-modal-context" id="reportModalContext"></div>
+      <label class="report-field">Actual sustained wind (kt)
+        <input type="number" id="reportActualMin" min="0" max="80" step="1" inputmode="numeric" placeholder="e.g. 20">
+      </label>
+      <label class="report-field">Gust (kt) <span class="optional">optional</span>
+        <input type="number" id="reportActualGust" min="0" max="90" step="1" inputmode="numeric" placeholder="e.g. 25">
+      </label>
+      <div class="report-modal-msg" id="reportModalMsg"></div>
+      <div class="report-modal-actions">
+        <button type="button" class="secondary" id="reportModalCancel">Cancel</button>
+        <button type="button" id="reportModalSubmit">Submit</button>
+      </div>
+    </div>
+  </div>
 
   <div id="obsSection" style="display:none;">
     <h2 class="section">Live surface conditions around the region</h2>
@@ -236,14 +283,27 @@ import { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, l
 
 let forecast = null; // loaded forecast.json shape
 let selectedDayIndex = 0;
-let minKt = 12, maxKt = 20;
+let minKt = 12;
 
-// "25+ Full send" uses an effectively open-ended top (maxKt=99) so it can
-// still score well on the very biggest wind days instead of scoring near-
-// zero once actual speed climbs past a closed 25-40 band — but "99" isn't a
-// real number to show a rider, so display it as "kt+" instead.
+// Every quick-pick button is a minimum, not a closed range — "12+ Sweet
+// spot" means "will it hit at least 12kt," and more wind than that only
+// helps the odds, never hurts them (see probabilityInRange() in rules.js).
 function rangeLabel() {
-  return maxKt >= 90 ? `${minKt}kt+` : `${minKt}–${maxKt}kt`;
+  return `${minKt}kt+`;
+}
+
+// Hours clearing this probability are "qualifying" (matches the green
+// tier's >=65% cutoff below) — among qualifying hours we rank by expected
+// wind speed instead of raw probability, so a likely-but-windier hour beats
+// a slightly-more-certain-but-calmer one. The flat +1000 offset guarantees
+// any qualifying hour outranks any non-qualifying one; within each tier the
+// ranking is unchanged from before (speed*confidence, or plain probability).
+const QUALIFY_PCT = 65;
+function scoreHour(probability, confidence, speedKt) {
+  if (probability >= QUALIFY_PCT) {
+    return 1000 + (speedKt ?? 0) * (0.5 + confidence / 200);
+  }
+  return probability * (0.5 + confidence / 200);
 }
 
 const genLabel = document.getElementById("genLabel");
@@ -341,8 +401,8 @@ function bestWindowForSpot(spot) {
   const hours = hoursForSelectedDay(spot);
   let best = null, bestAny = null;
   for (const h of hours) {
-    const { probability, confidence } = probabilityInRange(h, minKt, maxKt);
-    const score = probability * (0.5 + confidence / 200);
+    const { probability, confidence } = probabilityInRange(h, minKt);
+    const score = scoreHour(probability, confidence, h.speed_kt);
     if (!bestAny || score > bestAny.score) bestAny = { hour: h, probability, confidence, score };
     if (h.favorable_direction !== false && (!best || score > best.score)) {
       best = { hour: h, probability, confidence, score };
@@ -393,9 +453,13 @@ function renderHeroSummary() {
 
   const top = ranked[0];
   const hours = hoursForSelectedDay(top.spotData);
-  const withProb = hours.map(h => ({ h, ...probabilityInRange(h, minKt, maxKt) }));
+  const withProb = hours.map(h => ({ h, ...probabilityInRange(h, minKt) }));
   let peakIdx = 0;
-  withProb.forEach((w, i) => { if (w.probability > withProb[peakIdx].probability) peakIdx = i; });
+  withProb.forEach((w, i) => {
+    const wScore = scoreHour(w.probability, w.confidence, w.h.speed_kt);
+    const peakScore = scoreHour(withProb[peakIdx].probability, withProb[peakIdx].confidence, withProb[peakIdx].h.speed_kt);
+    if (wScore > peakScore) peakIdx = i;
+  });
 
   // Expand outward from the peak hour while it's still a workable window.
   let lo = peakIdx, hi = peakIdx;
@@ -419,6 +483,47 @@ function renderHeroSummary() {
     html += ` (${withProb[peakIdx].probability}%).`;
   }
   el.innerHTML = html;
+}
+
+// The single windiest, favorable-direction hour across every spot for the
+// selected day — deliberately ignores the selected quick-pick minimum
+// entirely (see the "quick pick" discussion in README): a rider who'd
+// rather ride 30kt somewhere else than 20kt at their default spot should
+// see that 30kt hour called out regardless of which button is active. A
+// light confidence floor (CONFIDENCE_FLOOR) keeps a single noisy model
+// outlier from headlining over a well-supported, only-slightly-calmer hour.
+const CONFIDENCE_FLOOR = 35;
+function windiestGoodBetForDay() {
+  let best = null;
+  for (const sp of SPOTS) {
+    const spot = forecast.spots.find(s => s.id === sp.id);
+    if (!spot) continue;
+    for (const h of hoursForSelectedDay(spot)) {
+      if (h.favorable_direction === false || h.speed_kt == null) continue;
+      const { confidence } = probabilityInRange(h, 0);
+      if (confidence < CONFIDENCE_FLOOR) continue;
+      if (!best || h.speed_kt > best.hour.speed_kt) best = { spot: sp, hour: h, confidence };
+    }
+  }
+  return best;
+}
+
+function renderWindiestCard() {
+  const card = document.getElementById("windiestCard");
+  const body = document.getElementById("windiestBody");
+  const whenEl = document.getElementById("windiestWhen");
+  const dates = dayBuckets();
+  const dateStr = dates[selectedDayIndex];
+  const dayLbl = dateStr ? labelForDate(dateStr, selectedDayIndex) : "today";
+  whenEl.textContent = dayLbl === "Today" ? "today" : dayLbl;
+
+  const w = windiestGoodBetForDay();
+  if (!w) { card.style.display = "none"; return; }
+  card.style.display = "block";
+  const gustText = w.hour.gust_kt != null ? `, gusting ${Math.round(w.hour.gust_kt)}` : "";
+  const gustyTag = w.hour.gusty ? ` <span class="gusty-tag" title="Strong upper-level wind riding over solid surface wind — expect a choppier, more gust-prone day than the average speed alone suggests.">💨 GUSTY</span>` : "";
+  body.innerHTML = `<b>${w.spot.name}</b> · ${Math.round(w.hour.speed_kt)}kt${gustText} ${w.hour.direction_label ?? ""} at ${w.hour.time.slice(11,16)}${gustyTag}
+    <span class="sub">Windiest favorable-direction hour across every spot ${whenEl.textContent} — shown regardless of which quick pick is selected above (${w.confidence}% confidence in this read).</span>`;
 }
 
 function renderBestBetsHeading() {
@@ -463,21 +568,122 @@ function renderBestBets() {
 
 const GITHUB_REPO = "ferreroforward/wind-guru";
 
-// h is optional — the header-level "Report actual conditions" link on each
-// spot card has no specific hour in mind, so it falls back to today's date
-// and lets the rider fill in the time themselves in the report form.
-function reportUrl(spotId, h) {
+// Cloudflare Worker that turns a report-popup submission into a GitHub
+// issue server-side (see worker/README.md for what it does and how to
+// deploy it) — replace YOUR-SUBDOMAIN once it's deployed. Until then the
+// popup's submit button will fail every time and fall back to the GitHub
+// link below, which still works on its own.
+const WORKER_URL = "https://wind-guru-reports.YOUR-SUBDOMAIN.workers.dev";
+
+// h is optional — the header-level "Report actual conditions" trigger on
+// each spot card has no specific hour in mind, so it falls back to today's
+// date and lets the rider fill in the time themselves.
+function reportContext(spotId, h) {
   const date = h ? h.time.slice(0, 10) : new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
   const time = h ? h.time.slice(11, 16) : "";
+  const forecast_speed = h && h.speed_kt != null ? h.speed_kt : "";
+  return { spot: spotId, date, time, forecast_speed };
+}
+
+// Fallback path if the Worker is unreachable or not yet deployed — opens
+// the original GitHub issue form, pre-filled the same way it always was.
+function reportUrl(spotId, h) {
+  const ctx = reportContext(spotId, h);
   const params = new URLSearchParams({
     template: "wind-report.yml",
-    spot: spotId,
-    report_date: date,
-    report_time: time,
-    forecasted_speed: h && h.speed_kt != null ? h.speed_kt : "",
+    spot: ctx.spot,
+    report_date: ctx.date,
+    report_time: ctx.time,
+    forecasted_speed: ctx.forecast_speed,
   });
   return `https://github.com/${GITHUB_REPO}/issues/new?${params.toString()}`;
 }
+
+// --- Report popup -------------------------------------------------------
+// Replaces the old "opens a GitHub issue form" link with a two-field
+// in-page popup. Submits to a small Cloudflare Worker (WORKER_URL above)
+// that creates the GitHub issue server-side — see worker/README.md — so
+// visitors never need a GitHub account or to leave the page. If the Worker
+// is unreachable (not deployed yet, or down), submitReport() below falls
+// back to the original GitHub link rather than just failing silently.
+const reportModalBackdrop = document.getElementById("reportModalBackdrop");
+const reportModalContext = document.getElementById("reportModalContext");
+const reportActualMin = document.getElementById("reportActualMin");
+const reportActualGust = document.getElementById("reportActualGust");
+const reportModalMsg = document.getElementById("reportModalMsg");
+const reportModalSubmit = document.getElementById("reportModalSubmit");
+const reportModalCancel = document.getElementById("reportModalCancel");
+let reportModalCtx = null;
+
+function openReportModal(ds) {
+  reportModalCtx = { spot: ds.spot, date: ds.date, time: ds.time, forecast_speed: ds.forecast };
+  const whenText = ds.time ? `${ds.date} · ${ds.time}` : ds.date;
+  const forecastText = ds.forecast ? ` · forecast said ${ds.forecast}kt` : "";
+  reportModalContext.textContent = `${ds.name} · ${whenText}${forecastText}`;
+  reportActualMin.value = "";
+  reportActualGust.value = "";
+  reportModalMsg.textContent = "";
+  reportModalMsg.className = "report-modal-msg";
+  reportModalSubmit.disabled = false;
+  reportModalSubmit.textContent = "Submit";
+  reportModalBackdrop.style.display = "flex";
+  reportActualMin.focus();
+}
+function closeReportModal() { reportModalBackdrop.style.display = "none"; reportModalCtx = null; }
+
+reportModalCancel.addEventListener("click", closeReportModal);
+reportModalBackdrop.addEventListener("click", (e) => { if (e.target === reportModalBackdrop) closeReportModal(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && reportModalBackdrop.style.display !== "none") closeReportModal(); });
+
+// Delegated on document (not bound per-button) so it keeps working for
+// spot cards and tooltips re-rendered after every quick-pick/day change.
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".report-trigger");
+  if (btn) openReportModal(btn.dataset);
+});
+
+async function submitReport() {
+  const actual = parseFloat(reportActualMin.value);
+  if (!isFinite(actual) || actual < 0 || actual > 80) {
+    reportModalMsg.textContent = "Enter the actual sustained wind speed in knots.";
+    reportModalMsg.className = "report-modal-msg error";
+    return;
+  }
+  const gustRaw = reportActualGust.value;
+  const gust = gustRaw === "" ? null : parseFloat(gustRaw);
+  if (gust != null && (!isFinite(gust) || gust < actual || gust > 90)) {
+    reportModalMsg.textContent = "Gust should be a number, and at least the sustained speed.";
+    reportModalMsg.className = "report-modal-msg error";
+    return;
+  }
+  reportModalSubmit.disabled = true;
+  reportModalSubmit.textContent = "Submitting…";
+  reportModalMsg.textContent = "";
+  reportModalMsg.className = "report-modal-msg";
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...reportModalCtx, actual_speed: actual, actual_gust: gust }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    reportModalMsg.textContent = "Thanks — that's logged and feeds straight into the forecast.";
+    reportModalMsg.className = "report-modal-msg success";
+    reportModalSubmit.textContent = "Submitted ✓";
+    setTimeout(closeReportModal, 1400);
+  } catch (err) {
+    console.error("Report submit failed:", err);
+    const fallback = reportUrl(reportModalCtx.spot, {
+      time: `${reportModalCtx.date}T${reportModalCtx.time}`,
+      speed_kt: reportModalCtx.forecast_speed || null,
+    });
+    reportModalMsg.innerHTML = `Couldn't submit right now — <a href="${fallback}" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;">report on GitHub instead</a>.`;
+    reportModalMsg.className = "report-modal-msg error";
+    reportModalSubmit.disabled = false;
+    reportModalSubmit.textContent = "Submit";
+  }
+}
+reportModalSubmit.addEventListener("click", submitReport);
 
 const globalTip = document.getElementById("globalTip");
 
@@ -502,8 +708,9 @@ function showTip(cellEl, h, spotId) {
   // previously this reasoning was computed every run but never actually
   // shown anywhere in the UI.
   const summaryText = h.summary ? `<div style="margin-top:4px;opacity:0.85;font-weight:400;">${h.summary}</div>` : "";
+  const spotName = (SPOTS.find(s => s.id === spotId) || {}).name ?? spotId;
   globalTip.innerHTML = `<b>${regimeLabel(h.regime)}</b>${speedText}${summaryText}
-    <a href="${reportUrl(spotId, h)}" target="_blank" rel="noopener">Report actual conditions →</a>`;
+    <button type="button" class="report-trigger" data-spot="${spotId}" data-name="${spotName}" data-date="${h.time.slice(0, 10)}" data-time="${h.time.slice(11, 16)}" data-forecast="${h.speed_kt != null ? h.speed_kt : ""}">📝 Report actual conditions →</button>`;
   const rect = cellEl.getBoundingClientRect();
   globalTip.style.display = "block";
   // Measure after display:block so offsetWidth is accurate, then clamp to viewport.
@@ -554,12 +761,12 @@ function renderSpotCards() {
            ${lc.mismatch ? ` — forecast said ${lc.forecasted_kt}kt` : ` · matches forecast`}
          </div>`
       : "";
-    // Always-visible report link, not hidden behind a hover/tap-to-pin
+    // Always-visible report trigger, not hidden behind a hover/tap-to-pin
     // tooltip — on mobile there's no hover at all, so this was previously
     // undiscoverable. Defaults to today's best window for this spot; the
-    // rider can still change the time in the report form itself.
+    // rider can still change the time in the popup itself.
     const best = bestWindowForSpot(spot);
-    const reportHref = reportUrl(sp.id, best ? best.hour : null);
+    const ctx = reportContext(sp.id, best ? best.hour : null);
     const card = document.createElement("div");
     card.className = "spot-card";
     card.innerHTML = `
@@ -568,7 +775,7 @@ function renderSpotCards() {
         <div class="sports">${sp.sports.join(" · ")}</div>
       </div>
       ${liveBadge}
-      <a class="report-link" href="${reportHref}" target="_blank" rel="noopener">📝 Report actual conditions</a>
+      <button type="button" class="report-link report-trigger" data-spot="${ctx.spot}" data-name="${sp.name}" data-date="${ctx.date}" data-time="${ctx.time}" data-forecast="${ctx.forecast_speed}">📝 Report actual conditions</button>
       <div class="hour-strip"></div>
     `;
     const stripEl = card.querySelector(".hour-strip");
@@ -576,7 +783,7 @@ function renderSpotCards() {
       stripEl.innerHTML = '<div class="empty">No data</div>';
     } else {
       hours.forEach(h => {
-        const { probability } = probabilityInRange(h, minKt, maxKt);
+        const { probability } = probabilityInRange(h, minKt);
         const cls = tierClass(probability);
         const cellEl = document.createElement("div");
         cellEl.className = `hour-cell ${cls}`;
@@ -706,13 +913,30 @@ function renderFreshnessBadge() {
   genLabel.title = forecast.generated_at_label;
 }
 
+// Sitewide "forecast accuracy" badge, computed by apply-feedback.mjs from
+// rider-submitted reports only (see ACCURACY_TOLERANCE_KT there) and passed
+// through untouched inside forecast.calibration_overrides.accuracy. Hidden
+// entirely below MIN_SAMPLES_FOR_ACCURACY reports rather than showing a
+// shaky early number.
+function renderAccuracyBadge() {
+  const el = document.getElementById("accuracyBadge");
+  if (!el) return;
+  const acc = forecast?.calibration_overrides?.accuracy;
+  if (!acc) { el.innerHTML = ""; return; }
+  const pct = Math.round(acc.hit_rate * 100);
+  const cls = pct >= 65 ? "fresh" : pct >= 40 ? "stale" : "very-stale";
+  el.innerHTML = `<span class="update-badge ${cls}" title="Based on ${acc.sample_size} rider reports comparing what Wind Guru forecast to what actually happened.">🎯 ${pct}% accurate within ${acc.tolerance_kt}kt (${acc.sample_size} reports)</span>`;
+}
+
 function renderAll() {
   if (!forecast) return;
   renderFreshnessBadge();
+  renderAccuracyBadge();
   if (!freshnessTimer) freshnessTimer = setInterval(renderFreshnessBadge, 60000); // keep "Xm ago" live while the tab is open
   renderBulletin();
   renderDayTabs();
   renderHeroSummary();
+  renderWindiestCard();
   renderBestBets();
   renderSpotCards();
   renderSurfaceObservations();
@@ -789,7 +1013,7 @@ async function loadLive() {
 
 presetsEl.querySelectorAll("button").forEach(btn => {
   btn.addEventListener("click", () => {
-    minKt = Number(btn.dataset.lo); maxKt = Number(btn.dataset.hi);
+    minKt = Number(btn.dataset.lo);
     presetsEl.querySelectorAll("button").forEach(b => { b.classList.remove("active"); b.setAttribute("aria-pressed", "false"); });
     btn.classList.add("active");
     btn.setAttribute("aria-pressed", "true");

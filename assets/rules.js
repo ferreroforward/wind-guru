@@ -905,48 +905,56 @@ function logisticCdf(x, center, s) {
   return 1 / (1 + Math.exp(-(x - center) / s));
 }
 
-// Probability that the true wind lands in [lo, hi] kt. Modeled as a smooth
-// uncertainty band (logistic distribution) around the hour's final speed
-// estimate (`speed_kt` — already fully calibrated/adjusted), rather than a
-// hard in/out vote across 2-4 model values. The old vote-based version could
-// swing from 0% to 50% to 0% across three adjacent, steadily-building
-// thermal hours whenever the point estimate crossed a range boundary by a
-// fraction of a knot, or when a particular hour's calibrated model set
-// happened to have fewer live model values than its neighbors — a vote
-// count isn't the right tool for "how confident are we the true value is in
-// this band" when the estimate itself already carries real uncertainty.
-// Sigma (the band's width) comes from the regime's base uncertainty, widened
-// by how much the raw models actually disagreed this hour (`raw_models`,
-// which — unlike `models` — always holds all 4 raw values regardless of any
-// calibration override), so a genuinely uncertain hour gets a wider, softer
-// curve and a well-agreed hour gets a tighter, more decisive one.
-export function probabilityInRange(hourResult, lo, hi) {
+// Probability that the true wind is AT LEAST `lo` kt — open-ended, not a
+// closed [lo, hi] band. An earlier closed-band version scored "way more
+// wind than you asked for" the same as "no wind at all" (both fall outside
+// the box), which is backwards for wind sports: clearing your selected
+// floor by a wide margin is a bonus, not a miss. A rider who picked "12-20
+// Sweet spot" and got a rock-solid 28kt afternoon was seeing that hour
+// scored as a near-miss purely because 28 > 20, which is exactly what sent
+// a real rider a misleadingly low number on what turned out to be a
+// fantastic Squamish day. Every quick-pick button is a minimum now, not a
+// range (see the `.presets` buttons in index.html).
+//
+// Modeled as a smooth uncertainty band (logistic distribution) around the
+// hour's final speed estimate (`speed_kt` — already fully
+// calibrated/adjusted), rather than a hard in/out vote across 2-4 model
+// values. The old vote-based version could swing from 0% to 50% to 0%
+// across three adjacent, steadily-building thermal hours whenever the point
+// estimate crossed a boundary by a fraction of a knot, or when a
+// particular hour's calibrated model set happened to have fewer live model
+// values than its neighbors — a vote count isn't the right tool for "how
+// confident are we the true value clears this floor" when the estimate
+// itself already carries real uncertainty. Sigma (the band's width) comes
+// from the regime's base uncertainty, widened by how much the raw models
+// actually disagreed this hour (`raw_models`, which — unlike `models` —
+// always holds all 4 raw values regardless of any calibration override), so
+// a genuinely uncertain hour gets a wider, softer curve and a well-agreed
+// hour gets a tighter, more decisive one.
+export function probabilityInRange(hourResult, lo) {
   const center = hourResult.speed_kt;
   if (center == null) return { probability: 0, confidence: 0 };
 
-  // Sigma (band width) needs a few different treatments. For a *calibrated*
-  // hour (Squamish-family thermal), a big gap between the raw coarse models
-  // and GEM/HRDPS is the expected signature of the phenomenon itself (see
+  // Sigma needs a few different treatments. For a *calibrated* hour
+  // (Squamish-family thermal), a big gap between the raw coarse models and
+  // GEM/HRDPS is the expected signature of the phenomenon itself (see
   // calibrateSquamishThermal) — punishing that spread as "uncertainty" would
   // undercut exactly the events this calibration exists to call with
-  // confidence. Sizing the band relative to the *point estimate* (the old
-  // ±22%-of-center approach) had a hidden problem though: it made sigma grow
-  // with the estimate itself, so the flagship spot could never post "good
-  // odds" (>=65%) even on a picture-perfect thermal day, no matter which
-  // knot range a rider picked — the band was always wider than any
-  // reasonable preset. Sizing sigma relative to the *user's chosen range*
-  // instead fixes that directly: a well-centered estimate now reliably
-  // clears the green threshold regardless of range width, while an estimate
-  // near the edge of the range (genuinely more marginal) still correctly
-  // scores lower. Every other regime still widens with genuine raw-model
-  // disagreement, since there all models are on equal footing — except a
-  // trigger-fired hour (reference station / Pam Rocks threshold), which
-  // isn't really "multiple models agreeing," just a floor value substituted
-  // in — that gets a wider base sigma so it doesn't read as more certain
-  // than it actually is.
+  // confidence, so it gets its own small fixed sigma rather than one derived
+  // from raw model spread. (A now-removed version of this sigma was derived
+  // from the *user's selected range width* instead — a workaround for the
+  // closed-band problem described above. That workaround is gone along with
+  // the closed band: once the band is open-ended, an estimate comfortably
+  // above `lo` clears the green threshold on its own, with no need for
+  // sigma to know anything about what the rider picked.) Every other regime
+  // still widens with genuine raw-model disagreement, since there all
+  // models are on equal footing — except a trigger-fired hour (reference
+  // station / Pam Rocks threshold), which isn't really "multiple models
+  // agreeing," just a floor value substituted in — that gets a wider base
+  // sigma so it doesn't read as more certain than it actually is.
   let sigma;
   if (hourResult.calibrated) {
-    sigma = Math.max(1.6, (hi - lo) / 4.5);
+    sigma = 1.8;
   } else {
     const rawVals = Object.values(hourResult.raw_models || {}).filter(v => v != null);
     const rawSpread = rawVals.length >= 2 ? Math.max(...rawVals) - Math.min(...rawVals) : 0;
@@ -956,8 +964,8 @@ export function probabilityInRange(hourResult, lo, hi) {
     sigma = Math.max(baseSigma, rawSpread * 0.4, 1.5);
   }
 
-  // P(lo <= true value <= hi) = F(hi) - F(lo) under the logistic band.
-  let probability = logisticCdf(hi, center, sigma) - logisticCdf(lo, center, sigma);
+  // P(true value >= lo) = 1 - F(lo) under the logistic band.
+  let probability = 1 - logisticCdf(lo, center, sigma);
   probability = Math.min(probability, 0.92); // never claim near-total certainty
 
   // Confidence: how much to trust the probability figure above. Pattern

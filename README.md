@@ -67,12 +67,20 @@ numbers.
   direction none of the models actually predicted (e.g. two near-calm
   readings from the north and two strong readings from the south averaging
   to due west, missing both real sectors).
-- **Probability band**: sized relative to the *knot range the rider picked*,
-  not the point estimate's own magnitude — a well-centered forecast now
-  reliably clears "good odds" (≥65%) regardless of which preset is active,
-  where the old center-relative sizing meant the flagship Squamish spot
-  could never post a green percentage no matter how clean the thermal
-  signal was. See `probabilityInRange()` in `assets/rules.js`.
+- **Probability, as an open-ended floor**: every quick-pick button ("12+
+  Sweet spot", etc.) asks "will it hit *at least* this many knots," not "will
+  it land in this closed range." An earlier closed-band version scored 29kt
+  the same as 0kt once it was outside the picked range — a real rider
+  picked "12-20 Sweet spot," got a rock-solid 28kt Squamish afternoon, and
+  nearly skipped it because the app showed 12-13%. See
+  `probabilityInRange()` in `assets/rules.js`.
+- **Best Bets ranked toward more wind**: among hours that clear the picked
+  floor with good odds (≥65%), the ranking favors expected wind speed
+  (weighted by confidence) over raw probability — a likely 28kt hour
+  outranks a slightly-more-certain 14kt one. See `scoreHour()` in
+  `index.html`. A separate "Windiest good bet" card above the ranked list
+  ignores the picked floor entirely and always surfaces the single windiest
+  favorable-direction hour across every spot for the selected day.
 - **Plain-language summary + offshore warning**: every hour also gets a
   short, jargon-free `summary` string (shown in the hour-cell tooltip) —
   what kind of wind, plus a caution if the direction looks offshore/
@@ -325,11 +333,20 @@ of any signal, because it's an actual observation rather than a forecast.
 
 ## Rider feedback & self-calibration
 
-Hovering any hour cell on the site shows a **"Report actual conditions"**
-link, prefilled with that spot, date/time, and what the tool forecasted. It
-opens a structured GitHub issue
-([`.github/ISSUE_TEMPLATE/wind-report.yml`](.github/ISSUE_TEMPLATE/wind-report.yml))
-asking for the actual speed/direction and any notes on why it differed.
+Tapping "Report actual conditions" on any spot card, or on an hour cell's
+tooltip, opens an in-page popup — two number inputs (actual sustained
+speed, and optional gust), everything else pre-filled from context. Submit
+posts to a small Cloudflare Worker (`worker/index.js`, see
+`worker/README.md` for deploy steps) that files it as a GitHub issue
+server-side, labeled `wind-report`, in the same format
+[`.github/ISSUE_TEMPLATE/wind-report.yml`](.github/ISSUE_TEMPLATE/wind-report.yml)
+produces — so a report from the popup and one filed by hand through the
+GitHub form are indistinguishable to everything downstream. This exists
+because GitHub Pages has no server of its own to receive a submission
+directly; the Worker is the one small always-on piece that lets a visitor
+report without a GitHub account or leaving the page. If the Worker is
+unreachable, the popup falls back to the original GitHub-issue-form link
+rather than failing silently.
 
 Every run, `.github/workflows/update-forecast.yml` first runs
 `scripts/apply-feedback.mjs`, which:
@@ -341,7 +358,10 @@ Every run, `.github/workflows/update-forecast.yml` first runs
    typos like "actual: 300kt" automatically), and pools in
    `data/live-verification-log.json`'s entries too (see "Live verification"
    below — every qualifying comparison is logged there now, not just
-   mismatches).
+   mismatches). Reported gust (if given) is captured but not yet fed into
+   calibration — display gust is still fabricated as speed×1.3 everywhere
+   (see `assets/rules.js`); a season of real rider-reported gusts is now on
+   hand for whenever that's worth revisiting.
 2. Groups them by spot and computes `actual ÷ forecasted` for each report —
    both into a spot-wide **general** bucket (rider reports and live-station
    entries alike), and, for live-station entries specifically (they carry a
@@ -360,6 +380,15 @@ Every run, `.github/workflows/update-forecast.yml` first runs
    recency window. Clamps the result to 0.75x–1.5x, and writes
    `data/calibration-overrides.json` as `{ spot: { general: {...}, thermal:
    {...}, ... } }`.
+4. Separately computes a sitewide **forecast accuracy** figure — the % of
+   rider reports (rider reports only, not the automated station checks
+   above) whose actual speed landed within 3kt of what was forecasted —
+   and writes it to the same file as `accuracy: { tolerance_kt, sample_size,
+   hit_rate }`. Stays `null` (and the page shows nothing) until there are
+   at least 10 rider reports, so an early 1-2 report figure never gets
+   published. `generate.mjs` passes this through unchanged into
+   `forecast.calibration_overrides.accuracy`, which the page reads to show
+   the 🎯 badge in the header ("82% accurate within 3kt (47 reports)").
 
 `generate.mjs` reads that file and, once it knows which regime an hour
 classified as, resolves that regime's bucket for the spot — falling back to
