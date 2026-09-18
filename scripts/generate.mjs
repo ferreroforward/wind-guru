@@ -523,6 +523,92 @@ async function getGradientStations() {
   return gradientStations;
 }
 
+
+// "Guillermo's take" -- a short daily commentary posted as a GitHub issue
+// (see .github/ISSUE_TEMPLATE/daily-take.yml), one issue per forecast date,
+// displayed on the site under a card of its own. The repo is public, so
+// anyone could technically open an issue shaped like this one -- the
+// AUTHOR_USERNAME check below is what keeps a spoofed "take" from ever
+// reaching the site: only an issue opened by that exact GitHub account is
+// trusted, everything else is silently skipped. Kept separate from
+// apply-feedback.mjs's OWNER/REPO (same values today, but that file's job
+// is calibration, not display) and reuses the "closing removes it" idea
+// from wind-report handling for symmetry (state=open only, so retracting a
+// take is just closing its issue).
+const DAILY_TAKE_OWNER = "ferreroforward";
+const DAILY_TAKE_REPO = "wind-guru"; // kept in sync with apply-feedback.mjs's REPO
+const AUTHOR_USERNAME = "ferreroforward"; // Guillermo's own GitHub login -- NOT swapped between staging/production, it's the same account either way
+
+function extractIssueField(body, exactLabel) {
+  // Same "### Label\n\nvalue\n\n" issue-form parsing apply-feedback.mjs
+  // uses for wind-report issues -- duplicated rather than shared/imported,
+  // matching this project's existing pattern of self-contained scripts.
+  const escaped = exactLabel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(`###\\s*${escaped}\\s*\\n+([\\s\\S]*?)(?=\\n###|$)`, "i");
+  const m = body.match(re);
+  if (!m) return null;
+  const val = m[1].trim();
+  return (!val || /^_no response_$/i.test(val)) ? null : val;
+}
+
+async function fetchDailyTakes() {
+  const headers = { "User-Agent": "wind-guru-agent/1.0", "Accept": "application/vnd.github+json" };
+  if (process.env.GITHUB_TOKEN) headers["Authorization"] = `Bearer ${process.env.GITHUB_TOKEN}`;
+  // Filtered by creator, not by the daily-take label -- an issue-form
+  // submission is supposed to auto-apply that label, but it doesn't always
+  // land (the first real take posted through this form came through with
+  // no label at all, title hand-edited too), and there's no reason a
+  // labeling hiccup should silently swallow a real post. AUTHOR_USERNAME is
+  // what actually keeps this safe on a public repo, so filtering on it
+  // server-side (rather than fetching everything and checking client-side)
+  // is no less secure and also cuts the response down to just his issues.
+  // The shape check below (both Date and Take present) is what tells a
+  // daily-take issue apart from anything else he might file, like a
+  // wind-report.
+  const url = `https://api.github.com/repos/${DAILY_TAKE_OWNER}/${DAILY_TAKE_REPO}/issues?creator=${AUTHOR_USERNAME}&state=open&per_page=30`;
+  let issues;
+  try {
+    const res = await fetch(url, { headers });
+    if (!res.ok) {
+      console.log(`[daily-take] GitHub API fetch failed: ${res.status} ${res.statusText}`);
+      return {};
+    }
+    issues = (await res.json()).filter((i) => !i.pull_request);
+  } catch (err) {
+    console.log(`[daily-take] fetch failed: ${err.message}`);
+    return {};
+  }
+
+  // Newest-edited first, so if there's ever more than one open issue for
+  // the same date (shouldn't normally happen -- the issue template tells
+  // Guillermo to edit rather than re-post) the most recently updated one
+  // wins rather than whichever the API happened to list first.
+  issues.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+  const takes = {};
+  for (const issue of issues) {
+    // Belt-and-suspenders -- the ?creator= filter above should already
+    // guarantee this, but an issue opened by anyone else is never trusted
+    // regardless of what the API returns.
+    if (issue.user?.login !== AUTHOR_USERNAME) {
+      console.log(`[daily-take] skipping issue #${issue.number} -- opened by ${issue.user?.login ?? "unknown"}, not ${AUTHOR_USERNAME}.`);
+      continue;
+    }
+    const body = issue.body || "";
+    const date = extractIssueField(body, "Date");
+    const text = extractIssueField(body, "Take");
+    // Not every issue he opens is a daily take (wind-report issues are his
+    // too) -- only one shaped like this template (both fields present)
+    // counts, silently skipped otherwise rather than logged as an error.
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !text) continue;
+    if (takes[date]) continue; // already have the newest-updated take for this date
+    takes[date] = { date, text, posted_at: issue.created_at, updated_at: issue.updated_at, issue_number: issue.number };
+  }
+  const count = Object.keys(takes).length;
+  if (count) console.log(`[daily-take] found ${count} take(s): ${Object.keys(takes).join(", ")}`);
+  return takes;
+}
+
 async function main() {
   const startedAt = new Date();
   const spotsOut = [];
@@ -546,6 +632,9 @@ async function main() {
       console.log(`[live:Pam Rocks] fetch failed: ${err.message}`);
     }
   }
+
+  console.log("Fetching daily take...");
+  const dailyTakes = await fetchDailyTakes();
 
   console.log("Fetching Environment Canada marine bulletins...");
   const bulletins = {};
@@ -714,12 +803,15 @@ async function main() {
   // use "Vancouver Harbour") plus every
   // additional station wtfbc.ca's board offers that we don't already have.
   // Riders like seeing the wider regional picture, not just the handful of
-  // spots we actively forecast for. The one genuine overlap between the two
-  // sources is Pam Rocks (our own Porteau Cove liveStation *is* wtfbc.ca's
-  // "Howe Sound - Pam Rocks" entry) — skip wtfbc's copy there so the same
-  // physical station doesn't show two slightly different numbers side by
-  // side, which would look like a bug rather than just two snapshots taken
-  // moments apart.
+  // spots we actively forecast for. A few of wtfbc.ca's stations are the
+  // exact same physical station as one we already fetch ourselves, just
+  // under a slightly different name (see DUPLICATE_OF_OWN_STATION below) —
+  // skip wtfbc's copy of those so the same station doesn't show two
+  // slightly different readings side by side, which reads as a bug rather
+  // than "two snapshots taken moments apart." Our own EC/igetwind fetch is
+  // the source of truth here (more directly sourced, and already proven
+  // out by the wind-column-index fix above), so it's always wtfbc's copy
+  // that gets dropped, never ours.
   console.log("Building live surface conditions board...");
   const ownStations = [];
   const seenStationKeys = new Set();
@@ -765,8 +857,17 @@ async function main() {
       console.log(`[surface-board] ${buoy.name} failed: ${err.message}`);
     }
   }
+  // Name patterns for wtfbc.ca board entries that duplicate a station we
+  // already have from our own fetch above — add to this list rather than
+  // the loops above if another overlap turns up (it's a much smaller,
+  // easier-to-scan diff than threading a dedupe key through both sources).
+  const DUPLICATE_OF_OWN_STATION = [
+    /pam rocks/i,       // ours: "Pam Rocks (Howe Sound entrance)" — wtfbc: "Howe Sound - Pam Rocks"
+    /sand\s*heads/i,   // ours: "Sand Heads" — wtfbc: "Sandheads Cs"
+    /point atkinson/i,  // ours: "Point Atkinson" — wtfbc: "Point Atkinson"
+  ];
   const extraStations = swobBoardStations
-    .filter((s) => !/pam rocks/i.test(s.name))
+    .filter((s) => !DUPLICATE_OF_OWN_STATION.some((re) => re.test(s.name)))
     .map((s) => ({ ...s, source: "wtfbc" }));
   const surfaceObservations = {
     updated_at: startedAt.toISOString(),
@@ -820,6 +921,7 @@ async function main() {
     models_used: ["GFS (NOAA)", "ECMWF IFS", "ICON (DWD)", "GEM / HRDPS (ECCC)"],
     marine_bulletins: bulletins,
     calibration_overrides: overrides,
+    daily_takes: dailyTakes,
     live_verification_count: cappedEntries.length,
     surface_observations: surfaceObservations,
     spots: spotsOut,
