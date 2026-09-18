@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-18T16:01:44.000Z",
+  "generated_at": "2026-09-18T16:21:59.392Z",
   "min_samples": 2,
   "spots": {
     "boundary-bay": {
@@ -162,5 +162,6 @@
         "note": "Based on 3 mixed data points (0 rider reports, 3 live-station checks): actual wind averaged 55% of what was forecasted (rider reports weighted 3x a station check)."
       }
     }
-  }
+  },
+  "accuracy": null
 }
