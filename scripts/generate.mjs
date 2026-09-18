@@ -84,47 +84,84 @@ async function loadLiveLog() {
 }
 
 // Environment Canada's "Past 24 Hour Conditions" page — genuinely observed
-// (not forecast) hourly station data: weather.gc.ca/past_conditions. Table
-// columns are Date/Time, Conditions, Temperature, Wind, Humidex, Relative
-// humidity, Dew point, Pressure, Visibility. We parse actual <tr>/<td> cells
+// (not forecast) hourly station data: weather.gc.ca/past_conditions. EC's
+// current table lists BOTH metric and imperial units side by side (Temp
+// °C, Temp °F, Wind km/h, Wind mph, ...) — 13 columns, not the simpler
+// single-unit layout this comment used to describe. That's a real, silent
+// trap: a hardcoded "wind is column 3" assumption used to work (and still
+// matches the OLD 8-column layout an older EC template had) but currently
+// grabs the Temp(°F) column instead, on every station this function is
+// used for — confirmed against both the Halibut Bank buoy and the
+// "Vancouver Harbour" land station, which had silently never worked either.
+// So: find the Wind(km/h) column by its header text instead of a fixed
+// index, with the old index 3 as a fallback if a table ever lacks a
+// parseable header (keeps this from breaking silently again if EC changes
+// the column count/order a third time). We parse actual <tr>/<td> cells
 // rather than scraping flattened text, since date-separator rows only have
 // one populated cell and would otherwise be easy to misread as data.
-function parseEcObservedWind(html) {
+function parseEcObservedWind(html, debugLabel = null) {
   const rowRe = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
   const cellRe = /<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/gi;
   const stripTags = (s) => s.replace(/<[^>]+>/g, " ").replace(/&nbsp;/gi, " ").replace(/\s+/g, " ").trim();
 
   const rows = [];
+  let headerCells = null;
   let rm;
   while ((rm = rowRe.exec(html))) {
     const cells = [];
     let cm;
     cellRe.lastIndex = 0;
     while ((cm = cellRe.exec(rm[1]))) cells.push(stripTags(cm[1]));
+    // The header row is the one whose cells include something like
+    // "Wind(km/h)" — data rows never contain that literal text, so this
+    // can't collide with a real observation.
+    if (headerCells === null && cells.some((c) => /^wind\s*\(\s*km\/h\s*\)/i.test(c))) headerCells = cells;
     // Data rows start with an "HH:MM" cell; date-separator rows ("13 August
     // 2026") and the header row don't match this and are skipped.
     if (cells.length >= 4 && /^\d{2}:\d{2}$/.test(cells[0])) rows.push(cells);
   }
-  if (!rows.length) return null;
+  if (!rows.length) {
+    if (debugLabel) console.log(`[live:${debugLabel}] parseEcObservedWind: found no data rows (page fetched OK, ${html.length} bytes — table layout may not match what this parser expects).`);
+    return null;
+  }
+
+  let windColIdx = 3; // fallback: the old assumption, only used if we can't find a header
+  if (headerCells) {
+    const idx = headerCells.findIndex((c) => /^wind\s*\(\s*km\/h\s*\)/i.test(c));
+    if (idx !== -1) windColIdx = idx;
+  }
 
   const latest = rows[0]; // rows are most-recent-first
   const time = latest[0];
-  const windRaw = latest[3];
-  let speedKmh, directionLabel, directionAbbr = null;
+  const windRaw = latest[windColIdx];
+  let speedKmh, directionLabel, directionAbbr = null, gustKmh = null;
   if (/^calm$/i.test(windRaw)) {
     speedKmh = 0;
     directionLabel = "calm";
   } else {
-    const m = windRaw.match(/^([A-Z]+)\s*\(([^)]+)\)\s*([\d.]+)/);
-    if (!m) return null;
+    // Land stations report "DIR (Label) SPEED"; buoy stations skip the
+    // parenthetical full-name label entirely and add a trailing "gusts N"
+    // instead — e.g. a land station reads "NE (Northeast) 20" but a buoy
+    // reads "W 14 gusts 17" (confirmed against the live Halibut Bank page's
+    // actual DOM, not just its rendered text — the "(West)"-style label
+    // some tools describe for buoy rows doesn't actually exist there).
+    // Label group is optional so both shapes match; falls back to the
+    // abbreviation as the label when there's no parenthetical, matching how
+    // wtfbc.ca's board already shows bare abbreviations like "NNW".
+    const m = windRaw.match(/^([A-Z]+)\s*(?:\(([^)]+)\))?\s*([\d.]+)(?:\s*gusts?\s*([\d.]+))?/);
+    if (!m) {
+      if (debugLabel) console.log(`[live:${debugLabel}] parseEcObservedWind: found a data row but couldn't parse its wind cell: ${JSON.stringify(windRaw)}`);
+      return null;
+    }
     directionAbbr = m[1];
-    directionLabel = m[2];
+    directionLabel = m[2] || m[1];
     speedKmh = parseFloat(m[3]);
+    gustKmh = m[4] != null ? parseFloat(m[4]) : null;
   }
   return {
     time, // "HH:MM" Pacific, no date attached
     speedKt: Math.round(speedKmh * 0.539957 * 10) / 10,
-    gustKt: null, // this table doesn't report gust
+    gustKt: gustKmh != null ? Math.round(gustKmh * 0.539957 * 10) / 10 : null,
     directionAbbr,
     directionLabel,
   };
@@ -135,8 +172,23 @@ async function fetchEcObservation(station) {
   const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
   if (!res.ok) { console.log(`[live:${station.name}] fetch failed: ${res.status}`); return null; }
   const html = await res.text();
-  return parseEcObservedWind(html);
+  return parseEcObservedWind(html, station.name);
 }
+
+// Environment Canada marine buoys — genuine open-water wind, distinct from
+// the coastal/land stations wtfbc.ca's board already covers (see
+// SWOB_BOARD_URL below) and from the marine bulletin *text* (MARINE_ZONES
+// above). A buoy's numeric NDBC-style id (e.g. Halibut Bank's "46146") is
+// also its EC "station" code on the same past_conditions page used for land
+// stations above, so this reuses fetchEcObservation/getLiveObservation as-is
+// — no new fetcher or parser needed. Halibut Bank sits mid-Strait of
+// Georgia, the one clearly-relevant open-water buoy for this app's coverage
+// area (Howe Sound + the Strait of Georgia south-of-Nanaimo zone); add more
+// here if useful later (e.g. Sentry Shoal, technically the zone north of
+// Nanaimo).
+const BUOY_STATIONS = [
+  { name: "Halibut Bank Buoy", code: "46146" },
+];
 
 // Squamish Windsports Society's own wind meter at the Spit
 // (squamishwindsports.com/conditions/wind) — the JSON endpoint behind that
@@ -692,6 +744,25 @@ async function main() {
       });
     } catch (err) {
       console.log(`[surface-board] ${spot.liveStation.name} failed: ${err.message}`);
+    }
+  }
+  for (const buoy of BUOY_STATIONS) {
+    try {
+      const obs = await getLiveObservation(buoy); // no `type` — same EC path as fetchEcObservation above
+      if (!obs) continue;
+      ownStations.push({
+        name: buoy.name,
+        source_url: `https://weather.gc.ca/past_conditions/index_e.html?station=${buoy.code}`,
+        observed_local_time: obs.time,
+        observed_age_min: obs.ageMin != null ? Math.round(obs.ageMin) : null,
+        temp_c: null,
+        direction_label: obs.directionLabel,
+        speed_kt: obs.speedKt,
+        gust_kt: obs.gustKt ?? null,
+        source: "wind-guru",
+      });
+    } catch (err) {
+      console.log(`[surface-board] ${buoy.name} failed: ${err.message}`);
     }
   }
   const extraStations = swobBoardStations

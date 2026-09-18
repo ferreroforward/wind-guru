@@ -1,0 +1,15 @@
+name = "wind-guru-reports"
+main = "index.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+# The one origin allowed to POST here (CORS). Update this if the site ever
+# moves off ferreroforward.github.io onto a custom domain, then redeploy.
+ALLOWED_ORIGIN = "https://ferreroforward.github.io"
+
+# GITHUB_TOKEN is a SECRET, not a plain var — never put it here in plain
+# text. Set it after deploying with either:
+#   wrangler secret put GITHUB_TOKEN
+# or, in the Cloudflare dashboard: Worker -> Settings -> Variables and
+# Secrets -> Add -> type "Secret" -> name GITHUB_TOKEN.
+# See README.md for how to create the token itself.

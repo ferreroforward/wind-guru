@@ -42,6 +42,19 @@ const LIVE_STATION_WEIGHT = 1;
 const MAX_PLAUSIBLE_KT = 80;
 const RATIO_SANITY_RANGE = [0.05, 20];
 
+// "Forecast accuracy" badge shown on the page (index.html reads this from
+// forecast.calibration_overrides.accuracy, passed through unchanged by
+// generate.mjs). Deliberately rider-reports only, sitewide, not mixed with
+// the automated live-station comparisons above — the badge is answering
+// "how accurate are we according to riders who were actually there," not
+// the broader (and much more numerous) automated-check pool. A flat +/-
+// tolerance rather than a ratio: two equal-and-opposite misses would
+// average out to looking "accurate" under a ratio-based measure even
+// though every single report missed, which is exactly the kind of number
+// that would have hidden the 12-20 vs 18-28 bug that prompted this feature.
+const ACCURACY_TOLERANCE_KT = 3;
+const MIN_SAMPLES_FOR_ACCURACY = 10;
+
 function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -148,11 +161,22 @@ async function main() {
   // shouldn't nudge an outflow multiplier for the same spot, and vice versa.
   const bySpotGeneral = {};
   const bySpotRegime = {};
+  // Flat, sitewide, rider-reports-only pool for the "forecast accuracy"
+  // badge — kept separate from bySpotGeneral, which mixes in the much more
+  // numerous automated live-station checks and is bucketed per spot (see
+  // ACCURACY_TOLERANCE_KT above for why this needs its own pool).
+  const accuracyPoints = [];
   for (const issue of issues) {
     const body = issue.body || "";
     const spot = extractField(body, "Spot");
     const forecasted = parseFloat(extractField(body, "Forecasted speed (kt)"));
     const actual = parseFloat(extractField(body, "Actual speed (kt)"));
+    // Gust isn't fed into calibration yet (the app currently fabricates
+    // display gust as speed*1.3 rather than reading a real value — see
+    // OPUS_REVIEW.md #33) — captured here so a season of real rider-
+    // reported gusts is on hand once that's worth tackling.
+    const gustRaw = extractField(body, "Actual gust (kt)");
+    const gust = gustRaw != null ? parseFloat(gustRaw) : null;
     if (!spot || !isFinite(forecasted) || !isFinite(actual) || forecasted <= 0) {
       console.log(`  Skipping issue #${issue.number} — couldn't parse spot/forecasted/actual.`);
       continue;
@@ -166,7 +190,8 @@ async function main() {
       console.log(`  Skipping issue #${issue.number} — forecasted=${forecasted}kt actual=${actual}kt is outside plausible bounds.`);
       continue;
     }
-    (bySpotGeneral[spot] ||= []).push({ date: issue.created_at, forecasted, actual, ratio, source: "rider-report" });
+    (bySpotGeneral[spot] ||= []).push({ date: issue.created_at, forecasted, actual, ratio, source: "rider-report", gust: isFinite(gust) ? gust : null });
+    accuracyPoints.push({ forecasted, actual });
   }
   for (const e of liveEntries) {
     if (!e.spot || !isFinite(e.forecasted) || !isFinite(e.actual) || e.forecasted <= 0) continue;
@@ -201,10 +226,29 @@ async function main() {
     console.log(`  ${spot} [${regime}]: ${bucket.sample_size} data points, avg ratio ${bucket.avg_ratio}, multiplier ${bucket.multiplier}`);
   }
 
+  // "Forecast accuracy" badge — null (hidden on the page) until there are
+  // at least MIN_SAMPLES_FOR_ACCURACY rider reports, so a shaky 2-report
+  // stat never gets published. generate.mjs copies this whole file through
+  // unchanged into forecast.calibration_overrides, so index.html reads it
+  // as forecast.calibration_overrides.accuracy.
+  let accuracy = null;
+  if (accuracyPoints.length >= MIN_SAMPLES_FOR_ACCURACY) {
+    const hits = accuracyPoints.filter((p) => Math.abs(p.actual - p.forecasted) <= ACCURACY_TOLERANCE_KT).length;
+    accuracy = {
+      tolerance_kt: ACCURACY_TOLERANCE_KT,
+      sample_size: accuracyPoints.length,
+      hit_rate: Math.round((hits / accuracyPoints.length) * 100) / 100,
+    };
+    console.log(`\nAccuracy: ${Math.round(accuracy.hit_rate * 100)}% of ${accuracy.sample_size} rider reports within ${ACCURACY_TOLERANCE_KT}kt of forecast.`);
+  } else {
+    console.log(`\nAccuracy badge: ${accuracyPoints.length}/${MIN_SAMPLES_FOR_ACCURACY} rider reports so far — not shown yet.`);
+  }
+
   const out = {
     generated_at: new Date().toISOString(),
     min_samples: MIN_SAMPLES,
     spots: overrides,
+    accuracy,
   };
 
   await mkdir(path.dirname(OUT_PATH), { recursive: true });
