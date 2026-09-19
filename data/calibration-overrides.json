@@ -1,7 +1,17 @@
 {
-  "generated_at": "2026-09-19T15:33:47.830Z",
+  "generated_at": "2026-09-19T22:16:39.159Z",
   "min_samples": 2,
   "spots": {
+    "squamish-spit": {
+      "general": {
+        "sample_size": 5,
+        "rider_reports": 5,
+        "live_checks": 0,
+        "avg_ratio": 0.48,
+        "multiplier": 0.75,
+        "note": "Based on 5 total data points (5 rider reports, 0 live-station checks): actual wind averaged 48% of what was forecasted (rider reports weighted 3x a station check)."
+      }
+    },
     "boundary-bay": {
       "general": {
         "sample_size": 6,
