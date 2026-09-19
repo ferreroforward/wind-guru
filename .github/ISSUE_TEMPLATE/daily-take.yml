@@ -20,8 +20,12 @@ body:
     id: take_date
     attributes:
       label: Date
-      description: The forecast day this take is about
-      placeholder: "2026-09-18"
+      description: >-
+        The forecast day this take is about. This box is always blank when
+        you open the form -- it does NOT fill in today's date for you, so
+        type it fresh every time (a leftover old date is why a take can go
+        missing from the site).
+      placeholder: "YYYY-MM-DD"
     validations:
       required: true
   - type: textarea
