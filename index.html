@@ -288,6 +288,22 @@ import { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, l
 
 let forecast = null; // loaded forecast.json shape
 let selectedDayIndex = 0;
+// Locks the day tabs onto whichever bucket is actually 'today' the very
+// first time real data loads, then never again -- without this, a snapshot
+// that's still the previous day's (the overnight window before the next
+// scheduled run, which can itself run late) leaves index 0 pointing at
+// what is now yesterday, and the page opens showing a stale day with no
+// obvious sign anything is wrong. Guarded by initialDaySet so it doesn't
+// fight the day-tab buttons or a manual "Refresh live" click afterwards.
+let initialDaySet = false;
+function syncSelectedDayToToday() {
+  if (initialDaySet) return;
+  initialDaySet = true;
+  const dates = dayBuckets();
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
+  const idx = dates.indexOf(today);
+  if (idx !== -1) selectedDayIndex = idx;
+}
 let minKt = 12;
 
 // Every quick-pick button is a minimum, not a closed range — "12+ Sweet
@@ -919,6 +935,7 @@ async function loadStatic() {
     const res = await fetch("data/forecast.json", { cache: "no-store" });
     if (!res.ok) throw new Error("no snapshot yet");
     forecast = await res.json();
+    syncSelectedDayToToday();
     renderAll();
   } catch (err) {
     genLabel.textContent = "No saved snapshot yet — fetching live…";
@@ -972,6 +989,7 @@ async function loadLive() {
       models_used: ["GFS", "ECMWF", "ICON", "GEM/HRDPS"],
       spots: spotsOut,
     };
+    syncSelectedDayToToday();
     renderAll();
   } catch (err) {
     genLabel.textContent = "Live fetch failed — check your connection.";
