@@ -1,5 +1,5 @@
 {
-  "version": "509c00b",
-  "message": "Merge origin/main",
-  "deployed_at": "2026-09-20T16:14:31Z"
+  "version": "a74a55b",
+  "message": "Scale the rider-feedback calibration by sample size, not just a hard clamp",
+  "deployed_at": "2026-09-20T20:29:20Z"
 }
