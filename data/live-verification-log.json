@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-20T20:46:39.336Z",
+  "updated_at": "2026-09-20T21:21:23.832Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -96,6 +96,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-09-20T14:00",
+      "forecasted": 8.1,
+      "actual": 8.9,
+      "ratio": 1.0987654320987654,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-09-20T21:21:23.832Z"
     },
     {
       "spot": "erwin-park",
@@ -261,6 +274,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "porteau-cove",
+      "time": "2026-09-20T14:00",
+      "forecasted": 13.5,
+      "actual": 9.9,
+      "ratio": 0.7333333333333334,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "thermal",
+      "mismatch": true,
+      "reasoning": "Forecast called a thermal that came in weaker than shown — possible early suppression (heat, high cloud) or the gradient not fully developing. This hour already had the Squamish field calibration applied. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-20T21:21:23.832Z"
     },
     {
       "spot": "porteau-cove",
@@ -768,19 +794,6 @@
       "mismatch": true,
       "reasoning": "Forecast called a thermal that came in weaker than shown — possible early suppression (heat, high cloud) or the gradient not fully developing. MSLP had already flagged this hour as uncertain. This hour already had the Squamish field calibration applied. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-08-25T21:01:34.851Z"
-    },
-    {
-      "spot": "porteau-cove",
-      "time": "2026-08-22T13:00",
-      "forecasted": 15.3,
-      "actual": 19,
-      "ratio": 1.2418300653594772,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "thermal",
-      "mismatch": true,
-      "reasoning": "Forecast called a thermal but under-shot its strength — even after the local calibration, coarse models can still lag on an unusually strong thermal day. This hour already had the Squamish field calibration applied. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-08-22T20:54:33.789Z"
     },
     {
       "spot": "white-rock-east",

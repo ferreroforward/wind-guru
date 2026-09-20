@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-20T20:46:39.336Z",
-  "generated_at_label": "Sun, Sep 20, 1:46 PM PDT",
+  "generated_at": "2026-09-20T21:21:23.832Z",
+  "generated_at_label": "Sun, Sep 20, 2:21 PM PDT",
   "models_used": [
     "GFS (NOAA)",
     "ECMWF IFS",
@@ -170,12 +170,12 @@
   "calibration_overrides": {
     "squamish-spit": {
       "general": {
-        "sample_size": 7,
-        "rider_reports": 7,
+        "sample_size": 8,
+        "rider_reports": 8,
         "live_checks": 0,
-        "avg_ratio": 0.52,
-        "multiplier": 0.81,
-        "note": "Based on 7 total data points (7 rider reports, 0 live-station checks): actual wind averaged 52% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 7 data points so far -- the raw ratio would be 52%, softened to a 81% multiplier until more reports come in."
+        "avg_ratio": 0.59,
+        "multiplier": 0.8,
+        "note": "Based on 8 total data points (8 rider reports, 0 live-station checks): actual wind averaged 59% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 8 data points so far -- the raw ratio would be 59%, softened to a 80% multiplier until more reports come in."
       }
     },
     "boundary-bay": {
@@ -219,9 +219,9 @@
         "sample_size": 6,
         "rider_reports": 0,
         "live_checks": 6,
-        "avg_ratio": 0.74,
+        "avg_ratio": 0.75,
         "multiplier": 0.81,
-        "note": "Based on 6 synoptic data points (0 rider reports, 6 live-station checks): actual wind averaged 74% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 6 data points so far -- the raw ratio would be 74%, softened to a 81% multiplier until more reports come in."
+        "note": "Based on 6 synoptic data points (0 rider reports, 6 live-station checks): actual wind averaged 75% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 6 data points so far -- the raw ratio would be 75%, softened to a 81% multiplier until more reports come in."
       },
       "outflow": {
         "sample_size": 5,
@@ -237,9 +237,9 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.54,
+        "avg_ratio": 0.56,
         "multiplier": 0.77,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 54% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 54%, softened to a 77% multiplier until more reports come in."
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 56% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 56%, softened to a 77% multiplier until more reports come in."
       },
       "thermal": {
         "sample_size": 20,
@@ -362,38 +362,38 @@
       "issue_number": 1
     }
   },
-  "live_verification_count": 109,
+  "live_verification_count": 110,
   "surface_observations": {
-    "updated_at": "2026-09-20T20:46:39.336Z",
+    "updated_at": "2026-09-20T21:21:23.832Z",
     "board_source_url": "https://wtfbc.ca/swob.php",
     "stations": [
       {
         "name": "Pam Rocks (Howe Sound entrance)",
         "source_url": null,
-        "observed_local_time": "13:00",
-        "observed_age_min": 47,
+        "observed_local_time": "14:00",
+        "observed_age_min": 21,
         "temp_c": null,
         "direction_label": "SE",
-        "speed_kt": 8.9,
+        "speed_kt": 9.9,
         "gust_kt": null,
         "source": "wind-guru"
       },
       {
         "name": "Sand Heads",
         "source_url": null,
-        "observed_local_time": "13:00",
-        "observed_age_min": 47,
+        "observed_local_time": "14:00",
+        "observed_age_min": 21,
         "temp_c": null,
-        "direction_label": "W",
-        "speed_kt": 4.1,
+        "direction_label": "WNW",
+        "speed_kt": 6,
         "gust_kt": null,
         "source": "wind-guru"
       },
       {
         "name": "White Rock, BC",
         "source_url": null,
-        "observed_local_time": "13:00",
-        "observed_age_min": 47,
+        "observed_local_time": "14:00",
+        "observed_age_min": 22,
         "temp_c": null,
         "direction_label": "WSW",
         "speed_kt": 4.1,
@@ -403,29 +403,29 @@
       {
         "name": "Point Atkinson",
         "source_url": null,
-        "observed_local_time": "13:00",
-        "observed_age_min": 47,
+        "observed_local_time": "14:00",
+        "observed_age_min": 22,
         "temp_c": null,
         "direction_label": "W",
-        "speed_kt": 7,
+        "speed_kt": 8.9,
         "gust_kt": null,
         "source": "wind-guru"
       },
       {
         "name": "Halibut Bank Buoy",
         "source_url": "https://weather.gc.ca/past_conditions/index_e.html?station=46146",
-        "observed_local_time": "13:00",
-        "observed_age_min": 46,
+        "observed_local_time": "14:00",
+        "observed_age_min": 21,
         "temp_c": null,
         "direction_label": "W",
-        "speed_kt": 9.2,
-        "gust_kt": 10.8,
+        "speed_kt": 7.6,
+        "gust_kt": 8.6,
         "source": "wind-guru"
       },
       {
         "name": "Tsawwassen Ferry Auto",
         "source_url": "https://dd.weather.gc.ca/today/observations/swob-ml/latest/CVTF-AUTO-minute-swob.xml",
-        "observed_local_time": "1:46 pm",
+        "observed_local_time": "2:20 pm",
         "temp_c": null,
         "direction_label": "N",
         "speed_kt": 0,
@@ -435,39 +435,39 @@
       {
         "name": "Vancouver International",
         "source_url": "https://dd.weather.gc.ca/today/observations/swob-ml/latest/CYVR-MAN-swob.xml",
-        "observed_local_time": "1:00 pm",
-        "temp_c": 17,
+        "observed_local_time": "2:00 pm",
+        "temp_c": 18,
         "direction_label": "W",
-        "speed_kt": 6,
+        "speed_kt": 8,
         "gust_kt": null,
         "source": "wtfbc"
       },
       {
         "name": "Jericho Sailing Centre",
         "source_url": "http://jsca.bc.ca/aboutus/weather/",
-        "observed_local_time": "1:30 pm",
+        "observed_local_time": "2:00 pm",
         "temp_c": 16,
         "direction_label": "W",
         "speed_kt": 13,
-        "gust_kt": 15,
+        "gust_kt": 16,
         "source": "wtfbc"
       },
       {
         "name": "Squamish Airport",
         "source_url": "https://dd.weather.gc.ca/today/observations/swob-ml/latest/CWSK-AUTO-minute-swob.xml",
-        "observed_local_time": "1:46 pm",
+        "observed_local_time": "2:20 pm",
         "temp_c": 21,
-        "direction_label": "SSE",
-        "speed_kt": 8,
-        "gust_kt": 9,
+        "direction_label": "S",
+        "speed_kt": 4,
+        "gust_kt": 5,
         "source": "wtfbc"
       },
       {
         "name": "Whistler",
         "source_url": "https://spaces.navcanada.ca/workspace/metcam?search=TM07",
-        "observed_local_time": "1:00 pm",
-        "temp_c": 22,
-        "direction_label": "SE",
+        "observed_local_time": "2:00 pm",
+        "temp_c": 24,
+        "direction_label": "S",
         "speed_kt": 5,
         "gust_kt": null,
         "source": "wtfbc"
@@ -499,7 +499,7 @@
           "upper_speed_kt": 4.9,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (WSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (WSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.36,
@@ -516,10 +516,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 4.455,
-            "ecmwf": 0.32400000000000007,
-            "icon": 2.1060000000000003,
-            "gem": 0.6480000000000001
+            "gfs": 4.4,
+            "ecmwf": 0.32000000000000006,
+            "icon": 2.08,
+            "gem": 0.6400000000000001
           },
           "raw_models": {
             "gfs": 5.5,
@@ -539,7 +539,7 @@
           "upper_speed_kt": 5.1,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (WSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (WSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.35,
@@ -556,10 +556,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 4.536,
-            "ecmwf": 0.486,
-            "icon": 2.43,
-            "gem": 0.32400000000000007
+            "gfs": 4.4799999999999995,
+            "ecmwf": 0.48,
+            "icon": 2.4000000000000004,
+            "gem": 0.32000000000000006
           },
           "raw_models": {
             "gfs": 5.6,
@@ -579,7 +579,7 @@
           "upper_speed_kt": 5.1,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.46,
@@ -596,10 +596,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 3.8070000000000004,
-            "ecmwf": 0.486,
-            "icon": 2.5920000000000005,
-            "gem": 0.32400000000000007
+            "gfs": 3.7600000000000002,
+            "ecmwf": 0.48,
+            "icon": 2.5600000000000005,
+            "gem": 0.32000000000000006
           },
           "raw_models": {
             "gfs": 4.7,
@@ -610,8 +610,8 @@
         },
         {
           "time": "2026-09-20T03:00",
-          "speed_kt": 1.7,
-          "gust_kt": 3.5,
+          "speed_kt": 1.6,
+          "gust_kt": 3.4,
           "direction_deg": 347,
           "direction_label": "NNW",
           "cloud_pct": 27,
@@ -619,7 +619,7 @@
           "upper_speed_kt": 4.9,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.61,
@@ -636,10 +636,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.511,
-            "ecmwf": 0.486,
-            "icon": 2.9970000000000003,
-            "gem": 0.6480000000000001
+            "gfs": 2.4800000000000004,
+            "ecmwf": 0.48,
+            "icon": 2.9600000000000004,
+            "gem": 0.6400000000000001
           },
           "raw_models": {
             "gfs": 3.1,
@@ -659,7 +659,7 @@
           "upper_speed_kt": 4.9,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.54,
@@ -676,10 +676,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 1.134,
-            "ecmwf": 0.32400000000000007,
-            "icon": 3.3209999999999997,
-            "gem": 0.81
+            "gfs": 1.1199999999999999,
+            "ecmwf": 0.32000000000000006,
+            "icon": 3.28,
+            "gem": 0.8
           },
           "raw_models": {
             "gfs": 1.4,
@@ -691,7 +691,7 @@
         {
           "time": "2026-09-20T05:00",
           "speed_kt": 1.9,
-          "gust_kt": 4.2,
+          "gust_kt": 4.1,
           "direction_deg": 39,
           "direction_label": "NE",
           "cloud_pct": 49,
@@ -699,7 +699,7 @@
           "upper_speed_kt": 5.1,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.51,
@@ -716,10 +716,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.5920000000000005,
-            "ecmwf": 0.32400000000000007,
-            "icon": 3.483,
-            "gem": 1.2960000000000003
+            "gfs": 2.5600000000000005,
+            "ecmwf": 0.32000000000000006,
+            "icon": 3.44,
+            "gem": 1.2800000000000002
           },
           "raw_models": {
             "gfs": 3.2,
@@ -731,7 +731,7 @@
         {
           "time": "2026-09-20T06:00",
           "speed_kt": 2.6,
-          "gust_kt": 4.6,
+          "gust_kt": 4.5,
           "direction_deg": 40,
           "direction_label": "NE",
           "cloud_pct": 49,
@@ -739,7 +739,7 @@
           "upper_speed_kt": 5.2,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (NE) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (NE) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.4,
@@ -756,10 +756,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 4.536,
-            "ecmwf": 0.6480000000000001,
-            "icon": 3.6450000000000005,
-            "gem": 1.539
+            "gfs": 4.4799999999999995,
+            "ecmwf": 0.6400000000000001,
+            "icon": 3.6,
+            "gem": 1.52
           },
           "raw_models": {
             "gfs": 5.6,
@@ -770,8 +770,8 @@
         },
         {
           "time": "2026-09-20T07:00",
-          "speed_kt": 2.7,
-          "gust_kt": 4.8,
+          "speed_kt": 2.6,
+          "gust_kt": 4.7,
           "direction_deg": 43,
           "direction_label": "NE",
           "cloud_pct": 52,
@@ -779,7 +779,7 @@
           "upper_speed_kt": 5.7,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (NE) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (NE) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.43,
@@ -796,10 +796,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 4.698,
-            "ecmwf": 0.972,
-            "icon": 3.6450000000000005,
-            "gem": 1.2960000000000003
+            "gfs": 4.64,
+            "ecmwf": 0.96,
+            "icon": 3.6,
+            "gem": 1.2800000000000002
           },
           "raw_models": {
             "gfs": 5.8,
@@ -819,7 +819,7 @@
           "upper_speed_kt": 5.8,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.66,
@@ -836,10 +836,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.9160000000000004,
-            "ecmwf": 1.2960000000000003,
-            "icon": 3.483,
-            "gem": 1.2960000000000003
+            "gfs": 2.8800000000000003,
+            "ecmwf": 1.2800000000000002,
+            "icon": 3.44,
+            "gem": 1.2800000000000002
           },
           "raw_models": {
             "gfs": 3.6,
@@ -851,7 +851,7 @@
         {
           "time": "2026-09-20T09:00",
           "speed_kt": 1.6,
-          "gust_kt": 4.1,
+          "gust_kt": 4,
           "direction_deg": 29,
           "direction_label": "NNE",
           "cloud_pct": 66,
@@ -859,7 +859,7 @@
           "upper_speed_kt": 5.8,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.88,
@@ -876,10 +876,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 1.7010000000000003,
-            "ecmwf": 1.2960000000000003,
-            "icon": 2.1060000000000003,
-            "gem": 1.377
+            "gfs": 1.6800000000000002,
+            "ecmwf": 1.2800000000000002,
+            "icon": 2.08,
+            "gem": 1.36
           },
           "raw_models": {
             "gfs": 2.1,
@@ -891,7 +891,7 @@
         {
           "time": "2026-09-20T10:00",
           "speed_kt": 1.3,
-          "gust_kt": 3.7,
+          "gust_kt": 3.6,
           "direction_deg": 17,
           "direction_label": "NNE",
           "cloud_pct": 64,
@@ -899,7 +899,7 @@
           "upper_speed_kt": 5.9,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.76,
@@ -916,10 +916,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.1060000000000003,
-            "ecmwf": 1.134,
-            "icon": 0.567,
-            "gem": 1.2960000000000003
+            "gfs": 2.08,
+            "ecmwf": 1.1199999999999999,
+            "icon": 0.5599999999999999,
+            "gem": 1.2800000000000002
           },
           "raw_models": {
             "gfs": 2.6,
@@ -930,8 +930,8 @@
         },
         {
           "time": "2026-09-20T11:00",
-          "speed_kt": 6.9,
-          "gust_kt": 9.2,
+          "speed_kt": 6.8,
+          "gust_kt": 9.1,
           "direction_deg": 256,
           "direction_label": "WSW",
           "cloud_pct": 52,
@@ -939,7 +939,7 @@
           "upper_speed_kt": 5.8,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~488 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~3kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (1.2hPa) and the local channel spread (0.7hPa) favor inflow. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~488 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~3kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (1.2hPa) and the local channel spread (0.7hPa) favor inflow. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.4,
@@ -956,8 +956,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 6.925500000000001,
-            "gem_local": 0.16200000000000003
+            "calibrated": 6.840000000000001,
+            "gem_local": 0.16000000000000003
           },
           "raw_models": {
             "gfs": 5,
@@ -968,8 +968,8 @@
         },
         {
           "time": "2026-09-20T12:00",
-          "speed_kt": 14.2,
-          "gust_kt": 18.4,
+          "speed_kt": 14,
+          "gust_kt": 18.2,
           "direction_deg": 237,
           "direction_label": "WSW",
           "cloud_pct": 49,
@@ -977,7 +977,7 @@
           "upper_speed_kt": 5.9,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~595 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (1.5hPa) and the local channel spread (0.8hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~595 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (1.5hPa) and the local channel spread (0.8hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.1,
@@ -994,8 +994,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 9.234000000000002,
-            "gem_local": 1.2960000000000003
+            "calibrated": 9.120000000000001,
+            "gem_local": 1.2800000000000002
           },
           "raw_models": {
             "gfs": 7.6,
@@ -1006,8 +1006,8 @@
         },
         {
           "time": "2026-09-20T13:00",
-          "speed_kt": 14.2,
-          "gust_kt": 18.4,
+          "speed_kt": 14,
+          "gust_kt": 18.2,
           "direction_deg": 229,
           "direction_label": "SW",
           "cloud_pct": 60,
@@ -1015,49 +1015,11 @@
           "upper_speed_kt": 5.9,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~648 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~5kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (1.8hPa) and the local channel spread (0.8hPa) favor inflow. Pam Rocks (sound's mouth) is reading ~9kt from SE — right in the band that's historically preceded this thermal filling in reliably. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~648 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~5kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (1.8hPa) and the local channel spread (0.8hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0,
           "fine_vs_coarse_gap": -1.2,
-          "calibrated": true,
-          "reference_triggered": false,
-          "live_reference_triggered": false,
-          "marine_anchored": true,
-          "pam_rocks_triggered": false,
-          "pressure_support": true,
-          "upper_suppression": false,
-          "pam_rocks_support": true,
-          "pam_rocks_tell": true,
-          "pam_rocks_head_fake": false,
-          "feedback_adjusted": true,
-          "models": {
-            "calibrated": 10.84995,
-            "gem_local": 2.835
-          },
-          "raw_models": {
-            "gfs": 8.7,
-            "ecmwf": 0.7,
-            "icon": 3,
-            "gem": 3.5
-          }
-        },
-        {
-          "time": "2026-09-20T14:00",
-          "speed_kt": 14.2,
-          "gust_kt": 18.4,
-          "direction_deg": 228,
-          "direction_label": "SW",
-          "cloud_pct": 70,
-          "radiation_wm2": 645,
-          "upper_speed_kt": 6,
-          "gusty": false,
-          "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~645 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~6kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.1hPa) and the local channel spread (0.7hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
-          "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
-          "favorable_direction": true,
-          "model_agreement": 0,
-          "fine_vs_coarse_gap": -1.1,
           "calibrated": true,
           "reference_triggered": false,
           "live_reference_triggered": false,
@@ -1070,8 +1032,46 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 13.389300000000002,
-            "gem_local": 3.8070000000000004
+            "calibrated": 10.716,
+            "gem_local": 2.8000000000000003
+          },
+          "raw_models": {
+            "gfs": 8.7,
+            "ecmwf": 0.7,
+            "icon": 3,
+            "gem": 3.5
+          }
+        },
+        {
+          "time": "2026-09-20T14:00",
+          "speed_kt": 14,
+          "gust_kt": 18.2,
+          "direction_deg": 228,
+          "direction_label": "SW",
+          "cloud_pct": 70,
+          "radiation_wm2": 645,
+          "upper_speed_kt": 6,
+          "gusty": false,
+          "regime": "thermal",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~645 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~6kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.1hPa) and the local channel spread (0.7hPa) favor inflow. Pam Rocks (sound's mouth) is reading ~10kt from SE — right in the band that's historically preceded this thermal filling in reliably. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
+          "favorable_direction": true,
+          "model_agreement": 0,
+          "fine_vs_coarse_gap": -1.1,
+          "calibrated": true,
+          "reference_triggered": false,
+          "live_reference_triggered": false,
+          "marine_anchored": true,
+          "pam_rocks_triggered": false,
+          "pressure_support": true,
+          "upper_suppression": false,
+          "pam_rocks_support": true,
+          "pam_rocks_tell": true,
+          "pam_rocks_head_fake": false,
+          "feedback_adjusted": true,
+          "models": {
+            "calibrated": 13.224000000000002,
+            "gem_local": 3.7600000000000002
           },
           "raw_models": {
             "gfs": 10.4,
@@ -1082,8 +1082,8 @@
         },
         {
           "time": "2026-09-20T15:00",
-          "speed_kt": 14.5,
-          "gust_kt": 18.4,
+          "speed_kt": 14.4,
+          "gust_kt": 18.2,
           "direction_deg": 226,
           "direction_label": "SW",
           "cloud_pct": 57,
@@ -1091,7 +1091,7 @@
           "upper_speed_kt": 5.9,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~591 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~6kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.0hPa) and the local channel spread (0.6hPa) favor inflow. EC marine forecast for this area: southerly 15-20kt monday afternoon. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~591 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~6kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.0hPa) and the local channel spread (0.6hPa) favor inflow. EC marine forecast for this area: southerly 15-20kt monday afternoon. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -1108,8 +1108,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 14.54355,
-            "gem_local": 3.6450000000000005
+            "calibrated": 14.363999999999999,
+            "gem_local": 3.6
           },
           "raw_models": {
             "gfs": 11.2,
@@ -1120,8 +1120,8 @@
         },
         {
           "time": "2026-09-20T16:00",
-          "speed_kt": 14.2,
-          "gust_kt": 18.4,
+          "speed_kt": 14,
+          "gust_kt": 18.2,
           "direction_deg": 227,
           "direction_label": "SW",
           "cloud_pct": 48,
@@ -1129,7 +1129,7 @@
           "upper_speed_kt": 5.6,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~493 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~6kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (1.8hPa) and the local channel spread (0.5hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~493 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~6kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (1.8hPa) and the local channel spread (0.5hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -1146,8 +1146,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 13.966425000000001,
-            "gem_local": 3.1590000000000003
+            "calibrated": 13.794,
+            "gem_local": 3.12
           },
           "raw_models": {
             "gfs": 10.4,
@@ -1158,8 +1158,8 @@
         },
         {
           "time": "2026-09-20T17:00",
-          "speed_kt": 13,
-          "gust_kt": 16.5,
+          "speed_kt": 12.9,
+          "gust_kt": 16.3,
           "direction_deg": 226,
           "direction_label": "SW",
           "cloud_pct": 39,
@@ -1167,7 +1167,7 @@
           "upper_speed_kt": 5.6,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~370 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~6kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (1.5hPa) and the local channel spread (0.4hPa) favor inflow. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~370 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~6kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (1.5hPa) and the local channel spread (0.4hPa) favor inflow. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -1184,8 +1184,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 13.043025000000004,
-            "gem_local": 2.835
+            "calibrated": 12.882000000000003,
+            "gem_local": 2.8000000000000003
           },
           "raw_models": {
             "gfs": 9.8,
@@ -1197,7 +1197,7 @@
         {
           "time": "2026-09-20T18:00",
           "speed_kt": 2.9,
-          "gust_kt": 6.4,
+          "gust_kt": 6.3,
           "direction_deg": 225,
           "direction_label": "SW",
           "cloud_pct": 32,
@@ -1205,7 +1205,7 @@
           "upper_speed_kt": 5.6,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.06,
@@ -1222,10 +1222,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 6.966,
-            "ecmwf": 0.8910000000000001,
-            "icon": 0.972,
-            "gem": 2.835
+            "gfs": 6.88,
+            "ecmwf": 0.8800000000000001,
+            "icon": 0.96,
+            "gem": 2.8000000000000003
           },
           "raw_models": {
             "gfs": 8.6,
@@ -1237,7 +1237,7 @@
         {
           "time": "2026-09-20T19:00",
           "speed_kt": 2.3,
-          "gust_kt": 5.3,
+          "gust_kt": 5.2,
           "direction_deg": 219,
           "direction_label": "SW",
           "cloud_pct": 39,
@@ -1245,7 +1245,7 @@
           "upper_speed_kt": 5.9,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.15,
@@ -1262,10 +1262,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 5.832000000000001,
-            "ecmwf": 0.567,
-            "icon": 0.32400000000000007,
-            "gem": 2.511
+            "gfs": 5.760000000000001,
+            "ecmwf": 0.5599999999999999,
+            "icon": 0.32000000000000006,
+            "gem": 2.4800000000000004
           },
           "raw_models": {
             "gfs": 7.2,
@@ -1277,7 +1277,7 @@
         {
           "time": "2026-09-20T20:00",
           "speed_kt": 2.3,
-          "gust_kt": 4.9,
+          "gust_kt": 4.8,
           "direction_deg": 217,
           "direction_label": "SW",
           "cloud_pct": 61,
@@ -1285,7 +1285,7 @@
           "upper_speed_kt": 6.4,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.16,
@@ -1302,10 +1302,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 5.67,
-            "ecmwf": 0.243,
-            "icon": 1.377,
-            "gem": 2.0250000000000004
+            "gfs": 5.6000000000000005,
+            "ecmwf": 0.24,
+            "icon": 1.36,
+            "gem": 2
           },
           "raw_models": {
             "gfs": 7,
@@ -1316,7 +1316,7 @@
         },
         {
           "time": "2026-09-20T21:00",
-          "speed_kt": 2.2,
+          "speed_kt": 2.1,
           "gust_kt": 4.7,
           "direction_deg": 220,
           "direction_label": "SW",
@@ -1325,7 +1325,7 @@
           "upper_speed_kt": 7,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.21,
@@ -1342,10 +1342,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 5.265000000000001,
-            "ecmwf": 0.16200000000000003,
-            "icon": 1.7010000000000003,
-            "gem": 1.539
+            "gfs": 5.2,
+            "ecmwf": 0.16000000000000003,
+            "icon": 1.6800000000000002,
+            "gem": 1.52
           },
           "raw_models": {
             "gfs": 6.5,
@@ -1365,7 +1365,7 @@
           "upper_speed_kt": 7.7,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.21,
@@ -1382,10 +1382,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 5.265000000000001,
-            "ecmwf": 0.16200000000000003,
-            "icon": 2.1870000000000003,
-            "gem": 1.539
+            "gfs": 5.2,
+            "ecmwf": 0.16000000000000003,
+            "icon": 2.16,
+            "gem": 1.52
           },
           "raw_models": {
             "gfs": 6.5,
@@ -1397,7 +1397,7 @@
         {
           "time": "2026-09-20T23:00",
           "speed_kt": 2.2,
-          "gust_kt": 5.1,
+          "gust_kt": 5,
           "direction_deg": 198,
           "direction_label": "SSW",
           "cloud_pct": 69,
@@ -1405,7 +1405,7 @@
           "upper_speed_kt": 7.9,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.36,
@@ -1422,10 +1422,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 4.455,
-            "ecmwf": 0.32400000000000007,
-            "icon": 2.673,
-            "gem": 1.539
+            "gfs": 4.4,
+            "ecmwf": 0.32000000000000006,
+            "icon": 2.64,
+            "gem": 1.52
           },
           "raw_models": {
             "gfs": 5.5,
@@ -1437,7 +1437,7 @@
         {
           "time": "2026-09-21T00:00",
           "speed_kt": 2.3,
-          "gust_kt": 4.8,
+          "gust_kt": 4.7,
           "direction_deg": 214,
           "direction_label": "SW",
           "cloud_pct": 70,
@@ -1445,7 +1445,7 @@
           "upper_speed_kt": 8.2,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.38,
@@ -1462,10 +1462,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 4.3740000000000006,
-            "ecmwf": 0.32400000000000007,
-            "icon": 2.9160000000000004,
-            "gem": 1.539
+            "gfs": 4.32,
+            "ecmwf": 0.32000000000000006,
+            "icon": 2.8800000000000003,
+            "gem": 1.52
           },
           "raw_models": {
             "gfs": 5.4,
@@ -1477,7 +1477,7 @@
         {
           "time": "2026-09-21T01:00",
           "speed_kt": 2.6,
-          "gust_kt": 5.3,
+          "gust_kt": 5.2,
           "direction_deg": 213,
           "direction_label": "SSW",
           "cloud_pct": 73,
@@ -1485,7 +1485,7 @@
           "upper_speed_kt": 8.3,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.3,
@@ -1502,10 +1502,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 5.022,
-            "ecmwf": 0.486,
-            "icon": 3.1590000000000003,
-            "gem": 1.7010000000000003
+            "gfs": 4.960000000000001,
+            "ecmwf": 0.48,
+            "icon": 3.12,
+            "gem": 1.6800000000000002
           },
           "raw_models": {
             "gfs": 6.2,
@@ -1525,7 +1525,7 @@
           "upper_speed_kt": 8.5,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.25,
@@ -1542,10 +1542,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 5.346,
-            "ecmwf": 0.486,
-            "icon": 3.1590000000000003,
-            "gem": 2.1870000000000003
+            "gfs": 5.28,
+            "ecmwf": 0.48,
+            "icon": 3.12,
+            "gem": 2.16
           },
           "raw_models": {
             "gfs": 6.6,
@@ -1556,8 +1556,8 @@
         },
         {
           "time": "2026-09-21T03:00",
-          "speed_kt": 3.1,
-          "gust_kt": 6.4,
+          "speed_kt": 3,
+          "gust_kt": 6.3,
           "direction_deg": 214,
           "direction_label": "SW",
           "cloud_pct": 76,
@@ -1565,7 +1565,7 @@
           "upper_speed_kt": 8.6,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.17,
@@ -1582,10 +1582,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 5.994000000000001,
-            "ecmwf": 0.6480000000000001,
-            "icon": 3.1590000000000003,
-            "gem": 2.511
+            "gfs": 5.920000000000001,
+            "ecmwf": 0.6400000000000001,
+            "icon": 3.12,
+            "gem": 2.4800000000000004
           },
           "raw_models": {
             "gfs": 7.4,
@@ -1605,7 +1605,7 @@
           "upper_speed_kt": 8.6,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.13,
@@ -1622,10 +1622,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 6.3180000000000005,
-            "ecmwf": 0.6480000000000001,
-            "icon": 3.24,
-            "gem": 2.349
+            "gfs": 6.24,
+            "ecmwf": 0.6400000000000001,
+            "icon": 3.2,
+            "gem": 2.32
           },
           "raw_models": {
             "gfs": 7.8,
@@ -1637,7 +1637,7 @@
         {
           "time": "2026-09-21T05:00",
           "speed_kt": 3.1,
-          "gust_kt": 6.6,
+          "gust_kt": 6.5,
           "direction_deg": 220,
           "direction_label": "SW",
           "cloud_pct": 77,
@@ -1645,7 +1645,7 @@
           "upper_speed_kt": 8.9,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.13,
@@ -1662,10 +1662,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 6.48,
-            "ecmwf": 0.81,
-            "icon": 3.1590000000000003,
-            "gem": 2.0250000000000004
+            "gfs": 6.4,
+            "ecmwf": 0.8,
+            "icon": 3.12,
+            "gem": 2
           },
           "raw_models": {
             "gfs": 8,
@@ -1676,8 +1676,8 @@
         },
         {
           "time": "2026-09-21T06:00",
-          "speed_kt": 3.4,
-          "gust_kt": 6.9,
+          "speed_kt": 3.3,
+          "gust_kt": 6.8,
           "direction_deg": 223,
           "direction_label": "SW",
           "cloud_pct": 73,
@@ -1685,7 +1685,7 @@
           "upper_speed_kt": 9.2,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.03,
@@ -1702,10 +1702,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 7.290000000000001,
-            "ecmwf": 0.972,
-            "icon": 2.9160000000000004,
-            "gem": 2.349
+            "gfs": 7.2,
+            "ecmwf": 0.96,
+            "icon": 2.8800000000000003,
+            "gem": 2.32
           },
           "raw_models": {
             "gfs": 9,
@@ -1717,7 +1717,7 @@
         {
           "time": "2026-09-21T07:00",
           "speed_kt": 3.8,
-          "gust_kt": 7.2,
+          "gust_kt": 7.1,
           "direction_deg": 226,
           "direction_label": "SW",
           "cloud_pct": 60,
@@ -1725,7 +1725,7 @@
           "upper_speed_kt": 8.8,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -1742,10 +1742,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 8.181000000000001,
-            "ecmwf": 1.134,
-            "icon": 2.5920000000000005,
-            "gem": 3.3209999999999997
+            "gfs": 8.08,
+            "ecmwf": 1.1199999999999999,
+            "icon": 2.5600000000000005,
+            "gem": 3.28
           },
           "raw_models": {
             "gfs": 10.1,
@@ -1757,7 +1757,7 @@
         {
           "time": "2026-09-21T08:00",
           "speed_kt": 4,
-          "gust_kt": 7.5,
+          "gust_kt": 7.4,
           "direction_deg": 228,
           "direction_label": "SW",
           "cloud_pct": 68,
@@ -1765,7 +1765,7 @@
           "upper_speed_kt": 8.9,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -1782,10 +1782,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 8.586,
-            "ecmwf": 1.134,
-            "icon": 2.349,
-            "gem": 3.9690000000000007
+            "gfs": 8.48,
+            "ecmwf": 1.1199999999999999,
+            "icon": 2.32,
+            "gem": 3.9200000000000004
           },
           "raw_models": {
             "gfs": 10.6,
@@ -1797,7 +1797,7 @@
         {
           "time": "2026-09-21T09:00",
           "speed_kt": 4.1,
-          "gust_kt": 7.8,
+          "gust_kt": 7.7,
           "direction_deg": 232,
           "direction_label": "SW",
           "cloud_pct": 63,
@@ -1805,7 +1805,7 @@
           "upper_speed_kt": 8.9,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -1822,10 +1822,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 9.801,
-            "ecmwf": 0.7290000000000001,
-            "icon": 1.2960000000000003,
-            "gem": 4.698
+            "gfs": 9.68,
+            "ecmwf": 0.7200000000000001,
+            "icon": 1.2800000000000002,
+            "gem": 4.64
           },
           "raw_models": {
             "gfs": 12.1,
@@ -1836,8 +1836,8 @@
         },
         {
           "time": "2026-09-21T10:00",
-          "speed_kt": 15.5,
-          "gust_kt": 19.8,
+          "speed_kt": 15.3,
+          "gust_kt": 19.5,
           "direction_deg": 232,
           "direction_label": "SW",
           "cloud_pct": 38,
@@ -1845,7 +1845,7 @@
           "upper_speed_kt": 8.6,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~354 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~7kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.2hPa) and the local channel spread (0.8hPa) favor inflow. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~354 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~7kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.2hPa) and the local channel spread (0.8hPa) favor inflow. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -1862,8 +1862,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 15.466950000000002,
-            "gem_local": 3.6450000000000005
+            "calibrated": 15.276000000000003,
+            "gem_local": 3.6
           },
           "raw_models": {
             "gfs": 12.6,
@@ -1874,8 +1874,8 @@
         },
         {
           "time": "2026-09-21T11:00",
-          "speed_kt": 16.2,
-          "gust_kt": 20.5,
+          "speed_kt": 16,
+          "gust_kt": 20.3,
           "direction_deg": 228,
           "direction_label": "SW",
           "cloud_pct": 2,
@@ -1883,7 +1883,7 @@
           "upper_speed_kt": 8.3,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~497 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~7kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.6hPa) and the local channel spread (0.9hPa) favor inflow. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~497 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~7kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.6hPa) and the local channel spread (0.9hPa) favor inflow. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -1900,8 +1900,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 16.1595,
-            "gem_local": 4.212000000000001
+            "calibrated": 15.96,
+            "gem_local": 4.16
           },
           "raw_models": {
             "gfs": 12.5,
@@ -1912,8 +1912,8 @@
         },
         {
           "time": "2026-09-21T12:00",
-          "speed_kt": 17.1,
-          "gust_kt": 21.6,
+          "speed_kt": 16.9,
+          "gust_kt": 21.4,
           "direction_deg": 226,
           "direction_label": "SW",
           "cloud_pct": 1,
@@ -1921,7 +1921,7 @@
           "upper_speed_kt": 7.9,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~600 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~7kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.0hPa) and the local channel spread (0.9hPa) favor inflow. EC marine forecast for this area: southerly 15-20kt monday afternoon. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~600 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~7kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.0hPa) and the local channel spread (0.9hPa) favor inflow. EC marine forecast for this area: southerly 15-20kt monday afternoon. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -1938,8 +1938,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 17.082900000000002,
-            "gem_local": 5.022
+            "calibrated": 16.872000000000003,
+            "gem_local": 4.960000000000001
           },
           "raw_models": {
             "gfs": 12.5,
@@ -1950,8 +1950,8 @@
         },
         {
           "time": "2026-09-21T13:00",
-          "speed_kt": 18.7,
-          "gust_kt": 23.6,
+          "speed_kt": 18.5,
+          "gust_kt": 23.3,
           "direction_deg": 225,
           "direction_label": "SW",
           "cloud_pct": 0,
@@ -1959,7 +1959,7 @@
           "upper_speed_kt": 7.9,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~654 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~8kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.3hPa) and the local channel spread (0.9hPa) favor inflow. EC marine forecast for this area: southerly 15-20kt monday afternoon. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~654 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~8kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.3hPa) and the local channel spread (0.9hPa) favor inflow. EC marine forecast for this area: southerly 15-20kt monday afternoon. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -1976,8 +1976,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 18.69885,
-            "gem_local": 5.508
+            "calibrated": 18.468,
+            "gem_local": 5.44
           },
           "raw_models": {
             "gfs": 13.4,
@@ -1988,8 +1988,8 @@
         },
         {
           "time": "2026-09-21T14:00",
-          "speed_kt": 19.3,
-          "gust_kt": 24.3,
+          "speed_kt": 19,
+          "gust_kt": 24,
           "direction_deg": 223,
           "direction_label": "SW",
           "cloud_pct": 7,
@@ -1997,7 +1997,7 @@
           "upper_speed_kt": 7.6,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~659 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~8kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.4hPa) and the local channel spread (0.8hPa) favor inflow. EC marine forecast for this area: southerly 15-20kt monday afternoon. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~659 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~8kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.4hPa) and the local channel spread (0.8hPa) favor inflow. EC marine forecast for this area: southerly 15-20kt monday afternoon. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -2014,8 +2014,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 19.275975000000003,
-            "gem_local": 6.156
+            "calibrated": 19.038,
+            "gem_local": 6.08
           },
           "raw_models": {
             "gfs": 13.4,
@@ -2026,8 +2026,8 @@
         },
         {
           "time": "2026-09-21T15:00",
-          "speed_kt": 19.2,
-          "gust_kt": 24.1,
+          "speed_kt": 18.9,
+          "gust_kt": 23.8,
           "direction_deg": 222,
           "direction_label": "SW",
           "cloud_pct": 38,
@@ -2035,7 +2035,7 @@
           "upper_speed_kt": 7.5,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~604 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~8kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.3hPa) and the local channel spread (0.8hPa) favor inflow. EC marine forecast for this area: southerly 15-20kt monday afternoon. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~604 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~8kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.3hPa) and the local channel spread (0.8hPa) favor inflow. EC marine forecast for this area: southerly 15-20kt monday afternoon. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -2052,8 +2052,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 19.16055,
-            "gem_local": 6.48
+            "calibrated": 18.924000000000003,
+            "gem_local": 6.4
           },
           "raw_models": {
             "gfs": 13,
@@ -2064,8 +2064,8 @@
         },
         {
           "time": "2026-09-21T16:00",
-          "speed_kt": 18.5,
-          "gust_kt": 23.1,
+          "speed_kt": 18.2,
+          "gust_kt": 22.8,
           "direction_deg": 219,
           "direction_label": "SW",
           "cloud_pct": 46,
@@ -2073,7 +2073,7 @@
           "upper_speed_kt": 7.7,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~488 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~8kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.1hPa) and the local channel spread (0.6hPa) favor inflow. EC marine forecast for this area: southerly 15-20kt monday afternoon. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~488 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~8kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.1hPa) and the local channel spread (0.6hPa) favor inflow. EC marine forecast for this area: southerly 15-20kt monday afternoon. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.04,
@@ -2090,8 +2090,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 18.468000000000004,
-            "gem_local": 6.3180000000000005
+            "calibrated": 18.240000000000002,
+            "gem_local": 6.24
           },
           "raw_models": {
             "gfs": 12.2,
@@ -2102,8 +2102,8 @@
         },
         {
           "time": "2026-09-21T17:00",
-          "speed_kt": 17.5,
-          "gust_kt": 21.9,
+          "speed_kt": 17.3,
+          "gust_kt": 21.6,
           "direction_deg": 217,
           "direction_label": "SW",
           "cloud_pct": 54,
@@ -2111,7 +2111,7 @@
           "upper_speed_kt": 8.2,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~338 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~8kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.0hPa) and the local channel spread (0.5hPa) favor inflow. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~338 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~8kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.0hPa) and the local channel spread (0.5hPa) favor inflow. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -2128,8 +2128,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 17.544600000000003,
-            "gem_local": 5.832000000000001
+            "calibrated": 17.328,
+            "gem_local": 5.760000000000001
           },
           "raw_models": {
             "gfs": 11.7,
@@ -2141,7 +2141,7 @@
         {
           "time": "2026-09-21T18:00",
           "speed_kt": 4.8,
-          "gust_kt": 10.7,
+          "gust_kt": 10.6,
           "direction_deg": 212,
           "direction_label": "SSW",
           "cloud_pct": 54,
@@ -2149,7 +2149,7 @@
           "upper_speed_kt": 9,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -2166,10 +2166,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 8.991,
-            "ecmwf": 2.1870000000000003,
-            "icon": 3.24,
-            "gem": 4.86
+            "gfs": 8.88,
+            "ecmwf": 2.16,
+            "icon": 3.2,
+            "gem": 4.800000000000001
           },
           "raw_models": {
             "gfs": 11.1,
@@ -2181,7 +2181,7 @@
         {
           "time": "2026-09-21T19:00",
           "speed_kt": 3.9,
-          "gust_kt": 9.6,
+          "gust_kt": 9.5,
           "direction_deg": 209,
           "direction_label": "SSW",
           "cloud_pct": 56,
@@ -2189,7 +2189,7 @@
           "upper_speed_kt": 9.5,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -2206,10 +2206,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 7.9380000000000015,
-            "ecmwf": 1.4580000000000002,
-            "icon": 2.43,
-            "gem": 3.8070000000000004
+            "gfs": 7.840000000000001,
+            "ecmwf": 1.4400000000000002,
+            "icon": 2.4000000000000004,
+            "gem": 3.7600000000000002
           },
           "raw_models": {
             "gfs": 9.8,
@@ -2220,8 +2220,8 @@
         },
         {
           "time": "2026-09-21T20:00",
-          "speed_kt": 3.6,
-          "gust_kt": 8.9,
+          "speed_kt": 3.5,
+          "gust_kt": 8.8,
           "direction_deg": 201,
           "direction_label": "SSW",
           "cloud_pct": 58,
@@ -2229,7 +2229,7 @@
           "upper_speed_kt": 9.4,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -2246,10 +2246,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 8.100000000000001,
-            "ecmwf": 0.81,
-            "icon": 2.1060000000000003,
-            "gem": 3.3209999999999997
+            "gfs": 8,
+            "ecmwf": 0.8,
+            "icon": 2.08,
+            "gem": 3.28
           },
           "raw_models": {
             "gfs": 10,
@@ -2261,7 +2261,7 @@
         {
           "time": "2026-09-21T21:00",
           "speed_kt": 3.2,
-          "gust_kt": 8.1,
+          "gust_kt": 8,
           "direction_deg": 197,
           "direction_label": "SSW",
           "cloud_pct": 24,
@@ -2269,7 +2269,7 @@
           "upper_speed_kt": 8.6,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -2286,10 +2286,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 7.857,
-            "ecmwf": 0.486,
-            "icon": 1.62,
-            "gem": 2.9970000000000003
+            "gfs": 7.76,
+            "ecmwf": 0.48,
+            "icon": 1.6,
+            "gem": 2.9600000000000004
           },
           "raw_models": {
             "gfs": 9.7,
@@ -2300,7 +2300,7 @@
         },
         {
           "time": "2026-09-21T22:00",
-          "speed_kt": 2.8,
+          "speed_kt": 2.7,
           "gust_kt": 7.2,
           "direction_deg": 194,
           "direction_label": "SSW",
@@ -2309,7 +2309,7 @@
           "upper_speed_kt": 7.7,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -2326,10 +2326,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 6.966,
-            "ecmwf": 0.486,
-            "icon": 0.8910000000000001,
-            "gem": 2.673
+            "gfs": 6.88,
+            "ecmwf": 0.48,
+            "icon": 0.8800000000000001,
+            "gem": 2.64
           },
           "raw_models": {
             "gfs": 8.6,
@@ -2341,7 +2341,7 @@
         {
           "time": "2026-09-21T23:00",
           "speed_kt": 2.7,
-          "gust_kt": 6.4,
+          "gust_kt": 6.3,
           "direction_deg": 192,
           "direction_label": "SSW",
           "cloud_pct": 18,
@@ -2349,7 +2349,7 @@
           "upper_speed_kt": 6.8,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0,
@@ -2366,10 +2366,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 6.885000000000001,
-            "ecmwf": 0.32400000000000007,
-            "icon": 0.8910000000000001,
-            "gem": 2.673
+            "gfs": 6.800000000000001,
+            "ecmwf": 0.32000000000000006,
+            "icon": 0.8800000000000001,
+            "gem": 2.64
           },
           "raw_models": {
             "gfs": 8.5,
@@ -2389,7 +2389,7 @@
           "upper_speed_kt": 6.2,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.06,
@@ -2406,10 +2406,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 6.237000000000001,
-            "ecmwf": 0.16200000000000003,
-            "icon": 0.81,
-            "gem": 2.511
+            "gfs": 6.16,
+            "ecmwf": 0.16000000000000003,
+            "icon": 0.8,
+            "gem": 2.4800000000000004
           },
           "raw_models": {
             "gfs": 7.7,
@@ -2421,7 +2421,7 @@
         {
           "time": "2026-09-22T01:00",
           "speed_kt": 2.2,
-          "gust_kt": 5.2,
+          "gust_kt": 5.1,
           "direction_deg": 202,
           "direction_label": "SSW",
           "cloud_pct": 43,
@@ -2429,7 +2429,7 @@
           "upper_speed_kt": 5.4,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.04,
@@ -2446,10 +2446,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 6.237000000000001,
+            "gfs": 6.16,
             "ecmwf": 0,
-            "icon": 0.32400000000000007,
-            "gem": 2.349
+            "icon": 0.32000000000000006,
+            "gem": 2.32
           },
           "raw_models": {
             "gfs": 7.7,
@@ -2460,8 +2460,8 @@
         },
         {
           "time": "2026-09-22T02:00",
-          "speed_kt": 1.9,
-          "gust_kt": 4.2,
+          "speed_kt": 1.8,
+          "gust_kt": 4.1,
           "direction_deg": 213,
           "direction_label": "SSW",
           "cloud_pct": 49,
@@ -2469,7 +2469,7 @@
           "upper_speed_kt": 4.2,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (SSW) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual.",
           "favorable_direction": true,
           "model_agreement": 0.32,
@@ -2486,10 +2486,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 4.3740000000000006,
+            "gfs": 4.32,
             "ecmwf": 0,
-            "icon": 0.8910000000000001,
-            "gem": 2.1870000000000003
+            "icon": 0.8800000000000001,
+            "gem": 2.16
           },
           "raw_models": {
             "gfs": 5.4,
@@ -2500,7 +2500,7 @@
         },
         {
           "time": "2026-09-22T03:00",
-          "speed_kt": 2.1,
+          "speed_kt": 2,
           "gust_kt": 3.8,
           "direction_deg": 93,
           "direction_label": "E",
@@ -2509,7 +2509,7 @@
           "upper_speed_kt": 3,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (E) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (E) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.15,
@@ -2526,10 +2526,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 5.508,
+            "gfs": 5.44,
             "ecmwf": 0,
-            "icon": 1.2960000000000003,
-            "gem": 1.4580000000000002
+            "icon": 1.2800000000000002,
+            "gem": 1.4400000000000002
           },
           "raw_models": {
             "gfs": 6.8,
@@ -2549,7 +2549,7 @@
           "upper_speed_kt": 2.3,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (ESE) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (ESE) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.2,
@@ -2566,10 +2566,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 5.184000000000001,
+            "gfs": 5.120000000000001,
             "ecmwf": 0,
-            "icon": 1.62,
-            "gem": 0.81
+            "icon": 1.6,
+            "gem": 0.8
           },
           "raw_models": {
             "gfs": 6.4,
@@ -2581,7 +2581,7 @@
         {
           "time": "2026-09-22T05:00",
           "speed_kt": 1.7,
-          "gust_kt": 4.1,
+          "gust_kt": 4,
           "direction_deg": 94,
           "direction_label": "E",
           "cloud_pct": 57,
@@ -2589,7 +2589,7 @@
           "upper_speed_kt": 2.5,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (E) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (E) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.28,
@@ -2606,10 +2606,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 4.698,
+            "gfs": 4.64,
             "ecmwf": 0,
-            "icon": 1.377,
-            "gem": 0.7290000000000001
+            "icon": 1.36,
+            "gem": 0.7200000000000001
           },
           "raw_models": {
             "gfs": 5.8,
@@ -2629,7 +2629,7 @@
           "upper_speed_kt": 2.9,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (E) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (E) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.31,
@@ -2646,10 +2646,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 4.455,
+            "gfs": 4.4,
             "ecmwf": 0,
-            "icon": 1.377,
-            "gem": 0.32400000000000007
+            "icon": 1.36,
+            "gem": 0.32000000000000006
           },
           "raw_models": {
             "gfs": 5.5,
@@ -2661,7 +2661,7 @@
         {
           "time": "2026-09-22T07:00",
           "speed_kt": 1.5,
-          "gust_kt": 3.2,
+          "gust_kt": 3.1,
           "direction_deg": 80,
           "direction_label": "E",
           "cloud_pct": 68,
@@ -2669,7 +2669,7 @@
           "upper_speed_kt": 2.9,
           "gusty": false,
           "regime": "mixed",
-          "reason": "Wind expected (E) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Wind expected (E) but doesn't clearly match this spot's known thermal or outflow pattern — treat with extra caution. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Some wind expected, but it doesn't clearly match this spot's usual pattern — less certain than usual. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.36,
@@ -2686,10 +2686,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 4.293,
-            "ecmwf": 0.243,
-            "icon": 1.4580000000000002,
-            "gem": 0.16200000000000003
+            "gfs": 4.24,
+            "ecmwf": 0.24,
+            "icon": 1.4400000000000002,
+            "gem": 0.16000000000000003
           },
           "raw_models": {
             "gfs": 5.3,
@@ -2709,7 +2709,7 @@
           "upper_speed_kt": 2.9,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.49,
@@ -2726,10 +2726,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 3.6450000000000005,
-            "ecmwf": 0.32400000000000007,
-            "icon": 1.215,
-            "gem": 0.32400000000000007
+            "gfs": 3.6,
+            "ecmwf": 0.32000000000000006,
+            "icon": 1.2000000000000002,
+            "gem": 0.32000000000000006
           },
           "raw_models": {
             "gfs": 4.5,
@@ -2740,8 +2740,8 @@
         },
         {
           "time": "2026-09-22T09:00",
-          "speed_kt": 1,
-          "gust_kt": 3.2,
+          "speed_kt": 0.9,
+          "gust_kt": 3.1,
           "direction_deg": 91,
           "direction_label": "E",
           "cloud_pct": 70,
@@ -2749,7 +2749,7 @@
           "upper_speed_kt": 3,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.74,
@@ -2766,10 +2766,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.0250000000000004,
-            "ecmwf": 0.7290000000000001,
-            "icon": 0.7290000000000001,
-            "gem": 0.32400000000000007
+            "gfs": 2,
+            "ecmwf": 0.7200000000000001,
+            "icon": 0.7200000000000001,
+            "gem": 0.32000000000000006
           },
           "raw_models": {
             "gfs": 2.5,
@@ -2781,7 +2781,7 @@
         {
           "time": "2026-09-22T10:00",
           "speed_kt": 1.5,
-          "gust_kt": 3.9,
+          "gust_kt": 3.8,
           "direction_deg": 219,
           "direction_label": "SW",
           "cloud_pct": 72,
@@ -2789,7 +2789,7 @@
           "upper_speed_kt": 4.2,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on.",
           "favorable_direction": true,
           "model_agreement": 0.7,
@@ -2806,10 +2806,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.43,
-            "ecmwf": 1.0530000000000002,
-            "icon": 2.1060000000000003,
-            "gem": 0.486
+            "gfs": 2.4000000000000004,
+            "ecmwf": 1.04,
+            "icon": 2.08,
+            "gem": 0.48
           },
           "raw_models": {
             "gfs": 3,
@@ -2820,8 +2820,8 @@
         },
         {
           "time": "2026-09-22T11:00",
-          "speed_kt": 7.5,
-          "gust_kt": 9.3,
+          "speed_kt": 7.4,
+          "gust_kt": 9.2,
           "direction_deg": 212,
           "direction_label": "SSW",
           "cloud_pct": 66,
@@ -2829,7 +2829,7 @@
           "upper_speed_kt": 4.7,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~274 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~3kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.0hPa) and the local channel spread (0.4hPa) favor inflow. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~274 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~3kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.0hPa) and the local channel spread (0.4hPa) favor inflow. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.55,
@@ -2846,8 +2846,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 7.502625000000001,
-            "gem_local": 0.972
+            "calibrated": 7.410000000000001,
+            "gem_local": 0.96
           },
           "raw_models": {
             "gfs": 4.8,
@@ -2858,8 +2858,8 @@
         },
         {
           "time": "2026-09-22T12:00",
-          "speed_kt": 14.2,
-          "gust_kt": 18.4,
+          "speed_kt": 14,
+          "gust_kt": 18.2,
           "direction_deg": 211,
           "direction_label": "SSW",
           "cloud_pct": 54,
@@ -2867,7 +2867,7 @@
           "upper_speed_kt": 4.7,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~412 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~3kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.7hPa) and the local channel spread (0.5hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~412 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~3kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.7hPa) and the local channel spread (0.5hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.69,
@@ -2884,8 +2884,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 7.502625000000001,
-            "gem_local": 1.539
+            "calibrated": 7.410000000000001,
+            "gem_local": 1.52
           },
           "raw_models": {
             "gfs": 4.3,
@@ -2896,8 +2896,8 @@
         },
         {
           "time": "2026-09-22T13:00",
-          "speed_kt": 14.2,
-          "gust_kt": 18.4,
+          "speed_kt": 14,
+          "gust_kt": 18.2,
           "direction_deg": 208,
           "direction_label": "SSW",
           "cloud_pct": 47,
@@ -2905,7 +2905,7 @@
           "upper_speed_kt": 5.1,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~547 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.1hPa) and the local channel spread (0.6hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~547 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.1hPa) and the local channel spread (0.6hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.56,
@@ -2922,8 +2922,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 8.541450000000001,
-            "gem_local": 1.2960000000000003
+            "calibrated": 8.436000000000002,
+            "gem_local": 1.2800000000000002
           },
           "raw_models": {
             "gfs": 4.5,
@@ -2934,8 +2934,8 @@
         },
         {
           "time": "2026-09-22T14:00",
-          "speed_kt": 14.2,
-          "gust_kt": 18.4,
+          "speed_kt": 14,
+          "gust_kt": 18.2,
           "direction_deg": 209,
           "direction_label": "SSW",
           "cloud_pct": 36,
@@ -2943,7 +2943,7 @@
           "upper_speed_kt": 5.8,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~550 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.4hPa) and the local channel spread (0.7hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~550 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.4hPa) and the local channel spread (0.7hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.49,
@@ -2960,8 +2960,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 9.92655,
-            "gem_local": 1.2960000000000003
+            "calibrated": 9.804,
+            "gem_local": 1.2800000000000002
           },
           "raw_models": {
             "gfs": 5.1,
@@ -2972,8 +2972,8 @@
         },
         {
           "time": "2026-09-22T15:00",
-          "speed_kt": 14.2,
-          "gust_kt": 18.4,
+          "speed_kt": 14,
+          "gust_kt": 18.2,
           "direction_deg": 208,
           "direction_label": "SSW",
           "cloud_pct": 28,
@@ -2981,7 +2981,7 @@
           "upper_speed_kt": 6.9,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~567 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.5hPa) and the local channel spread (0.7hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~567 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.5hPa) and the local channel spread (0.7hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.5,
@@ -2998,8 +2998,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 10.1574,
-            "gem_local": 1.377
+            "calibrated": 10.032000000000002,
+            "gem_local": 1.36
           },
           "raw_models": {
             "gfs": 5.1,
@@ -3010,8 +3010,8 @@
         },
         {
           "time": "2026-09-22T16:00",
-          "speed_kt": 14.2,
-          "gust_kt": 18.4,
+          "speed_kt": 14,
+          "gust_kt": 18.2,
           "direction_deg": 205,
           "direction_label": "SSW",
           "cloud_pct": 25,
@@ -3019,7 +3019,7 @@
           "upper_speed_kt": 7.5,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~450 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.4hPa) and the local channel spread (0.6hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~450 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.4hPa) and the local channel spread (0.6hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.53,
@@ -3036,8 +3036,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 10.1574,
-            "gem_local": 1.377
+            "calibrated": 10.032000000000002,
+            "gem_local": 1.36
           },
           "raw_models": {
             "gfs": 5.1,
@@ -3048,8 +3048,8 @@
         },
         {
           "time": "2026-09-22T17:00",
-          "speed_kt": 9.9,
-          "gust_kt": 12,
+          "speed_kt": 9.8,
+          "gust_kt": 11.9,
           "direction_deg": 200,
           "direction_label": "SSW",
           "cloud_pct": 18,
@@ -3057,7 +3057,7 @@
           "upper_speed_kt": 7.8,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~355 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.3hPa) and the local channel spread (0.5hPa) favor inflow. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~355 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (3.3hPa) and the local channel spread (0.5hPa) favor inflow. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.56,
@@ -3074,8 +3074,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 9.92655,
-            "gem_local": 1.2960000000000003
+            "calibrated": 9.804,
+            "gem_local": 1.2800000000000002
           },
           "raw_models": {
             "gfs": 5.1,
@@ -3086,8 +3086,8 @@
         },
         {
           "time": "2026-09-22T18:00",
-          "speed_kt": 2.6,
-          "gust_kt": 8,
+          "speed_kt": 2.5,
+          "gust_kt": 7.9,
           "direction_deg": 197,
           "direction_label": "SSW",
           "cloud_pct": 35,
@@ -3095,7 +3095,7 @@
           "upper_speed_kt": 7.6,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on.",
           "favorable_direction": true,
           "model_agreement": 0.58,
@@ -3112,10 +3112,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 3.726,
-            "ecmwf": 2.349,
-            "icon": 3.24,
-            "gem": 0.972
+            "gfs": 3.6799999999999997,
+            "ecmwf": 2.32,
+            "icon": 3.2,
+            "gem": 0.96
           },
           "raw_models": {
             "gfs": 4.6,
@@ -3127,7 +3127,7 @@
         {
           "time": "2026-09-22T19:00",
           "speed_kt": 2,
-          "gust_kt": 6,
+          "gust_kt": 5.9,
           "direction_deg": 187,
           "direction_label": "S",
           "cloud_pct": 58,
@@ -3135,7 +3135,7 @@
           "upper_speed_kt": 7.1,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on.",
           "favorable_direction": true,
           "model_agreement": 0.64,
@@ -3152,10 +3152,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 3.1590000000000003,
-            "ecmwf": 1.7010000000000003,
-            "icon": 2.349,
-            "gem": 0.81
+            "gfs": 3.12,
+            "ecmwf": 1.6800000000000002,
+            "icon": 2.32,
+            "gem": 0.8
           },
           "raw_models": {
             "gfs": 3.9,
@@ -3175,7 +3175,7 @@
           "upper_speed_kt": 7,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on.",
           "favorable_direction": true,
           "model_agreement": 0.85,
@@ -3192,10 +3192,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.1060000000000003,
-            "ecmwf": 1.2960000000000003,
-            "icon": 2.0250000000000004,
-            "gem": 1.134
+            "gfs": 2.08,
+            "ecmwf": 1.2800000000000002,
+            "icon": 2,
+            "gem": 1.1199999999999999
           },
           "raw_models": {
             "gfs": 2.6,
@@ -3215,7 +3215,7 @@
           "upper_speed_kt": 7.5,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on.",
           "favorable_direction": true,
           "model_agreement": 0.88,
@@ -3232,10 +3232,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 1.7010000000000003,
-            "ecmwf": 1.2960000000000003,
-            "icon": 1.944,
-            "gem": 1.134
+            "gfs": 1.6800000000000002,
+            "ecmwf": 1.2800000000000002,
+            "icon": 1.92,
+            "gem": 1.1199999999999999
           },
           "raw_models": {
             "gfs": 2.1,
@@ -3247,7 +3247,7 @@
         {
           "time": "2026-09-22T22:00",
           "speed_kt": 1.8,
-          "gust_kt": 4.8,
+          "gust_kt": 4.7,
           "direction_deg": 131,
           "direction_label": "SE",
           "cloud_pct": 75,
@@ -3255,7 +3255,7 @@
           "upper_speed_kt": 7.6,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.81,
@@ -3272,10 +3272,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.1870000000000003,
-            "ecmwf": 1.215,
-            "icon": 2.43,
-            "gem": 1.2960000000000003
+            "gfs": 2.16,
+            "ecmwf": 1.2000000000000002,
+            "icon": 2.4000000000000004,
+            "gem": 1.2800000000000002
           },
           "raw_models": {
             "gfs": 2.7,
@@ -3287,7 +3287,7 @@
         {
           "time": "2026-09-22T23:00",
           "speed_kt": 1.7,
-          "gust_kt": 5.5,
+          "gust_kt": 5.4,
           "direction_deg": 132,
           "direction_label": "SE",
           "cloud_pct": 76,
@@ -3295,7 +3295,7 @@
           "upper_speed_kt": 7.9,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.76,
@@ -3312,10 +3312,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 1.944,
-            "ecmwf": 1.215,
-            "icon": 2.673,
-            "gem": 1.134
+            "gfs": 1.92,
+            "ecmwf": 1.2000000000000002,
+            "icon": 2.64,
+            "gem": 1.1199999999999999
           },
           "raw_models": {
             "gfs": 2.4,
@@ -3327,7 +3327,7 @@
         {
           "time": "2026-09-23T00:00",
           "speed_kt": 1.6,
-          "gust_kt": 5.9,
+          "gust_kt": 5.8,
           "direction_deg": 134,
           "direction_label": "SE",
           "cloud_pct": 88,
@@ -3335,7 +3335,7 @@
           "upper_speed_kt": 7.7,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.71,
@@ -3352,10 +3352,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 1.863,
-            "ecmwf": 0.8910000000000001,
-            "icon": 2.754,
-            "gem": 0.972
+            "gfs": 1.8399999999999999,
+            "ecmwf": 0.8800000000000001,
+            "icon": 2.72,
+            "gem": 0.96
           },
           "raw_models": {
             "gfs": 2.3,
@@ -3367,7 +3367,7 @@
         {
           "time": "2026-09-23T01:00",
           "speed_kt": 1.4,
-          "gust_kt": 5.7,
+          "gust_kt": 5.6,
           "direction_deg": 119,
           "direction_label": "ESE",
           "cloud_pct": 96,
@@ -3375,7 +3375,7 @@
           "upper_speed_kt": 7.1,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.7,
@@ -3392,10 +3392,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.1060000000000003,
-            "ecmwf": 0.405,
-            "icon": 2.349,
-            "gem": 0.6480000000000001
+            "gfs": 2.08,
+            "ecmwf": 0.4,
+            "icon": 2.32,
+            "gem": 0.6400000000000001
           },
           "raw_models": {
             "gfs": 2.6,
@@ -3407,7 +3407,7 @@
         {
           "time": "2026-09-23T02:00",
           "speed_kt": 1.2,
-          "gust_kt": 5.7,
+          "gust_kt": 5.6,
           "direction_deg": 119,
           "direction_label": "ESE",
           "cloud_pct": 91,
@@ -3415,7 +3415,7 @@
           "upper_speed_kt": 6.5,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.69,
@@ -3432,10 +3432,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 1.7010000000000003,
-            "ecmwf": 0.243,
-            "icon": 2.268,
-            "gem": 0.486
+            "gfs": 1.6800000000000002,
+            "ecmwf": 0.24,
+            "icon": 2.2399999999999998,
+            "gem": 0.48
           },
           "raw_models": {
             "gfs": 2.1,
@@ -3447,7 +3447,7 @@
         {
           "time": "2026-09-23T03:00",
           "speed_kt": 1.1,
-          "gust_kt": 4.5,
+          "gust_kt": 4.4,
           "direction_deg": 122,
           "direction_label": "ESE",
           "cloud_pct": 96,
@@ -3455,7 +3455,7 @@
           "upper_speed_kt": 6.7,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Rain in the forecast — thermal wind is often suppressed on wet days, unlike plain cloud cover. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Rain in the forecast — thermal wind is often suppressed on wet days, unlike plain cloud cover. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.73,
@@ -3472,10 +3472,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 1.7820000000000003,
-            "ecmwf": 0.32400000000000007,
-            "icon": 2.1060000000000003,
-            "gem": 0.32400000000000007
+            "gfs": 1.7600000000000002,
+            "ecmwf": 0.32000000000000006,
+            "icon": 2.08,
+            "gem": 0.32000000000000006
           },
           "raw_models": {
             "gfs": 2.2,
@@ -3487,7 +3487,7 @@
         {
           "time": "2026-09-23T04:00",
           "speed_kt": 1.1,
-          "gust_kt": 4.2,
+          "gust_kt": 4.1,
           "direction_deg": 136,
           "direction_label": "SE",
           "cloud_pct": 99,
@@ -3495,7 +3495,7 @@
           "upper_speed_kt": 6.6,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.8,
@@ -3512,10 +3512,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 1.4580000000000002,
-            "ecmwf": 0.7290000000000001,
-            "icon": 1.7820000000000003,
-            "gem": 0.486
+            "gfs": 1.4400000000000002,
+            "ecmwf": 0.7200000000000001,
+            "icon": 1.7600000000000002,
+            "gem": 0.48
           },
           "raw_models": {
             "gfs": 1.8,
@@ -3526,7 +3526,7 @@
         },
         {
           "time": "2026-09-23T05:00",
-          "speed_kt": 1.3,
+          "speed_kt": 1.2,
           "gust_kt": 4,
           "direction_deg": 134,
           "direction_label": "SE",
@@ -3535,7 +3535,7 @@
           "upper_speed_kt": 5.9,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.76,
@@ -3552,10 +3552,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 1.62,
-            "ecmwf": 0.8910000000000001,
-            "icon": 2.0250000000000004,
-            "gem": 0.486
+            "gfs": 1.6,
+            "ecmwf": 0.8800000000000001,
+            "icon": 2,
+            "gem": 0.48
           },
           "raw_models": {
             "gfs": 2,
@@ -3567,7 +3567,7 @@
         {
           "time": "2026-09-23T06:00",
           "speed_kt": 1.1,
-          "gust_kt": 3.9,
+          "gust_kt": 3.8,
           "direction_deg": 115,
           "direction_label": "ESE",
           "cloud_pct": 92,
@@ -3575,7 +3575,7 @@
           "upper_speed_kt": 5.4,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.75,
@@ -3592,10 +3592,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 1.539,
-            "ecmwf": 0.8910000000000001,
-            "icon": 1.7820000000000003,
-            "gem": 0.16200000000000003
+            "gfs": 1.52,
+            "ecmwf": 0.8800000000000001,
+            "icon": 1.7600000000000002,
+            "gem": 0.16000000000000003
           },
           "raw_models": {
             "gfs": 1.9,
@@ -3607,7 +3607,7 @@
         {
           "time": "2026-09-23T07:00",
           "speed_kt": 1.1,
-          "gust_kt": 3.8,
+          "gust_kt": 3.7,
           "direction_deg": 101,
           "direction_label": "E",
           "cloud_pct": 96,
@@ -3615,7 +3615,7 @@
           "upper_speed_kt": 5.6,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.76,
@@ -3632,10 +3632,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 1.215,
-            "ecmwf": 0.7290000000000001,
-            "icon": 2.0250000000000004,
-            "gem": 0.486
+            "gfs": 1.2000000000000002,
+            "ecmwf": 0.7200000000000001,
+            "icon": 2,
+            "gem": 0.48
           },
           "raw_models": {
             "gfs": 1.5,
@@ -3655,7 +3655,7 @@
           "upper_speed_kt": 5.1,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.7,
@@ -3672,10 +3672,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 0.972,
-            "ecmwf": 0.7290000000000001,
-            "icon": 2.268,
-            "gem": 0.32400000000000007
+            "gfs": 0.96,
+            "ecmwf": 0.7200000000000001,
+            "icon": 2.2399999999999998,
+            "gem": 0.32000000000000006
           },
           "raw_models": {
             "gfs": 1.2,
@@ -3695,7 +3695,7 @@
           "upper_speed_kt": 5.7,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on.",
           "favorable_direction": true,
           "model_agreement": 0.79,
@@ -3712,10 +3712,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 0.7290000000000001,
-            "ecmwf": 0.8910000000000001,
-            "icon": 1.863,
-            "gem": 0.486
+            "gfs": 0.7200000000000001,
+            "ecmwf": 0.8800000000000001,
+            "icon": 1.8399999999999999,
+            "gem": 0.48
           },
           "raw_models": {
             "gfs": 0.9,
@@ -3726,8 +3726,8 @@
         },
         {
           "time": "2026-09-23T10:00",
-          "speed_kt": 1.7,
-          "gust_kt": 5.3,
+          "speed_kt": 1.6,
+          "gust_kt": 5.2,
           "direction_deg": 180,
           "direction_label": "S",
           "cloud_pct": 76,
@@ -3735,7 +3735,7 @@
           "upper_speed_kt": 5.7,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on.",
           "favorable_direction": true,
           "model_agreement": 0.79,
@@ -3752,10 +3752,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.511,
-            "ecmwf": 1.2960000000000003,
-            "icon": 1.7010000000000003,
-            "gem": 1.134
+            "gfs": 2.4800000000000004,
+            "ecmwf": 1.2800000000000002,
+            "icon": 1.6800000000000002,
+            "gem": 1.1199999999999999
           },
           "raw_models": {
             "gfs": 3.1,
@@ -3767,7 +3767,7 @@
         {
           "time": "2026-09-23T11:00",
           "speed_kt": 1.7,
-          "gust_kt": 6,
+          "gust_kt": 5.9,
           "direction_deg": 184,
           "direction_label": "S",
           "cloud_pct": 81,
@@ -3775,7 +3775,7 @@
           "upper_speed_kt": 5.9,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on.",
           "favorable_direction": true,
           "model_agreement": 0.78,
@@ -3792,10 +3792,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.754,
-            "ecmwf": 1.539,
-            "icon": 1.2960000000000003,
-            "gem": 1.377
+            "gfs": 2.72,
+            "ecmwf": 1.52,
+            "icon": 1.2800000000000002,
+            "gem": 1.36
           },
           "raw_models": {
             "gfs": 3.4,
@@ -3806,8 +3806,8 @@
         },
         {
           "time": "2026-09-23T12:00",
-          "speed_kt": 14.2,
-          "gust_kt": 18.4,
+          "speed_kt": 14,
+          "gust_kt": 18.2,
           "direction_deg": 194,
           "direction_label": "SSW",
           "cloud_pct": 68,
@@ -3815,7 +3815,7 @@
           "upper_speed_kt": 5.9,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~420 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.0hPa) and the local channel spread (0.3hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~420 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.0hPa) and the local channel spread (0.3hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.56,
@@ -3832,8 +3832,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 8.3106,
-            "gem_local": 1.2960000000000003
+            "calibrated": 8.208,
+            "gem_local": 1.2800000000000002
           },
           "raw_models": {
             "gfs": 5.1,
@@ -3844,8 +3844,8 @@
         },
         {
           "time": "2026-09-23T13:00",
-          "speed_kt": 14.2,
-          "gust_kt": 18.4,
+          "speed_kt": 14,
+          "gust_kt": 18.2,
           "direction_deg": 203,
           "direction_label": "SSW",
           "cloud_pct": 65,
@@ -3853,7 +3853,7 @@
           "upper_speed_kt": 5.3,
           "gusty": false,
           "regime": "synoptic",
-          "reason": "Forecast light — every model under 5kt. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "General regional wind, not tied to time of day.",
           "favorable_direction": true,
           "model_agreement": 0.96,
@@ -3870,10 +3870,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 1.4580000000000002,
-            "ecmwf": 1.62,
-            "icon": 1.377,
-            "gem": 1.377
+            "gfs": 1.4400000000000002,
+            "ecmwf": 1.6,
+            "icon": 1.36,
+            "gem": 1.36
           },
           "raw_models": {
             "gfs": 1.8,
@@ -3884,8 +3884,8 @@
         },
         {
           "time": "2026-09-23T14:00",
-          "speed_kt": 14.2,
-          "gust_kt": 18.4,
+          "speed_kt": 14,
+          "gust_kt": 18.2,
           "direction_deg": 198,
           "direction_label": "SSW",
           "cloud_pct": 39,
@@ -3893,7 +3893,7 @@
           "upper_speed_kt": 5.4,
           "gusty": false,
           "regime": "synoptic",
-          "reason": "Forecast light — every model under 5kt. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "General regional wind, not tied to time of day.",
           "favorable_direction": true,
           "model_agreement": 0.9,
@@ -3910,10 +3910,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.0250000000000004,
-            "ecmwf": 1.62,
-            "icon": 1.4580000000000002,
-            "gem": 1.377
+            "gfs": 2,
+            "ecmwf": 1.6,
+            "icon": 1.4400000000000002,
+            "gem": 1.36
           },
           "raw_models": {
             "gfs": 2.5,
@@ -3924,8 +3924,8 @@
         },
         {
           "time": "2026-09-23T15:00",
-          "speed_kt": 14.2,
-          "gust_kt": 18.4,
+          "speed_kt": 14,
+          "gust_kt": 18.2,
           "direction_deg": 205,
           "direction_label": "SSW",
           "cloud_pct": 44,
@@ -3933,7 +3933,7 @@
           "upper_speed_kt": 5.8,
           "gusty": false,
           "regime": "synoptic",
-          "reason": "Forecast light — every model under 5kt. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "General regional wind, not tied to time of day.",
           "favorable_direction": true,
           "model_agreement": 0.69,
@@ -3950,10 +3950,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 3.1590000000000003,
-            "ecmwf": 1.4580000000000002,
-            "icon": 1.134,
-            "gem": 1.539
+            "gfs": 3.12,
+            "ecmwf": 1.4400000000000002,
+            "icon": 1.1199999999999999,
+            "gem": 1.52
           },
           "raw_models": {
             "gfs": 3.9,
@@ -3964,8 +3964,8 @@
         },
         {
           "time": "2026-09-23T16:00",
-          "speed_kt": 14.2,
-          "gust_kt": 18.4,
+          "speed_kt": 14,
+          "gust_kt": 18.2,
           "direction_deg": 208,
           "direction_label": "SSW",
           "cloud_pct": 50,
@@ -3973,7 +3973,7 @@
           "upper_speed_kt": 5.4,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~342 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~3kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (1.7hPa) and the local channel spread (0.2hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~342 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~3kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (1.7hPa) and the local channel spread (0.2hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.57,
@@ -3990,8 +3990,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 7.15635,
-            "gem_local": 1.134
+            "calibrated": 7.068,
+            "gem_local": 1.1199999999999999
           },
           "raw_models": {
             "gfs": 4.8,
@@ -4002,8 +4002,8 @@
         },
         {
           "time": "2026-09-23T17:00",
-          "speed_kt": 7.2,
-          "gust_kt": 8.9,
+          "speed_kt": 7.1,
+          "gust_kt": 8.8,
           "direction_deg": 217,
           "direction_label": "SW",
           "cloud_pct": 68,
@@ -4011,7 +4011,7 @@
           "upper_speed_kt": 4.8,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~246 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~3kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). Caution: MSLP doesn't clearly support inflow yet (large-scale 1.3hPa, local 0.1hPa) — could be weaker or more marginal than the wind signal alone suggests. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Classic Squamish summer thermal: valley heats, draws air up Howe Sound from the south. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is moderate (~246 W/m²) — thermal may be a bit softer than a full-sun day. Field-calibrated: raw coarse-model wind (~3kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). Caution: MSLP doesn't clearly support inflow yet (large-scale 1.3hPa, local 0.1hPa) — could be weaker or more marginal than the wind signal alone suggests. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.44,
@@ -4028,8 +4028,8 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "calibrated": 7.1563500000000015,
-            "gem_local": 0.567
+            "calibrated": 7.068000000000001,
+            "gem_local": 0.5599999999999999
           },
           "raw_models": {
             "gfs": 5.2,
@@ -4041,7 +4041,7 @@
         {
           "time": "2026-09-23T18:00",
           "speed_kt": 1.4,
-          "gust_kt": 4.6,
+          "gust_kt": 4.5,
           "direction_deg": 226,
           "direction_label": "SW",
           "cloud_pct": 71,
@@ -4049,7 +4049,7 @@
           "upper_speed_kt": 3.6,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on.",
           "favorable_direction": true,
           "model_agreement": 0.6,
@@ -4066,10 +4066,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 3.078,
-            "ecmwf": 0.7290000000000001,
-            "icon": 1.4580000000000002,
-            "gem": 0.486
+            "gfs": 3.04,
+            "ecmwf": 0.7200000000000001,
+            "icon": 1.4400000000000002,
+            "gem": 0.48
           },
           "raw_models": {
             "gfs": 3.8,
@@ -4089,7 +4089,7 @@
           "upper_speed_kt": 3.2,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on.",
           "favorable_direction": true,
           "model_agreement": 0.74,
@@ -4106,10 +4106,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.349,
-            "ecmwf": 0.6480000000000001,
-            "icon": 2.0250000000000004,
-            "gem": 0.6480000000000001
+            "gfs": 2.32,
+            "ecmwf": 0.6400000000000001,
+            "icon": 2,
+            "gem": 0.6400000000000001
           },
           "raw_models": {
             "gfs": 2.9,
@@ -4120,8 +4120,8 @@
         },
         {
           "time": "2026-09-23T20:00",
-          "speed_kt": 1.2,
-          "gust_kt": 3.1,
+          "speed_kt": 1.1,
+          "gust_kt": 3,
           "direction_deg": 335,
           "direction_label": "NNW",
           "cloud_pct": 78,
@@ -4129,7 +4129,7 @@
           "upper_speed_kt": 2.7,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.69,
@@ -4146,10 +4146,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 0.567,
-            "ecmwf": 0.6480000000000001,
-            "icon": 2.5920000000000005,
-            "gem": 0.81
+            "gfs": 0.5599999999999999,
+            "ecmwf": 0.6400000000000001,
+            "icon": 2.5600000000000005,
+            "gem": 0.8
           },
           "raw_models": {
             "gfs": 0.7,
@@ -4169,7 +4169,7 @@
           "upper_speed_kt": 2.7,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.68,
@@ -4186,10 +4186,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 1.377,
-            "ecmwf": 0.486,
-            "icon": 2.5920000000000005,
-            "gem": 0.81
+            "gfs": 1.36,
+            "ecmwf": 0.48,
+            "icon": 2.5600000000000005,
+            "gem": 0.8
           },
           "raw_models": {
             "gfs": 1.7,
@@ -4209,7 +4209,7 @@
           "upper_speed_kt": 2.9,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.61,
@@ -4226,10 +4226,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.43,
-            "ecmwf": 0.16200000000000003,
-            "icon": 2.673,
-            "gem": 0.6480000000000001
+            "gfs": 2.4000000000000004,
+            "ecmwf": 0.16000000000000003,
+            "icon": 2.64,
+            "gem": 0.6400000000000001
           },
           "raw_models": {
             "gfs": 3,
@@ -4241,7 +4241,7 @@
         {
           "time": "2026-09-23T23:00",
           "speed_kt": 1.4,
-          "gust_kt": 4,
+          "gust_kt": 3.9,
           "direction_deg": 41,
           "direction_label": "NE",
           "cloud_pct": 86,
@@ -4249,7 +4249,7 @@
           "upper_speed_kt": 3.4,
           "gusty": false,
           "regime": "calm",
-          "reason": "Forecast light — every model under 5kt. Adjusted ×0.81 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Forecast light — every model under 5kt. Adjusted ×0.80 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Light and variable — not much going on. Direction looks offshore or otherwise tricky here — use caution.",
           "favorable_direction": false,
           "model_agreement": 0.59,
@@ -4266,10 +4266,10 @@
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
-            "gfs": 2.43,
+            "gfs": 2.4000000000000004,
             "ecmwf": 0,
-            "icon": 2.673,
-            "gem": 0.6480000000000001
+            "icon": 2.64,
+            "gem": 0.6400000000000001
           },
           "raw_models": {
             "gfs": 3,
@@ -4824,7 +4824,7 @@
           "upper_speed_kt": 5.1,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Secondary thermal channel down-Sound from the Spit — weaker and less reliable than Squamish itself; best on strong-thermal days. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~639 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (1.8hPa) and the local channel spread (0.5hPa) favor inflow. Pam Rocks (sound's mouth) is reading ~9kt from SE — right in the band that's historically preceded this thermal filling in reliably. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.77 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Secondary thermal channel down-Sound from the Spit — weaker and less reliable than Squamish itself; best on strong-thermal days. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~639 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~4kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (1.8hPa) and the local channel spread (0.5hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.77 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.83,
@@ -4836,8 +4836,8 @@
           "pam_rocks_triggered": false,
           "pressure_support": true,
           "upper_suppression": false,
-          "pam_rocks_support": true,
-          "pam_rocks_tell": true,
+          "pam_rocks_support": null,
+          "pam_rocks_tell": false,
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
@@ -4862,7 +4862,7 @@
           "upper_speed_kt": 5,
           "gusty": false,
           "regime": "thermal",
-          "reason": "Secondary thermal channel down-Sound from the Spit — weaker and less reliable than Squamish itself; best on strong-thermal days. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~640 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~5kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.1hPa) and the local channel spread (0.3hPa) favor inflow. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.77 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
+          "reason": "Secondary thermal channel down-Sound from the Spit — weaker and less reliable than Squamish itself; best on strong-thermal days. Multiple models agree, which is a good sign for a thermal-driven day. Solar loading is strong (~640 W/m²) — good thermal driver. Field-calibrated: raw coarse-model wind (~5kt) is scaled up ~2.85x, matching how this thermal typically under-reads on GFS-class models (source: local rider calibration, see README). MSLP backs this up — both the large-scale coast-vs-interior spread (2.1hPa) and the local channel spread (0.3hPa) favor inflow. Pam Rocks (sound's mouth) is reading ~10kt from SE — right in the band that's historically preceded this thermal filling in reliably. Environment Canada's marine forecast for this area calls for southerly 15-20kt monday afternoon (inflow), from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten. Adjusted ×0.77 based on rider-reported actual conditions at this spot (see the \"Report actual conditions\" link).",
           "summary": "Afternoon sea-breeze pattern — builds through the day, fades around sunset.",
           "favorable_direction": true,
           "model_agreement": 0.68,
@@ -4874,8 +4874,8 @@
           "pam_rocks_triggered": false,
           "pressure_support": true,
           "upper_suppression": false,
-          "pam_rocks_support": null,
-          "pam_rocks_tell": false,
+          "pam_rocks_support": true,
+          "pam_rocks_tell": true,
           "pam_rocks_head_fake": false,
           "feedback_adjusted": true,
           "models": {
@@ -8095,15 +8095,15 @@
         }
       ],
       "live_check": {
-        "checked_hour": "2026-09-20T13:00",
+        "checked_hour": "2026-09-20T14:00",
         "station": "Pam Rocks (Howe Sound entrance)",
-        "observed_local_time": "13:00",
-        "observed_age_min": 47,
+        "observed_local_time": "14:00",
+        "observed_age_min": 21,
         "forecasted_kt": 13.5,
-        "live_kt": 8.9,
+        "live_kt": 9.9,
         "live_gust_kt": null,
         "live_direction": "SE",
-        "error_pct": -34,
+        "error_pct": -27,
         "mismatch": true,
         "regime": "thermal",
         "reasoning": "Forecast called a thermal that came in weaker than shown — possible early suppression (heat, high cloud) or the gradient not fully developing. This hour already had the Squamish field calibration applied. This hour already had a rider-feedback adjustment applied."
@@ -35100,15 +35100,15 @@
         }
       ],
       "live_check": {
-        "checked_hour": "2026-09-20T13:00",
+        "checked_hour": "2026-09-20T14:00",
         "station": "Point Atkinson",
-        "observed_local_time": "13:00",
-        "observed_age_min": 47,
+        "observed_local_time": "14:00",
+        "observed_age_min": 22,
         "forecasted_kt": 8.1,
-        "live_kt": 7,
+        "live_kt": 8.9,
         "live_gust_kt": null,
         "live_direction": "W",
-        "error_pct": -14,
+        "error_pct": 10,
         "mismatch": false,
         "regime": "synoptic"
       }
