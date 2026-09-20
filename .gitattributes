@@ -1,0 +1,10 @@
+# The four data/*.json files are written by scripts/generate.mjs and
+# scripts/apply-feedback.mjs running in GitHub Actions on Ubuntu, so they're
+# always committed with LF line endings. Without this, a Windows checkout
+# (with core.autocrlf=true, the common Windows Git default) converts them to
+# CRLF locally, which then makes git think they're "modified" relative to
+# what's committed -- even when the actual content is identical -- and can
+# block a pull/merge with a false "local changes would be overwritten"
+# error. Forcing eol=lf here keeps them LF on every platform, matching what
+# Actions always commits, so this class of false conflict stops recurring.
+data/*.json text eol=lf
