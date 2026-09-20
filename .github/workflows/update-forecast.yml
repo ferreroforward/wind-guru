@@ -9,10 +9,24 @@ on:
     # thermal. In winter (PST, UTC-8) these land an hour early (4am/12pm/4pm
     # local). Adjust to "0 13 * * *" / "0 20 * * *" / "0 1 * * *" around
     # November if you want it exact.
+    #
+    # These schedule runs can land 30-60+ minutes late (GitHub does not
+    # guarantee cron timing), and Guillermo often posts his daily take well
+    # after the 5am run. The "issues" trigger below is what actually gets a
+    # freshly-posted take (or a wind report) onto the site quickly, rather
+    # than waiting for the next scheduled slot — treat these cron times as
+    # a safety net, not the primary mechanism.
     - cron: "0 12 * * *"
     - cron: "0 20 * * *"
     - cron: "0 0 * * *"
   workflow_dispatch: {}   # lets you trigger a run manually from the Actions tab
+  issues:
+    # Fires the moment Guillermo posts or edits a "Daily take" or wind-report
+    # issue, so the site updates within a minute or two instead of waiting
+    # for the next scheduled run — this is what makes a morning take
+    # actually show up in the morning. Also re-fires on "edited" so fixing a
+    # typo (like a wrong date field) re-triggers a fresh build automatically.
+    types: [opened, edited]
 
 permissions:
   contents: write
@@ -20,6 +34,11 @@ permissions:
 jobs:
   update-forecast:
     runs-on: ubuntu-latest
+    # This repo is public, so anyone can open an issue -- without this guard
+    # a stranger filing an unrelated issue would trigger a pointless build.
+    # Both the daily-take form and the report Worker create issues while
+    # authenticated as ferreroforward, so this still covers everything real.
+    if: github.event_name != "issues" || github.event.issue.user.login == "ferreroforward"
     steps:
       - uses: actions/checkout@v4
 
