@@ -865,9 +865,19 @@ async function main() {
     /pam rocks/i,       // ours: "Pam Rocks (Howe Sound entrance)" — wtfbc: "Howe Sound - Pam Rocks"
     /sand\s*heads/i,   // ours: "Sand Heads" — wtfbc: "Sandheads Cs"
     /point atkinson/i,  // ours: "Point Atkinson" — wtfbc: "Point Atkinson"
+    /white rock/i,      // ours: "White Rock, BC" (CWWK METAR) — wtfbc: "White Rock East Beach"
+  ];
+  // wtfbc.ca's board also carries stations well outside our forecast area
+  // (interior BC, Vancouver Island beyond the "south of Nanaimo" marine
+  // zone) — those aren't useful to Howe Sound/Strait of Georgia riders and
+  // just clutter the board, so drop them by name too.
+  const OUTSIDE_OUR_AREA = [
+    /merritt/i,   // interior BC, ~250km from Howe Sound
+    /nanaimo/i,   // the town itself, not just the "south of Nanaimo" marine zone name
   ];
   const extraStations = swobBoardStations
     .filter((s) => !DUPLICATE_OF_OWN_STATION.some((re) => re.test(s.name)))
+    .filter((s) => !OUTSIDE_OUR_AREA.some((re) => re.test(s.name)))
     .map((s) => ({ ...s, source: "wtfbc" }));
   const surfaceObservations = {
     updated_at: startedAt.toISOString(),

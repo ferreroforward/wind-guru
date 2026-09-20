@@ -461,16 +461,6 @@
         "source": "wtfbc"
       },
       {
-        "name": "White Rock East Beach",
-        "source_url": "/viewtopic.php?f=36&t=884&start=10#p9695",
-        "observed_local_time": "8:15 am",
-        "temp_c": 14,
-        "direction_label": "SE",
-        "speed_kt": 1,
-        "gust_kt": null,
-        "source": "wtfbc"
-      },
-      {
         "name": "Vancouver International",
         "source_url": "https://dd.weather.gc.ca/today/observations/swob-ml/latest/CYVR-MAN-swob.xml",
         "observed_local_time": "8:00 am",
@@ -497,26 +487,6 @@
         "temp_c": 5,
         "direction_label": "N",
         "speed_kt": 0,
-        "gust_kt": null,
-        "source": "wtfbc"
-      },
-      {
-        "name": "Merritt",
-        "source_url": "https://dd.weather.gc.ca/today/observations/swob-ml/latest/CVME-AUTO-minute-swob.xml",
-        "observed_local_time": "8:51 am",
-        "temp_c": 9,
-        "direction_label": "ENE",
-        "speed_kt": 0,
-        "gust_kt": 1,
-        "source": "wtfbc"
-      },
-      {
-        "name": "Nanaimo",
-        "source_url": "https://dd.weather.gc.ca/today/observations/swob-ml/latest/CYCD-AUTO-swob.xml",
-        "observed_local_time": "8:00 am",
-        "temp_c": 7,
-        "direction_label": "ENE",
-        "speed_kt": 2,
         "gust_kt": null,
         "source": "wtfbc"
       }
