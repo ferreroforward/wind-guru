@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-19T22:16:39.159Z",
+  "generated_at": "2026-09-20T04:15:42.923Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
@@ -71,17 +71,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.51,
+        "avg_ratio": 0.54,
         "multiplier": 0.75,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 51% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 54% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "thermal": {
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.4,
+        "avg_ratio": 0.45,
         "multiplier": 0.75,
-        "note": "Based on 20 thermal data points (0 rider reports, 20 live-station checks): actual wind averaged 40% of what was forecasted (rider reports weighted 3x a station check)."
+        "note": "Based on 20 thermal data points (0 rider reports, 20 live-station checks): actual wind averaged 45% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 17,
