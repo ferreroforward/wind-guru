@@ -38,7 +38,7 @@ jobs:
     # a stranger filing an unrelated issue would trigger a pointless build.
     # Both the daily-take form and the report Worker create issues while
     # authenticated as ferreroforward, so this still covers everything real.
-    if: github.event_name != "issues" || github.event.issue.user.login == "ferreroforward"
+    if: github.event_name != 'issues' || github.event.issue.user.login == 'ferreroforward'
     steps:
       - uses: actions/checkout@v4
 
