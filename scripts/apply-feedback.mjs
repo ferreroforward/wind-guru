@@ -25,7 +25,26 @@ const REPO = "wind-guru";
 
 const MIN_SAMPLES = 2; // don't adjust a spot on a single report
 const MAX_REPORTS_PER_SPOT = 20; // weight toward recent reports
+// These are the FULL-STRENGTH bounds — how far the multiplier is allowed to
+// move once there's enough data to trust it completely. A spot with only a
+// handful of reports doesn't get this whole swing; see SHRINKAGE_PRIOR below.
 const MULTIPLIER_CLAMP = [0.75, 1.5]; // never let one bad/joke report send this wild
+// A small pool of reports (e.g. Squamish's 5, all rider reports averaging
+// 48% of forecast) used to get the SAME full 0.75 floor as a spot with 20
+// station checks -- clamping straight to the floor/ceiling regardless of
+// sample size, which is overconfident: 5 data points is real signal, but
+// not enough to fully override the model's own physics-based estimate.
+// This treats "no correction" (1.0x) as itself worth SHRINKAGE_PRIOR worth
+// of virtual samples, and blends the raw ratio toward 1.0 by how much real
+// data has actually shown up -- confidence = n / (n + SHRINKAGE_PRIOR), which
+// scales the allowed floor/ceiling deviation (not the ratio itself, so a
+// wild single-report ratio still can't swing the *result* wildly even
+// though it's rare enough not to be fully trusted yet). Chosen so it lines
+// up with MIN_SAMPLES=2 (already gated out below that): at n=2 the swing is
+// half-strength, and it keeps approaching (never quite reaching) full
+// strength as reports accumulate toward MAX_REPORTS_PER_SPOT.
+const SHRINKAGE_PRIOR = 2;
+function confidenceFor(n) { return n / (n + SHRINKAGE_PRIOR); }
 // Automated live-station checks now run 2-3x/day/spot (see generate.mjs H4)
 // and log EVERY comparison, not just mismatches — within the 20-sample
 // recency window that would drown out human rider reports within about a
@@ -131,16 +150,26 @@ function weightedGeometricMean(points) {
 function summarize(recent, label) {
   if (recent.length < MIN_SAMPLES) return null;
   const avgRatio = weightedGeometricMean(recent);
-  const multiplier = Math.max(MULTIPLIER_CLAMP[0], Math.min(MULTIPLIER_CLAMP[1], avgRatio));
+  // Scale how far from 1.0x the multiplier is allowed to move by how much
+  // data actually backs it up (see SHRINKAGE_PRIOR above) -- a thin sample
+  // gets a floor/ceiling much closer to "no adjustment" than a well-
+  // sampled one, instead of both hitting the same hard clamp.
+  const confidence = confidenceFor(recent.length);
+  const dynamicFloor = 1 - (1 - MULTIPLIER_CLAMP[0]) * confidence;
+  const dynamicCeil = 1 + (MULTIPLIER_CLAMP[1] - 1) * confidence;
+  const multiplier = Math.max(dynamicFloor, Math.min(dynamicCeil, avgRatio));
   const riderCount = recent.filter((r) => r.source === "rider-report").length;
   const liveCount = recent.filter((r) => r.source === "live-station").length;
+  const dampedNote = Math.abs(multiplier - avgRatio) > 0.01
+    ? ` Scaled toward no-adjustment since there's only ${recent.length} data point${recent.length === 1 ? "" : "s"} so far -- the raw ratio would be ${Math.round(avgRatio * 100)}%, softened to a ${Math.round(multiplier * 100)}% multiplier until more reports come in.`
+    : "";
   return {
     sample_size: recent.length,
     rider_reports: riderCount,
     live_checks: liveCount,
     avg_ratio: Math.round(avgRatio * 100) / 100,
     multiplier: Math.round(multiplier * 100) / 100,
-    note: `Based on ${recent.length} ${label} data point${recent.length === 1 ? "" : "s"} (${riderCount} rider report${riderCount === 1 ? "" : "s"}, ${liveCount} live-station check${liveCount === 1 ? "" : "s"}): actual wind averaged ${Math.round(avgRatio * 100)}% of what was forecasted (rider reports weighted ${RIDER_REPORT_WEIGHT}x a station check).`,
+    note: `Based on ${recent.length} ${label} data point${recent.length === 1 ? "" : "s"} (${riderCount} rider report${riderCount === 1 ? "" : "s"}, ${liveCount} live-station check${liveCount === 1 ? "" : "s"}): actual wind averaged ${Math.round(avgRatio * 100)}% of what was forecasted (rider reports weighted ${RIDER_REPORT_WEIGHT}x a station check).${dampedNote}`,
   };
 }
 
