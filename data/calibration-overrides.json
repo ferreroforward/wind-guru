@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-21T22:52:52.998Z",
+  "generated_at": "2026-09-21T23:36:05.265Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
       "general": {
-        "sample_size": 9,
-        "rider_reports": 9,
+        "sample_size": 10,
+        "rider_reports": 10,
         "live_checks": 0,
-        "avg_ratio": 0.63,
-        "multiplier": 0.8,
-        "note": "Based on 9 total data points (9 rider reports, 0 live-station checks): actual wind averaged 63% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 9 data points so far -- the raw ratio would be 63%, softened to a 80% multiplier until more reports come in."
+        "avg_ratio": 0.67,
+        "multiplier": 0.79,
+        "note": "Based on 10 total data points (10 rider reports, 0 live-station checks): actual wind averaged 67% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 10 data points so far -- the raw ratio would be 67%, softened to a 79% multiplier until more reports come in."
       }
     },
     "boundary-bay": {
@@ -173,5 +173,9 @@
       }
     }
   },
-  "accuracy": null
+  "accuracy": {
+    "tolerance_kt": 3,
+    "sample_size": 10,
+    "hit_rate": 0.4
+  }
 }
