@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-09-22T19:16:02.871Z",
+  "generated_at": "2026-09-22T22:10:15.306Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
       "general": {
-        "sample_size": 12,
-        "rider_reports": 12,
+        "sample_size": 13,
+        "rider_reports": 13,
         "live_checks": 0,
-        "avg_ratio": 0.72,
-        "multiplier": 0.79,
-        "note": "Based on 12 total data points (12 rider reports, 0 live-station checks): actual wind averaged 72% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 12 data points so far -- the raw ratio would be 72%, softened to a 79% multiplier until more reports come in."
+        "avg_ratio": 0.73,
+        "multiplier": 0.78,
+        "note": "Based on 13 total data points (13 rider reports, 0 live-station checks): actual wind averaged 73% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 13 data points so far -- the raw ratio would be 73%, softened to a 78% multiplier until more reports come in."
       }
     },
     "boundary-bay": {
@@ -79,9 +79,9 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.57,
+        "avg_ratio": 0.58,
         "multiplier": 0.77,
-        "note": "Based on 20 thermal data points (0 rider reports, 20 live-station checks): actual wind averaged 57% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 57%, softened to a 77% multiplier until more reports come in."
+        "note": "Based on 20 thermal data points (0 rider reports, 20 live-station checks): actual wind averaged 58% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 58%, softened to a 77% multiplier until more reports come in."
       },
       "synoptic": {
         "sample_size": 16,
@@ -175,7 +175,7 @@
   },
   "accuracy": {
     "tolerance_kt": 3,
-    "sample_size": 12,
-    "hit_rate": 0.5
+    "sample_size": 13,
+    "hit_rate": 0.54
   }
 }
