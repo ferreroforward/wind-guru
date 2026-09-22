@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-22T18:31:39.538Z",
+  "updated_at": "2026-09-22T19:16:02.978Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -313,6 +313,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "porteau-cove",
+      "time": "2026-09-22T12:00",
+      "forecasted": 11.6,
+      "actual": 4.1,
+      "ratio": 0.35344827586206895,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "thermal",
+      "mismatch": true,
+      "reasoning": "Forecast called a thermal that came in weaker than shown — possible early suppression (heat, high cloud) or the gradient not fully developing. This hour already had the Squamish field calibration applied. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-22T19:16:02.978Z"
     },
     {
       "spot": "porteau-cove",
@@ -820,19 +833,6 @@
       "mismatch": true,
       "reasoning": "Forecast called a thermal that came in weaker than shown — possible early suppression (heat, high cloud) or the gradient not fully developing. This hour already had the Squamish field calibration applied. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-08-29T20:09:05.755Z"
-    },
-    {
-      "spot": "porteau-cove",
-      "time": "2026-08-28T17:00",
-      "forecasted": 9.6,
-      "actual": 1.9,
-      "ratio": 0.19791666666666666,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "thermal",
-      "mismatch": true,
-      "reasoning": "Forecast called a thermal that came in weaker than shown — possible early suppression (heat, high cloud) or the gradient not fully developing. MSLP had already flagged this hour as uncertain. This hour already had the Squamish field calibration applied. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-08-29T00:07:38.892Z"
     },
     {
       "spot": "white-rock-east",
