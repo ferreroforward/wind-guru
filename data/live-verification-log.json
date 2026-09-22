@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-22T16:40:51.622Z",
+  "updated_at": "2026-09-22T18:31:39.538Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -96,6 +96,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-09-22T11:00",
+      "forecasted": 8,
+      "actual": 1,
+      "ratio": 0.125,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 80%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-22T18:31:39.538Z"
     },
     {
       "spot": "erwin-park",
