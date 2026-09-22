@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-22T22:10:15.410Z",
+  "updated_at": "2026-09-22T22:27:23.700Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -318,14 +318,14 @@
       "spot": "porteau-cove",
       "time": "2026-09-22T15:00",
       "forecasted": 11.6,
-      "actual": 8,
-      "ratio": 0.6896551724137931,
+      "actual": 8.9,
+      "ratio": 0.7672413793103449,
       "source": "live-station",
       "station": "Pam Rocks (Howe Sound entrance)",
       "regime": "thermal",
       "mismatch": true,
       "reasoning": "Forecast called a thermal that came in weaker than shown — possible early suppression (heat, high cloud) or the gradient not fully developing. MSLP had already flagged this hour as uncertain. This hour already had the Squamish field calibration applied. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-22T22:10:15.410Z"
+      "checked_at": "2026-09-22T22:27:23.700Z"
     },
     {
       "spot": "porteau-cove",
