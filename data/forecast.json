@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-24T13:25:46.269Z",
-  "generated_at_label": "Thu, Sep 24, 6:25 AM PDT",
+  "generated_at": "2026-09-24T13:26:37.978Z",
+  "generated_at_label": "Thu, Sep 24, 6:26 AM PDT",
   "models_used": [
     "GFS (NOAA)",
     "ECMWF IFS",
@@ -168,6 +168,32 @@
     }
   },
   "calibration_overrides": {
+    "garry-point": {
+      "general": {
+        "sample_size": 20,
+        "rider_reports": 1,
+        "live_checks": 19,
+        "avg_ratio": 0.71,
+        "multiplier": 0.77,
+        "note": "Based on 20 total data points (1 rider report, 19 live-station checks): actual wind averaged 71% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 71%, softened to a 77% multiplier until more reports come in."
+      },
+      "synoptic": {
+        "sample_size": 17,
+        "rider_reports": 0,
+        "live_checks": 17,
+        "avg_ratio": 0.71,
+        "multiplier": 0.78,
+        "note": "Based on 17 synoptic data points (0 rider reports, 17 live-station checks): actual wind averaged 71% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 17 data points so far -- the raw ratio would be 71%, softened to a 78% multiplier until more reports come in."
+      },
+      "thermal": {
+        "sample_size": 5,
+        "rider_reports": 0,
+        "live_checks": 5,
+        "avg_ratio": 0.82,
+        "multiplier": 0.82,
+        "note": "Based on 5 thermal data points (0 rider reports, 5 live-station checks): actual wind averaged 82% of what was forecasted (rider reports weighted 3x a station check)."
+      }
+    },
     "tsawwassen-south": {
       "general": {
         "sample_size": 20,
@@ -181,9 +207,9 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.13,
+        "avg_ratio": 0.14,
         "multiplier": 0.77,
-        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 13% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 13%, softened to a 77% multiplier until more reports come in."
+        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 14% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 14%, softened to a 77% multiplier until more reports come in."
       }
     },
     "squamish-spit": {
@@ -294,32 +320,6 @@
         "note": "Based on 5 synoptic data points (0 rider reports, 5 live-station checks): actual wind averaged 26% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 5 data points so far -- the raw ratio would be 26%, softened to a 82% multiplier until more reports come in."
       }
     },
-    "garry-point": {
-      "general": {
-        "sample_size": 20,
-        "rider_reports": 0,
-        "live_checks": 20,
-        "avg_ratio": 0.64,
-        "multiplier": 0.77,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 64% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 64%, softened to a 77% multiplier until more reports come in."
-      },
-      "synoptic": {
-        "sample_size": 17,
-        "rider_reports": 0,
-        "live_checks": 17,
-        "avg_ratio": 0.61,
-        "multiplier": 0.78,
-        "note": "Based on 17 synoptic data points (0 rider reports, 17 live-station checks): actual wind averaged 61% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 17 data points so far -- the raw ratio would be 61%, softened to a 78% multiplier until more reports come in."
-      },
-      "thermal": {
-        "sample_size": 5,
-        "rider_reports": 0,
-        "live_checks": 5,
-        "avg_ratio": 0.82,
-        "multiplier": 0.82,
-        "note": "Based on 5 thermal data points (0 rider reports, 5 live-station checks): actual wind averaged 82% of what was forecasted (rider reports weighted 3x a station check)."
-      }
-    },
     "crescent-beach": {
       "general": {
         "sample_size": 4,
@@ -392,14 +392,14 @@
   },
   "live_verification_count": 121,
   "surface_observations": {
-    "updated_at": "2026-09-24T13:25:46.269Z",
+    "updated_at": "2026-09-24T13:26:37.978Z",
     "board_source_url": "https://wtfbc.ca/swob.php",
     "stations": [
       {
         "name": "Pam Rocks (Howe Sound entrance)",
         "source_url": null,
         "observed_local_time": "06:00",
-        "observed_age_min": 26,
+        "observed_age_min": 27,
         "temp_c": null,
         "direction_label": "N",
         "speed_kt": 20,
@@ -410,7 +410,7 @@
         "name": "Sand Heads",
         "source_url": null,
         "observed_local_time": "06:00",
-        "observed_age_min": 26,
+        "observed_age_min": 27,
         "temp_c": null,
         "direction_label": "N",
         "speed_kt": 11.1,
@@ -421,7 +421,7 @@
         "name": "White Rock, BC",
         "source_url": null,
         "observed_local_time": "06:00",
-        "observed_age_min": 26,
+        "observed_age_min": 27,
         "temp_c": null,
         "direction_label": "N",
         "speed_kt": 1.9,
@@ -432,7 +432,7 @@
         "name": "Point Atkinson",
         "source_url": null,
         "observed_local_time": "06:00",
-        "observed_age_min": 26,
+        "observed_age_min": 27,
         "temp_c": null,
         "direction_label": "NNW",
         "speed_kt": 1.9,
@@ -443,7 +443,7 @@
         "name": "Halibut Bank Buoy",
         "source_url": "https://weather.gc.ca/past_conditions/index_e.html?station=46146",
         "observed_local_time": "06:00",
-        "observed_age_min": 25,
+        "observed_age_min": 26,
         "temp_c": null,
         "direction_label": "NW",
         "speed_kt": 8.1,
@@ -453,7 +453,7 @@
       {
         "name": "Tsawwassen Ferry Auto",
         "source_url": "https://dd.weather.gc.ca/today/observations/swob-ml/latest/CVTF-AUTO-minute-swob.xml",
-        "observed_local_time": "6:25 am",
+        "observed_local_time": "6:26 am",
         "temp_c": null,
         "direction_label": "N",
         "speed_kt": 0,
@@ -483,8 +483,8 @@
       {
         "name": "Squamish Airport",
         "source_url": "https://dd.weather.gc.ca/today/observations/swob-ml/latest/CWSK-AUTO-minute-swob.xml",
-        "observed_local_time": "6:25 am",
-        "temp_c": 8,
+        "observed_local_time": "6:26 am",
+        "temp_c": 7,
         "direction_label": "NNE",
         "speed_kt": 2,
         "gust_kt": null,
@@ -15888,7 +15888,7 @@
         "checked_hour": "2026-09-24T06:00",
         "station": "Sand Heads",
         "observed_local_time": "06:00",
-        "observed_age_min": 26,
+        "observed_age_min": 27,
         "forecasted_kt": 14,
         "live_kt": 11.1,
         "live_gust_kt": null,
@@ -31325,7 +31325,7 @@
         "checked_hour": "2026-09-24T06:00",
         "station": "White Rock, BC",
         "observed_local_time": "06:00",
-        "observed_age_min": 26,
+        "observed_age_min": 27,
         "forecasted_kt": 13.9,
         "live_kt": 1.9,
         "live_gust_kt": null,

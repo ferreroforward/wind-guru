@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-24T13:25:46.269Z",
+  "updated_at": "2026-09-24T13:26:37.978Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -923,7 +923,7 @@
       "regime": "synoptic",
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 90%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-24T13:25:46.269Z"
+      "checked_at": "2026-09-24T13:26:37.978Z"
     },
     {
       "spot": "garry-point",
@@ -1222,7 +1222,7 @@
       "regime": "synoptic",
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 84%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-24T13:25:46.269Z"
+      "checked_at": "2026-09-24T13:26:37.978Z"
     },
     {
       "spot": "tsawwassen-south",
