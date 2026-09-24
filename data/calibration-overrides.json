@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T01:56:14.928Z",
+  "generated_at": "2026-09-24T13:00:54.844Z",
   "min_samples": 2,
   "spots": {
     "tsawwassen-south": {
@@ -15,9 +15,9 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.13,
+        "avg_ratio": 0.14,
         "multiplier": 0.77,
-        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 13% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 13%, softened to a 77% multiplier until more reports come in."
+        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 14% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 14%, softened to a 77% multiplier until more reports come in."
       }
     },
     "squamish-spit": {
@@ -156,12 +156,12 @@
     },
     "crescent-beach": {
       "general": {
-        "sample_size": 3,
+        "sample_size": 4,
         "rider_reports": 0,
-        "live_checks": 3,
-        "avg_ratio": 0.55,
-        "multiplier": 0.85,
-        "note": "Based on 3 total data points (0 rider reports, 3 live-station checks): actual wind averaged 55% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 3 data points so far -- the raw ratio would be 55%, softened to a 85% multiplier until more reports come in."
+        "live_checks": 4,
+        "avg_ratio": 0.49,
+        "multiplier": 0.83,
+        "note": "Based on 4 total data points (0 rider reports, 4 live-station checks): actual wind averaged 49% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 4 data points so far -- the raw ratio would be 49%, softened to a 83% multiplier until more reports come in."
       },
       "mixed": {
         "sample_size": 3,
