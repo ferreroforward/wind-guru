@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-23T22:30:41.420Z",
+  "updated_at": "2026-09-24T01:56:15.035Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1200,6 +1200,19 @@
     },
     {
       "spot": "tsawwassen-south",
+      "time": "2026-09-23T18:00",
+      "forecasted": 8.7,
+      "actual": 2.9,
+      "ratio": 0.33333333333333337,
+      "source": "live-station",
+      "station": "White Rock, BC",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 66%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-24T01:56:15.035Z"
+    },
+    {
+      "spot": "tsawwassen-south",
       "time": "2026-09-23T09:00",
       "forecasted": 12.1,
       "actual": 1.9,
@@ -1470,6 +1483,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 0%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-29T12:07:32.837Z"
+    },
+    {
+      "spot": "crescent-beach",
+      "time": "2026-09-23T18:00",
+      "forecasted": 8.5,
+      "actual": 2.9,
+      "ratio": 0.3411764705882353,
+      "source": "live-station",
+      "station": "White Rock, BC",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 63%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-24T01:56:15.035Z"
     },
     {
       "spot": "crescent-beach",
