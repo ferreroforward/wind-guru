@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-25T16:57:06.983Z",
+  "updated_at": "2026-09-25T22:52:08.592Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -96,6 +96,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-09-25T15:00",
+      "forecasted": 18.6,
+      "actual": 28,
+      "ratio": 1.5053763440860215,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 62%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-25T22:52:08.592Z"
     },
     {
       "spot": "erwin-park",
@@ -339,6 +352,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "porteau-cove",
+      "time": "2026-09-25T15:00",
+      "forecasted": 14,
+      "actual": 15,
+      "ratio": 1.0714285714285714,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-09-25T22:52:08.592Z"
     },
     {
       "spot": "porteau-cove",
@@ -848,19 +874,6 @@
       "checked_at": "2026-09-01T00:22:38.401Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-08-31T05:00",
-      "forecasted": 9.4,
-      "actual": 8.9,
-      "ratio": 0.9468085106382979,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-08-31T12:07:37.326Z"
-    },
-    {
       "spot": "white-rock-east",
       "time": "2026-09-24T19:00",
       "forecasted": 11.3,
@@ -963,6 +976,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-09-25T15:00",
+      "forecasted": 9.9,
+      "actual": 21,
+      "ratio": 2.121212121212121,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 66%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-25T22:52:08.592Z"
     },
     {
       "spot": "garry-point",
@@ -1317,6 +1343,19 @@
     },
     {
       "spot": "tsawwassen-south",
+      "time": "2026-09-25T15:00",
+      "forecasted": 9,
+      "actual": 2.9,
+      "ratio": 0.3222222222222222,
+      "source": "live-station",
+      "station": "White Rock, BC",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 78%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-25T22:52:08.592Z"
+    },
+    {
+      "spot": "tsawwassen-south",
       "time": "2026-09-24T10:00",
       "forecasted": 17.3,
       "actual": 1.9,
@@ -1639,6 +1678,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 0%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-29T12:07:32.837Z"
+    },
+    {
+      "spot": "crescent-beach",
+      "time": "2026-09-25T15:00",
+      "forecasted": 8.6,
+      "actual": 2.9,
+      "ratio": 0.3372093023255814,
+      "source": "live-station",
+      "station": "White Rock, BC",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 70%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-25T22:52:08.592Z"
     },
     {
       "spot": "crescent-beach",
