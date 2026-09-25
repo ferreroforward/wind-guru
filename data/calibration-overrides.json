@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T02:13:01.931Z",
+  "generated_at": "2026-09-25T14:52:06.691Z",
   "min_samples": 2,
   "spots": {
     "tsawwassen-south": {
@@ -86,20 +86,20 @@
     },
     "erwin-park": {
       "general": {
-        "sample_size": 18,
+        "sample_size": 19,
         "rider_reports": 0,
-        "live_checks": 18,
-        "avg_ratio": 0.61,
-        "multiplier": 0.78,
-        "note": "Based on 18 total data points (0 rider reports, 18 live-station checks): actual wind averaged 61% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 18 data points so far -- the raw ratio would be 61%, softened to a 78% multiplier until more reports come in."
+        "live_checks": 19,
+        "avg_ratio": 0.58,
+        "multiplier": 0.77,
+        "note": "Based on 19 total data points (0 rider reports, 19 live-station checks): actual wind averaged 58% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 19 data points so far -- the raw ratio would be 58%, softened to a 77% multiplier until more reports come in."
       },
       "synoptic": {
-        "sample_size": 11,
+        "sample_size": 12,
         "rider_reports": 0,
-        "live_checks": 11,
-        "avg_ratio": 0.56,
+        "live_checks": 12,
+        "avg_ratio": 0.53,
         "multiplier": 0.79,
-        "note": "Based on 11 synoptic data points (0 rider reports, 11 live-station checks): actual wind averaged 56% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 11 data points so far -- the raw ratio would be 56%, softened to a 79% multiplier until more reports come in."
+        "note": "Based on 12 synoptic data points (0 rider reports, 12 live-station checks): actual wind averaged 53% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 12 data points so far -- the raw ratio would be 53%, softened to a 79% multiplier until more reports come in."
       },
       "outflow": {
         "sample_size": 5,
@@ -138,38 +138,38 @@
     },
     "white-rock-east": {
       "general": {
+        "sample_size": 8,
+        "rider_reports": 0,
+        "live_checks": 8,
+        "avg_ratio": 0.2,
+        "multiplier": 0.8,
+        "note": "Based on 8 total data points (0 rider reports, 8 live-station checks): actual wind averaged 20% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 8 data points so far -- the raw ratio would be 20%, softened to a 80% multiplier until more reports come in."
+      },
+      "synoptic": {
         "sample_size": 7,
         "rider_reports": 0,
         "live_checks": 7,
-        "avg_ratio": 0.24,
+        "avg_ratio": 0.17,
         "multiplier": 0.81,
-        "note": "Based on 7 total data points (0 rider reports, 7 live-station checks): actual wind averaged 24% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 7 data points so far -- the raw ratio would be 24%, softened to a 81% multiplier until more reports come in."
-      },
-      "synoptic": {
-        "sample_size": 6,
-        "rider_reports": 0,
-        "live_checks": 6,
-        "avg_ratio": 0.21,
-        "multiplier": 0.81,
-        "note": "Based on 6 synoptic data points (0 rider reports, 6 live-station checks): actual wind averaged 21% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 6 data points so far -- the raw ratio would be 21%, softened to a 81% multiplier until more reports come in."
+        "note": "Based on 7 synoptic data points (0 rider reports, 7 live-station checks): actual wind averaged 17% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 7 data points so far -- the raw ratio would be 17%, softened to a 81% multiplier until more reports come in."
       }
     },
     "crescent-beach": {
       "general": {
-        "sample_size": 5,
+        "sample_size": 6,
         "rider_reports": 0,
-        "live_checks": 5,
-        "avg_ratio": 0.35,
-        "multiplier": 0.82,
-        "note": "Based on 5 total data points (0 rider reports, 5 live-station checks): actual wind averaged 35% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 5 data points so far -- the raw ratio would be 35%, softened to a 82% multiplier until more reports come in."
+        "live_checks": 6,
+        "avg_ratio": 0.25,
+        "multiplier": 0.81,
+        "note": "Based on 6 total data points (0 rider reports, 6 live-station checks): actual wind averaged 25% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 6 data points so far -- the raw ratio would be 25%, softened to a 81% multiplier until more reports come in."
       },
       "synoptic": {
-        "sample_size": 2,
+        "sample_size": 3,
         "rider_reports": 0,
-        "live_checks": 2,
-        "avg_ratio": 0.17,
-        "multiplier": 0.88,
-        "note": "Based on 2 synoptic data points (0 rider reports, 2 live-station checks): actual wind averaged 17% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 2 data points so far -- the raw ratio would be 17%, softened to a 88% multiplier until more reports come in."
+        "live_checks": 3,
+        "avg_ratio": 0.11,
+        "multiplier": 0.85,
+        "note": "Based on 3 synoptic data points (0 rider reports, 3 live-station checks): actual wind averaged 11% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 3 data points so far -- the raw ratio would be 11%, softened to a 85% multiplier until more reports come in."
       },
       "mixed": {
         "sample_size": 3,
