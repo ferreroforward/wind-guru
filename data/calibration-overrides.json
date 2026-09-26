@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T02:18:31.770Z",
+  "generated_at": "2026-09-26T15:23:05.875Z",
   "min_samples": 2,
   "spots": {
     "tsawwassen-south": {
@@ -123,9 +123,9 @@
         "sample_size": 15,
         "rider_reports": 0,
         "live_checks": 15,
-        "avg_ratio": 0.54,
+        "avg_ratio": 0.57,
         "multiplier": 0.78,
-        "note": "Based on 15 synoptic data points (0 rider reports, 15 live-station checks): actual wind averaged 54% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 15 data points so far -- the raw ratio would be 54%, softened to a 78% multiplier until more reports come in."
+        "note": "Based on 15 synoptic data points (0 rider reports, 15 live-station checks): actual wind averaged 57% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 15 data points so far -- the raw ratio would be 57%, softened to a 78% multiplier until more reports come in."
       },
       "thermal": {
         "sample_size": 20,
