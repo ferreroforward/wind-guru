@@ -639,9 +639,40 @@ A spot can carry an `epicSignature` (spots.js): direction sector, minimum
 wind, tide state, time window and minimum run length, all of which must hold,
 with the wind backed by EC, a live reading, or at least two models. The first
 one is Garry Point's: NW to NNW 17kt+, falling tide, 7am to 5pm, 2+ hours.
-Tide comes from DFO's public tide API (`tideStation`, Steveston 07607) and is
-shown in each hour's popup. Only the scheduled server run computes tides and
+Tide comes from DFO's public tide API (`tideStation`, see "Tide stations")
+and is shown in each hour's popup. Only the scheduled server run computes tides and
 epic windows; the "Refresh live" button doesn't.
+
+## Models, weighting and agreement (Sep 2026)
+
+We request every model Open-Meteo has with real data for this area (16
+sources, see `MODELS` in rules.js): HRRR 3km (inside the GFS blend for its
+first ~60h), HRDPS 2.5km (inside the GEM blend for ~54h), NAM 3km, HRDPS West
+1km, NBM 2.5km, GEM Regional 10km, ECMWF 9km, UK Met Office 10km, and the
+global runs (ECMWF 25km, GFS 13km, ICON 13km, GEM Global, ARPEGE, JMA, CMA,
+ECMWF AIFS). HRW 3km isn't available from Open-Meteo.
+
+Scored against Sand Heads on Sep 25 2026, the 3km and finer models were
+within ~3 to 6kt and the coarse globals off by ~10kt; an equal average of all
+of them was worse than the 3km models alone. So the blend is weighted 6x for
+3km and finer, 2x for ~10km regional, 1x for coarse global: every model still
+counts, the high resolution ones lead.
+
+**Agreement rule (Guillermo's):** when the models land on the same speed,
+within about 15%, it's normally a good forecast. `modelAgreement()` measures
+the share of model weight within ±15% of the weighted median; 80%+ from 4 or
+more models marks the hour `models_agree`, which raises confidence and
+narrows the probability band. The hour shows a ✓ and says so in its popup.
+
+## Tide stations
+
+Always the nearest DFO station to the spot, except Steveston, which uses
+Tsawwassen (Guillermo: better for Steveston and south; the Steveston gauge
+sits in the river mouth and reads ~0.6m lower and ~20min later than the
+coast). Squamish and Porteau: Darrell Bay. Jericho: Point Atkinson. Erwin
+Park: Sandy Cove. Ambleside and Dundarave: Ambleside. White Rock, Crescent
+Beach: their own stations. Boundary Bay, Tsawwassen: Tsawwassen. The North
+Shore stations read within ~0.05m of Point Atkinson.
 
 ## Known limitations / good next steps
 

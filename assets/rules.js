@@ -8,17 +8,108 @@
 
 import { inSector, degToLabel } from "./spots.js";
 
-// Models requested from Open-Meteo. "seamless" variants blend each
-// provider's own global+regional+high-res nest automatically.
-// gem_seamless folds in Environment Canada's HRDPS West nest (~2.5km)
-// over BC, which is the one most likely to resolve local thermal/outflow
-// effects that coarser global models miss.
+// Models requested from Open-Meteo: every model with real data for this
+// area (checked Sep 2026 at the Garry Point water point), per Guillermo:
+// "use all the models available for the area, the more the better".
+//
+// The first four keep their original keys and sources on purpose: several
+// local calibrations (Squamish thermal scaling, fine vs coarse gap, Erwin's
+// reference offset) were fitted against exactly these. Note gfs_seamless is
+// really NOAA's HRRR 3km for its first ~60 hours here (Open-Meteo's GFS
+// blend hands over to GFS after that), and gem_seamless is HRDPS 2.5km for
+// its first ~54 hours, then GEM regional/global.
+//
+// `weight`: how much a model counts in the blend. Scored against Sand Heads
+// on Sep 25 2026, every 3km or finer model was within ~3-6kt while the
+// ~13km+ globals were off by ~10kt (they can't resolve the Strait's coast
+// and terrain), matching riders' experience that the 3km models do best
+// here, especially away from pure thermal spots. An equal weight average
+// of all 15 was actually WORSE than the 3km models alone that day (mean
+// error 5.6kt vs 4.7kt, 7am to 4pm at the Garry Point water point); 6/2/1
+// keeps every model in while recovering most of that (4.9kt). So: 3km or
+// finer counts 6x, ~10km regional 2x, coarse global 1x. All of them still
+// feed the agreement check (modelAgreement). Where two "models" return the
+// identical value in an hour (a seamless blend that has fallen back to the
+// same global run), only one copy counts, at the lower weight (see
+// dedupeRow).
+//
+// Not available from Open-Meteo for this area: HRW 3km (NOAA WRF window).
 export const MODELS = [
-  { key: "gfs", param: "gfs_seamless", label: "GFS (NOAA)", resolution: "coarse" },
-  { key: "ecmwf", param: "ecmwf_ifs025", label: "ECMWF", resolution: "coarse" },
-  { key: "icon", param: "icon_seamless", label: "ICON (DWD)", resolution: "medium" },
-  { key: "gem", param: "gem_seamless", label: "GEM / HRDPS (ECCC)", resolution: "fine" },
+  { key: "gfs", param: "gfs_seamless", label: "HRRR 3km (NOAA), then GFS", resolution: "fine", weight: 6 },
+  { key: "ecmwf", param: "ecmwf_ifs025", label: "ECMWF 25km", resolution: "coarse", weight: 1 },
+  { key: "icon", param: "icon_seamless", label: "ICON 13km (DWD)", resolution: "coarse", weight: 1 },
+  { key: "gem", param: "gem_seamless", label: "HRDPS 2.5km (ECCC), then GEM", resolution: "fine", weight: 6 },
+  { key: "nam", param: "ncep_nam_conus", label: "NAM 3km (NOAA)", resolution: "fine", weight: 6 },
+  { key: "hrdps_west", param: "gem_hrdps_west", label: "HRDPS West 1km (ECCC)", resolution: "fine", weight: 6 },
+  { key: "nbm", param: "ncep_nbm_conus", label: "NBM 2.5km blend (NOAA)", resolution: "fine", weight: 6 },
+  { key: "gem_regional", param: "gem_regional", label: "GEM Regional 10km (ECCC)", resolution: "regional", weight: 2 },
+  { key: "ecmwf_hres", param: "ecmwf_ifs", label: "ECMWF 9km", resolution: "regional", weight: 2 },
+  { key: "ukmo", param: "ukmo_global_deterministic_10km", label: "UK Met Office 10km", resolution: "regional", weight: 2 },
+  { key: "gfs_global", param: "gfs_global", label: "GFS 13km (NOAA)", resolution: "coarse", weight: 1 },
+  { key: "gem_global", param: "gem_global", label: "GEM Global 15km (ECCC)", resolution: "coarse", weight: 1 },
+  { key: "arpege", param: "meteofrance_arpege_world", label: "ARPEGE (Meteo France)", resolution: "coarse", weight: 1 },
+  { key: "jma", param: "jma_gsm", label: "JMA GSM", resolution: "coarse", weight: 1 },
+  { key: "cma", param: "cma_grapes_global", label: "CMA GRAPES", resolution: "coarse", weight: 1 },
+  { key: "aifs", param: "ecmwf_aifs025_single", label: "ECMWF AIFS (AI)", resolution: "coarse", weight: 1 },
 ];
+const MODEL_WEIGHT = Object.fromEntries(MODELS.map(m => [m.key, m.weight ?? 1]));
+
+// Weight of a model in this row (after dedupe), default from MODELS.
+export function modelWeight(row, key) {
+  return (row && row.weights && row.weights[key] != null) ? row.weights[key] : (MODEL_WEIGHT[key] ?? 1);
+}
+
+// Weighted mean over whichever models have a value.
+export function weightedMean(values, row) {
+  let sum = 0, wsum = 0;
+  for (const [k, v] of Object.entries(values || {})) {
+    if (v == null) continue;
+    const w = modelWeight(row, k);
+    sum += v * w; wsum += w;
+  }
+  return wsum ? sum / wsum : null;
+}
+
+// The seamless blends fall back to a global run once their high resolution
+// source ends (gfs_seamless -> GFS after HRRR's ~60h, gem_seamless -> GEM
+// regional/global after HRDPS's ~54h), so later hours can carry the same
+// run twice. For those known pairs only, identical values in an hour are
+// counted once: the legacy key survives (calibrations read it) at the lower
+// weight, since the value is the coarser model's. Limited to known pairs so
+// two genuinely different models that happen to match are never merged.
+const SEAMLESS_FALLBACKS = [["gfs", "gfs_global"], ["gem", "gem_regional"], ["gem", "gem_global"]];
+function dedupeRow(row) {
+  row.weights = {};
+  for (const k of Object.keys(row.speeds)) row.weights[k] = MODEL_WEIGHT[k] ?? 1;
+  for (const [keep, drop] of SEAMLESS_FALLBACKS) {
+    if (!(keep in row.speeds) || !(drop in row.speeds)) continue;
+    const same = Math.abs(row.speeds[keep] - row.speeds[drop]) < 0.05 &&
+      (row.dirs[keep] == null || row.dirs[drop] == null || Math.abs(row.dirs[keep] - row.dirs[drop]) < 0.5) &&
+      (row.gusts[keep] == null || row.gusts[drop] == null || Math.abs(row.gusts[keep] - row.gusts[drop]) < 0.05);
+    if (!same) continue;
+    row.weights[keep] = Math.min(row.weights[keep], row.weights[drop]);
+    for (const field of ["speeds", "gusts", "dirs", "cloud", "pressure", "precip", "temp", "upperSpeeds", "upperDirs", "radiation"]) delete row[field][drop];
+    delete row.weights[drop];
+  }
+}
+
+// Agreement per Guillermo's rule of thumb: when the models land on the same
+// speed, give or take 15%, it's normally a good forecast. Returns the share
+// of model weight within +/-15% of the weighted median (with a 2kt floor so
+// near calm hours aren't judged on tiny numbers), and whether that counts as
+// "models agree" (at least 80% of the weight, from 4+ models).
+export function modelAgreement(row, speeds = row.speeds) {
+  const entries = Object.entries(speeds || {}).filter(([, v]) => v != null);
+  if (entries.length < 2) return { share: 0.5, agree: false, median: entries[0]?.[1] ?? null, count: entries.length };
+  const sorted = entries.map(([k, v]) => ({ v, w: modelWeight(row, k) })).sort((a, b) => a.v - b.v);
+  const total = sorted.reduce((a, e) => a + e.w, 0);
+  let acc = 0, median = sorted[sorted.length - 1].v;
+  for (const e of sorted) { acc += e.w; if (acc >= total / 2) { median = e.v; break; } }
+  const tol = Math.max(0.15 * median, 2);
+  const inside = sorted.filter(e => Math.abs(e.v - median) <= tol).reduce((a, e) => a + e.w, 0);
+  const share = inside / total;
+  return { share, agree: share >= 0.8 && entries.length >= 4, median, count: entries.length };
+}
 
 export function buildForecastUrl(lat, lon, days = 4) {
   const models = MODELS.map(m => m.param).join(",");
@@ -74,6 +165,7 @@ export function reshapeOpenMeteo(json) {
       if (sw && sw[i] != null) row.radiation[m.key] = sw[i];
     });
   }
+  rows.forEach(dedupeRow);
   return rows;
 }
 
@@ -420,6 +512,7 @@ function mean(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.le
 function rowsToSeriesMap(rows, field) {
   const map = {};
   for (const row of rows) {
+    if (field === "speeds") { map[row.time] = weightedMean(row.speeds, row); continue; }
     const vals = Object.values(row[field]).filter(v => v != null);
     map[row.time] = vals.length ? mean(vals) : null;
   }
@@ -529,8 +622,10 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   const cloudVals = Object.values(row.cloud).filter(v => v != null);
   const radiationVals = Object.values(row.radiation || {}).filter(v => v != null);
 
-  const speed_kt = mean(speedVals);
-  const gust_kt = mean(Object.values(row.gusts).filter(v => v != null));
+  // Weighted by model resolution (see MODELS): the 3km-and-finer models
+  // count 3x, regional 1.5x, coarse global 1x.
+  const speed_kt = weightedMean(row.speeds, row);
+  const gust_kt = weightedMean(row.gusts, row);
   // Weight each model's direction by that same model's speed (see
   // circularMeanDeg) — a near-calm model shouldn't get an equal vote on
   // "which way is the wind coming from" against a model showing real wind.
@@ -538,7 +633,7 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   // silently misalign against another model's value.
   const dirPairs = Object.entries(row.dirs)
     .filter(([, v]) => v != null)
-    .map(([k, v]) => ({ deg: v, weight: row.speeds[k] != null ? Math.max(row.speeds[k], 0.5) : 1 }));
+    .map(([k, v]) => ({ deg: v, weight: (row.speeds[k] != null ? Math.max(row.speeds[k], 0.5) : 1) * modelWeight(row, k) }));
   const direction_deg = circularMeanDeg(dirPairs.map(p => p.deg), dirPairs.map(p => p.weight));
   const cloud_pct = mean(cloudVals);
   const radiation_wm2 = radiationVals.length ? mean(radiationVals) : null;
@@ -553,11 +648,11 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   // a confidence multiplier — synoptic/gradient events tend to show up on
   // every model; pure thermal/mesoscale effects often show up on the
   // fine-resolution model only, which is itself informative.
-  let agreement = 0.5;
-  if (speedVals.length >= 2 && speed_kt) {
-    const spread = Math.max(...speedVals) - Math.min(...speedVals);
-    agreement = Math.max(0, Math.min(1, 1 - spread / Math.max(8, speed_kt * 1.2)));
-  }
+  // Now Guillermo's rule: the share of (weighted) models within +/-15% of
+  // the median speed. `modelsAgree` = 80%+ of the weight, 4+ models.
+  const ag = modelAgreement(row);
+  const agreement = ag.share;
+  const modelsAgree = ag.agree;
 
   let regime = "calm", reason = "Light and variable — no clear driver.";
   // Shortwave radiation is a more direct read on "how hard is the sun
@@ -1046,6 +1141,9 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     summary,
     favorable_direction: favorable,
     model_agreement: Math.round(agreement * 100) / 100,
+    models_agree: modelsAgree,
+    model_count: ag.count,
+    model_weights: row.weights || null,
     fine_vs_coarse_gap: fine_vs_coarse_gap != null ? Math.round(fine_vs_coarse_gap * 10) / 10 : null,
     calibrated,
     reference_triggered: referenceTriggered,
@@ -1132,12 +1230,23 @@ export function probabilityInRange(hourResult, lo) {
   if (hourResult.calibrated) {
     sigma = 1.8;
   } else {
-    const rawVals = Object.values(hourResult.raw_models || {}).filter(v => v != null);
-    const rawSpread = rawVals.length >= 2 ? Math.max(...rawVals) - Math.min(...rawVals) : 0;
+    // Weighted standard deviation across models (the old max-minus-min
+    // range grew with every model added, so it no longer measured real
+    // disagreement once we moved from 4 models to ~15).
+    const entries = Object.entries(hourResult.raw_models || {}).filter(([, v]) => v != null);
+    let spreadSd = 0;
+    if (entries.length >= 2) {
+      const w = (k) => hourResult.model_weights?.[k] ?? 1;
+      const W = entries.reduce((a, [k]) => a + w(k), 0);
+      const m = entries.reduce((a, [k, v]) => a + v * w(k), 0) / W;
+      spreadSd = Math.sqrt(entries.reduce((a, [k, v]) => a + w(k) * (v - m) ** 2, 0) / W);
+    }
     const triggered = hourResult.reference_triggered || hourResult.pam_rocks_triggered ||
       hourResult.live_reference_triggered || hourResult.marine_anchored;
     const baseSigma = triggered ? 4 : (REGIME_BASE_SIGMA[hourResult.regime] ?? 3);
-    sigma = Math.max(baseSigma, rawSpread * 0.4, 1.5);
+    sigma = Math.max(baseSigma, spreadSd, 1.5);
+    // Models agree within +/-15%: trust the number more (narrower band).
+    if (hourResult.models_agree && !triggered) sigma = Math.max(1.5, Math.min(sigma, 0.1 * center + 1));
   }
 
   // P(true value >= lo) = 1 - F(lo) under the logistic band.
@@ -1161,6 +1270,9 @@ export function probabilityInRange(hourResult, lo) {
     confidence = 0.35 + hourResult.model_agreement * 0.2;
   }
   if (hourResult.reference_triggered || hourResult.pam_rocks_triggered) confidence = Math.max(confidence, 0.7);
+  // Guillermo's rule of thumb: when the models all land on the same speed
+  // (within about 15%), it's normally a good forecast for the location.
+  if (hourResult.models_agree) confidence = Math.max(confidence, 0.85);
   // A live reading at a nearby station is the strongest single signal we have
   // for "right now" — stronger than any model agreement, since it's an actual
   // observation rather than a forecast.
@@ -1347,6 +1459,7 @@ export function dropModels(rows, keys) {
       if (!row[field]) continue;
       for (const k of keys) delete row[field][k];
     }
+    if (row.weights) for (const k of keys) delete row.weights[k];
   }
   return rows;
 }

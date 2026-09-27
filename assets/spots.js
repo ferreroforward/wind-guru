@@ -51,6 +51,9 @@ export const SPOTS = [
     // Spit proper, especially on marginal days — worth knowing even though
     // they share one entry here.
     id: "squamish-spit",
+    // Tide: Darrell Bay (nearest DFO station, 1.6km; Squamish Inner (1.8km) reads within ~0.05m). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07808", id: "5cebf1e43d0f4a073c4bc40e", name: "Darrell Bay" },
     name: "Squamish (Spit & Nexen Beach)",
     region: "Howe Sound",
     lat: 49.682811, lon: -123.172443,
@@ -90,6 +93,9 @@ export const SPOTS = [
     // was merged in here rather than kept as its own entry. Coordinates
     // refined (Aug 2026) to Guillermo's exact water-access point.
     id: "porteau-cove",
+    // Tide: Darrell Bay (nearest DFO station, 13km up Howe Sound). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07808", id: "5cebf1e43d0f4a073c4bc40e", name: "Darrell Bay" },
     name: "Porteau Cove",
     region: "Howe Sound",
     lat: 49.560074, lon: -123.239163,
@@ -220,9 +226,13 @@ export const SPOTS = [
     // 2026) was in NNW 21 gusting 26 at Sand Heads. W, NW and SW remain the
     // core directions (see current_note).
     favorable_deg: [[180, 345]],
-    // DFO tide station right at Garry Point (07607). Tide matters a lot
+    // Tides from Tsawwassen (DFO 07590), per Guillermo: better for Steveston
+    // and south of it. The Steveston gauge (07607) is closer (0.3km) but sits
+    // in the river mouth and reads ~0.6m lower and ~20min later than the
+    // coast (Sep 25 2026 low: 1.08m Steveston vs 1.68m Tsawwassen), so its
+    // numbers don't match the tide tables riders use. Tide matters a lot
     // here: see current_note and epicSignature.
-    tideStation: { code: "07607", id: "5cebf1e13d0f4a073c4bbf8c", name: "Steveston" },
+    tideStation: { code: "07590", id: "5cebf1de3d0f4a073c4bb935", name: "Tsawwassen" },
     // Sand Heads is the local go/no-go read (see liveStation below). When it
     // is already blowing from a direction that works here, trust the reading
     // over the models for this hour, and carry it a couple of hours forward.
@@ -292,6 +302,9 @@ export const SPOTS = [
     // the right idea (this spot's biggest days are gradient-driven, not
     // thermal) — tightened to name SE specifically as the core direction.
     id: "boundary-bay",
+    // Tide: Tsawwassen (nearest DFO station, 7km). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07590", id: "5cebf1de3d0f4a073c4bb935", name: "Tsawwassen" },
     name: "Boundary Bay (Centennial Beach)",
     region: "South Delta",
     lat: 49.008345, lon: -123.034898,
@@ -317,6 +330,9 @@ export const SPOTS = [
     // makes clear these two beaches take different winds and have somewhat
     // different tide behavior, so they're now independently forecastable.
     id: "white-rock-east",
+    // Tide: White Rock (nearest DFO station, 0.7km). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07577", id: "5cebf1de3d0f4a073c4bb933", name: "White Rock" },
     name: "White Rock - East Beach",
     region: "South Delta",
     lat: 49.015658, lon: -122.790661,
@@ -344,6 +360,9 @@ export const SPOTS = [
     // New spot (Aug 2026) — see white-rock-east above for why this was
     // split out on its own.
     id: "crescent-beach",
+    // Tide: Crescent Beach (nearest DFO station, 2.7km). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07579", id: "5dd3064fe0fdc4b9b4be69d7", name: "Crescent Beach" },
     name: "Crescent Beach",
     region: "South Delta",
     lat: 49.057512, lon: -122.888188,
@@ -376,6 +395,9 @@ export const SPOTS = [
     // now rather than add a second "north causeway" entry with the inverse
     // rules. Revisit if the north side turns out to be worth its own spot.
     id: "tsawwassen-south",
+    // Tide: Tsawwassen (nearest DFO station, 1.4km). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07590", id: "5cebf1de3d0f4a073c4bb935", name: "Tsawwassen" },
     name: "Tsawwassen Ferry Terminal (South Causeway)",
     region: "South Delta",
     lat: 49.015191, lon: -123.114600,
@@ -406,6 +428,9 @@ export const SPOTS = [
     // location was corrected. Coordinates refined again (Aug 2026) to
     // Guillermo's exact water-access point.
     id: "erwin-park",
+    // Tide: Sandy Cove (nearest DFO station, 0.6km; same as Point Atkinson within ~0.05m). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07786", id: "5cebf1e43d0f4a073c4bc43b", name: "Sandy Cove" },
     name: "Erwin Park",
     region: "West Vancouver",
     lat: 49.338035, lon: -123.238878,
@@ -502,6 +527,9 @@ export const SPOTS = [
     // Ambleside refinement below — the two are "almost identical" per his
     // description, sharing the same tide/wind mechanic (see current_note).
     id: "dundarave-pier",
+    // Tide: Ambleside (nearest DFO station, 2.2km; same as Point Atkinson within ~0.05m). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07780", id: "5cebf1e43d0f4a073c4bc45a", name: "Ambleside" },
     name: "Dundarave Pier Beach",
     region: "West Vancouver",
     lat: 49.332129, lon: -123.183767,
@@ -534,6 +562,9 @@ export const SPOTS = [
     // thermal/direction config the way there is for e.g. Squamish or Erwin
     // Park. Flag if this needs correcting.
     id: "ambleside",
+    // Tide: Ambleside (nearest DFO station, 0.4km; same as Point Atkinson within ~0.05m). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07780", id: "5cebf1e43d0f4a073c4bc45a", name: "Ambleside" },
     name: "Ambleside Beach",
     region: "West Vancouver",
     lat: 49.322244, lon: -123.151668,

@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 import { SPOTS, PRESSURE_REFERENCE, degToLabel } from "../assets/spots.js";
-import { buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch, parseMarineWindText, marineAnchorForHour, parseEcIssued, dropModels, tideForHour, flagEpicHours } from "../assets/rules.js";
+import { MODELS, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch, parseMarineWindText, marineAnchorForHour, parseEcIssued, dropModels, tideForHour, flagEpicHours } from "../assets/rules.js";
 
 // Minutes between "now" and a Pacific-local "HH:MM" observation time, on the
 // (safe) assumption the observation is from earlier today — used to catch a
@@ -1009,7 +1009,7 @@ async function main() {
       weekday: "short", month: "short", day: "numeric",
       hour: "numeric", minute: "2-digit", timeZoneName: "short",
     }),
-    models_used: ["GFS (NOAA)", "ECMWF IFS", "ICON (DWD)", "GEM / HRDPS (ECCC)"],
+    models_used: MODELS.map(m => m.label),
     marine_bulletins: bulletins,
     calibration_overrides: overrides,
     daily_takes: dailyTakes,
