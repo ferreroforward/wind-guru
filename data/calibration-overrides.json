@@ -1,7 +1,17 @@
 {
-  "generated_at": "2026-09-27T16:45:01.181Z",
+  "generated_at": "2026-09-27T21:16:28.884Z",
   "min_samples": 2,
   "spots": {
+    "squamish-spit": {
+      "general": {
+        "sample_size": 15,
+        "rider_reports": 15,
+        "live_checks": 0,
+        "avg_ratio": 0.76,
+        "multiplier": 0.78,
+        "note": "Based on 15 total data points (15 rider reports, 0 live-station checks): actual wind averaged 76% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 15 data points so far -- the raw ratio would be 76%, softened to a 78% multiplier until more reports come in."
+      }
+    },
     "tsawwassen-south": {
       "general": {
         "sample_size": 20,
@@ -44,16 +54,6 @@
         "avg_ratio": 0.82,
         "multiplier": 0.82,
         "note": "Based on 5 thermal data points (0 rider reports, 5 live-station checks): actual wind averaged 82% of what was forecasted (rider reports weighted 3x a station check)."
-      }
-    },
-    "squamish-spit": {
-      "general": {
-        "sample_size": 14,
-        "rider_reports": 14,
-        "live_checks": 0,
-        "avg_ratio": 0.74,
-        "multiplier": 0.78,
-        "note": "Based on 14 total data points (14 rider reports, 0 live-station checks): actual wind averaged 74% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 14 data points so far -- the raw ratio would be 74%, softened to a 78% multiplier until more reports come in."
       }
     },
     "boundary-bay": {
@@ -183,7 +183,7 @@
   },
   "accuracy": {
     "tolerance_kt": 3,
-    "sample_size": 18,
-    "hit_rate": 0.5
+    "sample_size": 19,
+    "hit_rate": 0.53
   }
 }
