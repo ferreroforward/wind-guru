@@ -8,8 +8,8 @@ import { writeFile, mkdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-import { SPOTS, PRESSURE_REFERENCE, degToLabel } from "../assets/spots.js";
-import { MODELS, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch, parseMarineWindText, marineAnchorForHour, parseEcIssued, dropModels, tideForHour, flagEpicHours } from "../assets/rules.js";
+import { SPOTS, PRESSURE_REFERENCE, degToLabel, DEG_LABELS } from "../assets/spots.js";
+import { MODELS, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch, parseMarineWindText, marineAnchorForHour, parseEcIssued, dropModels, tideForHour, flagEpicHours, buildMosUrl, reshapeMos, applyMos } from "../assets/rules.js";
 
 // Minutes between "now" and a Pacific-local "HH:MM" observation time, on the
 // (safe) assumption the observation is from earlier today — used to catch a
@@ -36,6 +36,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_PATH = path.join(__dirname, "..", "data", "forecast.json");
 const OVERRIDES_PATH = path.join(__dirname, "..", "data", "calibration-overrides.json");
 const LIVE_LOG_PATH = path.join(__dirname, "..", "data", "live-verification-log.json");
+const MOS_PATH = path.join(__dirname, "..", "data", "mos-coefficients.json");
 const FORECAST_DAYS = 4; // "today" + 3 days ahead
 const LIVE_ERROR_THRESHOLD = 0.20; // 20% — flag as a "mismatch" in the UI/console at this gap or bigger
 const LIVE_LOG_MAX_PER_SPOT = 40; // cap so the log file doesn't grow forever
@@ -56,7 +57,7 @@ const MAX_LIVE_OBS_AGE_MIN = 180;
 
 // Same station Porteau Cove uses as its own live-check (see spots.js) —
 // reused here as a same-day nowcast input for any spot with pamRocksAware
-// and/or pamRocksTrigger set. Defined once so getLiveObservation's cache key
+// and/or pamRocksRule set. Defined once so getLiveObservation's cache key
 // matches Porteau's own fetch and we never hit igetwind twice for it.
 const PAM_ROCKS_STATION = { type: "igetwind", sid: "CWAS", lat: 49.48, lon: -123.30, name: "Pam Rocks (Howe Sound entrance)" };
 
@@ -160,8 +161,10 @@ function parseEcObservedWind(html, debugLabel = null) {
     speedKmh = parseFloat(m[3]);
     gustKmh = m[4] != null ? parseFloat(m[4]) : null;
   }
+  const labelIdx = directionAbbr ? DEG_LABELS.indexOf(directionAbbr) : -1;
   return {
     time, // "HH:MM" Pacific, no date attached
+    directionDeg: labelIdx >= 0 ? labelIdx * 22.5 : null,
     speedKt: Math.round(speedKmh * 0.539957 * 10) / 10,
     gustKt: gustKmh != null ? Math.round(gustKmh * 0.539957 * 10) / 10 : null,
     directionAbbr,
@@ -270,13 +273,75 @@ async function fetchIgetwindObservation(station) {
   };
 }
 
+// City of White Rock's East Beach weather station: the JSON behind
+// maps.whiterockcity.ca/weather (embedded on whiterockcity.ca's waterfront
+// cameras page). Speeds already in knots; `ts` is epoch ms.
+async function fetchWhiteRockCityObservation(station) {
+  const res = await fetch("https://maps.whiterockcity.ca/weather/weatherResults.txt", { headers: { "User-Agent": "wind-guru-agent/1.0" } });
+  if (!res.ok) { console.log(`[live:${station.name}] fetch failed: ${res.status}`); return null; }
+  return parseWhiteRockCity(await res.json());
+}
+function parseWhiteRockCity(json) {
+  const first = (k) => (Array.isArray(json?.[k]) && json[k].length ? json[k][0] : null);
+  const ws = first("windSpeed"), wg = first("maxWindSpeed"), wd = first("windDir");
+  const speedKt = ws ? parseFloat(ws.value) : NaN;
+  if (!isFinite(speedKt) || !ws.ts) return null;
+  const gustKt = wg ? parseFloat(wg.value) : NaN;
+  const dirDeg = wd ? parseFloat(wd.value) : NaN;
+  return {
+    time: new Date(ws.ts).toLocaleTimeString("en-US", { timeZone: "America/Los_Angeles", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }),
+    ageMin: Math.round((Date.now() - ws.ts) / 60000),
+    speedKt: Math.round(speedKt * 10) / 10,
+    gustKt: isFinite(gustKt) ? Math.round(gustKt * 10) / 10 : null,
+    directionAbbr: null,
+    directionDeg: isFinite(dirDeg) ? dirDeg : null,
+    directionLabel: isFinite(dirDeg) ? degToLabel(dirDeg) : null,
+  };
+}
+
+// A station read off wtfbc.ca's board (fetched once per run, see main()),
+// e.g. the Jericho Sailing Centre sensor. The board gives "H:MM am/pm".
+let swobBoardForLive = [];
+function swobObservation(station) {
+  const s = swobBoardForLive.find((x) => x.name.toLowerCase() === station.boardName.toLowerCase());
+  if (!s) return null;
+  const m = (s.observed_local_time || "").match(/^(\d{1,2}):(\d{2})\s*(am|pm)$/i);
+  const hh = m ? (Number(m[1]) % 12) + (/pm/i.test(m[3]) ? 12 : 0) : null;
+  const labelIdx = s.direction_label ? DEG_LABELS.indexOf(s.direction_label) : -1;
+  return {
+    time: hh != null ? `${String(hh).padStart(2, "0")}:${m[2]}` : null,
+    speedKt: s.speed_kt,
+    gustKt: s.gust_kt ?? null,
+    directionAbbr: s.direction_label,
+    directionDeg: labelIdx >= 0 ? labelIdx * 22.5 : null,
+    directionLabel: s.direction_label,
+  };
+}
+
 const liveObsCache = {};
+// A station can name a `fallback` (spots.js), used when the first has
+// nothing fresh (Jericho: English Bay buoy, then the Sailing Centre sensor).
+// The result says which one it came from in `sourceName`.
 async function getLiveObservation(station) {
-  const cacheKey = `${station.type || "ec"}:${station.code || station.windSrc || station.sid}`;
+  const obs = await getOneLiveObservation(station);
+  if (obs) return { ...obs, sourceName: obs.sourceName ?? station.name };
+  if (station.fallback) {
+    const fb = await getOneLiveObservation(station.fallback);
+    if (fb) {
+      console.log(`[live:${station.name}] nothing fresh, using ${station.fallback.name}`);
+      return { ...fb, sourceName: station.fallback.name, fromFallback: true };
+    }
+  }
+  return null;
+}
+async function getOneLiveObservation(station) {
+  const cacheKey = `${station.type || "ec"}:${station.code || station.windSrc || station.sid || station.boardName || station.name}`;
   if (liveObsCache[cacheKey]) return liveObsCache[cacheKey];
   try {
     let parsed = station.type === "squamishwindsports" ? await fetchSquamishWindsportsObservation(station)
       : station.type === "igetwind" ? await fetchIgetwindObservation(station)
+      : station.type === "whiterockcity" ? await fetchWhiteRockCityObservation(station)
+      : station.type === "swob" ? swobObservation(station)
       : await fetchEcObservation(station);
     // Staleness check, applied uniformly across all three source types. The
     // igetwind fetcher already attaches a precise `ageMin` (it has a real
@@ -352,6 +417,76 @@ async function fetchTideLevels(station, startedAt) {
   return tideCache[key];
 }
 
+// DFO high and low tide times (wlp-hilo) for a tideStation, local time,
+// heights in metres and feet. Cached per station.
+const tideHiloCache = {};
+async function fetchTideHilo(station, startedAt) {
+  if (!station?.id) return null;
+  if (station.code in tideHiloCache) return tideHiloCache[station.code];
+  tideHiloCache[station.code] = null;
+  try {
+    const from = new Date(startedAt.getTime() - 12 * 3600000);
+    const to = new Date(startedAt.getTime() + (FORECAST_DAYS + 1) * 24 * 3600000);
+    const iso = (d) => d.toISOString().slice(0, 19) + "Z";
+    const url = `https://api-iwls.dfo-mpo.gc.ca/api/v1/stations/${station.id}/data?time-series-code=wlp-hilo&from=${iso(from)}&to=${iso(to)}`;
+    const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    tideHiloCache[station.code] = labelHilo(await res.json());
+    console.log(`  [tide-hilo:${station.name}] ${tideHiloCache[station.code].length} highs/lows`);
+  } catch (err) {
+    console.log(`  [tide-hilo:${station.name}] fetch failed: ${err.message}`);
+  }
+  return tideHiloCache[station.code];
+}
+// The API lists extremes in order without saying which is which: a value
+// above both neighbours (or the one it alternates with) is a high.
+function labelHilo(arr) {
+  const pts = (arr || []).filter((e) => e.value != null && e.eventDate)
+    .map((e) => ({ t: new Date(e.eventDate), v: e.value }))
+    .sort((a, b) => a.t - b.t);
+  return pts.map((p, i) => {
+    const nb = [pts[i - 1], pts[i + 1]].filter(Boolean);
+    const high = nb.length ? nb.every((n) => p.v > n.v) : p.v > 2.5;
+    const local = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" })
+      .formatToParts(p.t).reduce((o, x) => (o[x.type] = x.value, o), {});
+    return {
+      date: `${local.year}-${local.month}-${local.day}`,
+      time: `${local.hour}:${local.minute}`,
+      type: high ? "high" : "low",
+      height_m: Math.round(p.v * 100) / 100,
+      height_ft: Math.round(p.v * 3.28084 * 10) / 10,
+    };
+  });
+}
+
+// Learned correction inputs (see applyMos in rules.js): the pure models at
+// the exact point each spot's blend was trained on. One request per point.
+let mosCoefficients = null;
+async function loadMosCoefficients() {
+  try {
+    mosCoefficients = JSON.parse(await readFile(MOS_PATH, "utf8"));
+    console.log(`Loaded learned corrections for: ${Object.keys(mosCoefficients.points || {}).join(", ")} (trained ${mosCoefficients.trained})`);
+  } catch {
+    mosCoefficients = null;
+    console.log("No data/mos-coefficients.json, learned corrections off this run.");
+  }
+}
+const mosInputCache = {};
+async function fetchMosInputs(pointId) {
+  const point = mosCoefficients?.points?.[pointId];
+  if (!point) return null;
+  if (pointId in mosInputCache) return mosInputCache[pointId];
+  mosInputCache[pointId] = null;
+  try {
+    const res = await fetch(buildMosUrl(point.lat, point.lon, FORECAST_DAYS), { headers: { "User-Agent": "wind-guru-agent/1.0" } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    mosInputCache[pointId] = reshapeMos(await res.json());
+  } catch (err) {
+    console.log(`  [mos:${pointId}] fetch failed: ${err.message} (falling back to the model blend)`);
+  }
+  return mosInputCache[pointId];
+}
+
 // Environment Canada's marine text bulletin — per a 12-year local rider
 // (see README), this is the single best starting resource for Squamish
 // wind, more trustworthy for today's magnitude than any raw model output.
@@ -418,6 +553,12 @@ async function fetchMarineBulletin(zone) {
     const winds = extractMarineSection(html, "Winds", ["Weather & Visibility", "Extended Forecast", "Stay connected"])
       || extractMarineSection(html, "Marine Forecast", ["Winds", "Weather & Visibility", "Extended Forecast", "Stay connected"]);
     const text = winds ? winds.text.slice(0, 900) : "";
+    // Shown in full on the page (Guillermo, Sep 2026: so riders don't need
+    // to click through): the wind forecast, the extended outlook and any
+    // warning headline, each as EC wrote it.
+    const extended = extractMarineSection(html, "Extended Forecast", ["Stay connected", "Weather & Visibility"]);
+    const flat = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+    const warnM = flat.match(/\b(STRONG WIND|GALE|STORM|HURRICANE FORCE WIND|SQUALL|FREEZING SPRAY) WARNING (IN EFFECT|ENDED)\b/i);
     // Timing phrases ("Friday morning", "this afternoon") only mean
     // something relative to the bulletin's issue time, so hand it over.
     // Fallback if EC ever drops the Issued line: assume it was just issued.
@@ -429,8 +570,14 @@ async function fetchMarineBulletin(zone) {
     } else {
       console.log(`  [marine:${zone.id}] no parseable wind text — anchoring disabled for this zone this run.`);
     }
-    const warning = /strong wind warning|gale warning|storm warning|small craft warning/i.test(html);
-    return { id: zone.id, label: zone.label, url, text, issued: winds?.issued ?? null, warning, parsed };
+    const warning = warnM ? !/ended/i.test(warnM[2]) : /strong wind warning|gale warning|storm warning|small craft warning/i.test(html);
+    return {
+      id: zone.id, label: zone.label, url, text, issued: winds?.issued ?? null, warning, parsed,
+      full_text: winds ? winds.text : null,
+      warning_headline: warnM ? warnM[0].toUpperCase() : null,
+      extended_text: extended ? extended.text : null,
+      extended_issued: extended ? extended.issued : null,
+    };
   } catch (err) {
     console.error(`[${zone.id}] marine bulletin fetch failed: ${err.message}`);
     return null;
@@ -665,6 +812,7 @@ async function main() {
   const liveVerifications = []; // new mismatches (>=20% error) found this run, appended to the persisted log below
 
   const overrides = await loadOverrides();
+  await loadMosCoefficients();
   if (Object.keys(overrides).length) {
     console.log(`Loaded calibration overrides for: ${Object.keys(overrides).join(", ")}`);
   }
@@ -675,7 +823,7 @@ async function main() {
   // pamRocksTrigger — see rules.js) — a live nowcast only ever applies to
   // whichever hour is "right now," so there's no point fetching it per spot.
   let pamRocksObs = null;
-  if (SPOTS.some((s) => s.pamRocksAware || s.pamRocksTrigger)) {
+  if (SPOTS.some((s) => s.pamRocksAware || s.pamRocksRule)) {
     try {
       pamRocksObs = await getLiveObservation(PAM_ROCKS_STATION);
     } catch (err) {
@@ -695,6 +843,7 @@ async function main() {
 
   console.log("Fetching wtfbc.ca surface observation board...");
   const swobBoardStations = await fetchSwobBoard();
+  swobBoardForLive = swobBoardStations;
   console.log(`  parsed ${swobBoardStations.length} station(s)`);
 
   for (const spot of SPOTS) {
@@ -740,6 +889,9 @@ async function main() {
       }
     }
 
+    const mosInputs = spot.mos ? await fetchMosInputs(spot.mos.point) : null;
+    const mosPoint = spot.mos ? mosCoefficients?.points?.[spot.mos.point] : null;
+
     const zoneBulletin = spot.marineZone ? bulletins[spot.marineZone] : null;
     const marineParsed = zoneBulletin?.parsed ?? null;
 
@@ -768,7 +920,7 @@ async function main() {
 
       // Only ever attached to the row matching "right now" — it's a live
       // buoy reading, not a forecast time series (see rules.js).
-      const pamRocksNow = ((spot.pamRocksAware || spot.pamRocksTrigger) && pamRocksObs && row.time === nowHourStr)
+      const pamRocksNow = ((spot.pamRocksAware || spot.pamRocksRule) && pamRocksObs && row.time === nowHourStr)
         ? { speedKt: pamRocksObs.speedKt, directionDeg: pamRocksObs.directionDeg }
         : null;
 
@@ -780,12 +932,21 @@ async function main() {
         ? { speedKt: liveRefObs.speedKt, directionDeg: liveRefObs.directionDeg, hoursAhead: ahead }
         : null;
 
-      return classifyHour(spot, row, hour, month, refSpeedKt, pressureGradients, overrideRecord, pamRocksNow, marineAnchor, liveRefNow);
+      // Learned correction for this hour, with how far ahead it is (its
+      // uncertainty grows with lead time, see mosLeadFactor).
+      let mosNow = null;
+      if (mosPoint && mosInputs && mosInputs[row.time]) {
+        mosNow = applyMos(mosPoint, mosInputs[row.time]);
+        if (mosNow) mosNow.leadHours = nowIdx >= 0 ? Math.max(0, rowIdx - nowIdx) : null;
+      }
+
+      return classifyHour(spot, row, hour, month, refSpeedKt, pressureGradients, overrideRecord, pamRocksNow, marineAnchor, liveRefNow, mosNow);
     });
 
     // Tide state per hour (for spots with a tideStation), then the spot's
     // "possible epic day" signature, which can depend on it.
     const tideLevels = spot.tideStation ? await fetchTideLevels(spot.tideStation, startedAt) : null;
+    const tideExtremes = spot.tideStation ? await fetchTideHilo(spot.tideStation, startedAt) : null;
     if (tideLevels) for (const h of hours) h.tide = tideForHour(tideLevels, h.time);
     const epicWindows = flagEpicHours(spot, hours);
     if (epicWindows.length) console.log(`  [epic:${spot.id}] ${epicWindows.map(w => `${w.date} ${w.start}-${w.end} peak ${w.peak_kt}kt`).join("; ")}`);
@@ -824,7 +985,7 @@ async function main() {
           const mismatch = Math.abs(errorPct) >= LIVE_ERROR_THRESHOLD;
           liveCheck = {
             checked_hour: nowHourStr,
-            station: spot.liveStation.name,
+            station: obs.sourceName || spot.liveStation.name,
             observed_local_time: obs.time,
             observed_age_min: obs.ageMin != null ? Math.round(obs.ageMin) : null,
             forecasted_kt: forecastHour.speed_kt,
@@ -848,7 +1009,7 @@ async function main() {
             actual: obs.speedKt,
             ratio: obs.speedKt / fcFloor,
             source: "live-station",
-            station: spot.liveStation.name,
+            station: obs.sourceName || spot.liveStation.name,
             regime: forecastHour.regime,
             mismatch,
             reasoning: mismatch ? liveCheck.reasoning : null,
@@ -871,6 +1032,7 @@ async function main() {
       hours,
       live_check: liveCheck,
       tide_station: spot.tideStation?.name ?? null,
+      tide_extremes: tideExtremes || [],
       epic_windows: epicWindows,
     });
 
@@ -903,7 +1065,7 @@ async function main() {
     seenStationKeys.add(key);
     try {
       const obs = await getLiveObservation(spot.liveStation); // cache hit in practice — already fetched above
-      if (!obs) continue;
+      if (!obs || obs.fromFallback) continue; // a fallback is already on wtfbc's board under its own name
       ownStations.push({
         name: spot.liveStation.name,
         source_url: null,
@@ -946,7 +1108,8 @@ async function main() {
     /pam rocks/i,       // ours: "Pam Rocks (Howe Sound entrance)" — wtfbc: "Howe Sound - Pam Rocks"
     /sand\s*heads/i,   // ours: "Sand Heads" — wtfbc: "Sandheads Cs"
     /point atkinson/i,  // ours: "Point Atkinson" — wtfbc: "Point Atkinson"
-    /white rock/i,      // ours: "White Rock, BC" (CWWK METAR) — wtfbc: "White Rock East Beach"
+    /white rock/i,      // ours: "White Rock East Beach" (the city sensor, direct) — wtfbc: same sensor
+    /tsawwassen/i,      // ours: "Tsawwassen Ferry Terminal" (EC vtf) — wtfbc's "Tsawwassen Ferry Auto" copy read 0 most of the time
   ];
   // wtfbc.ca's board also carries stations well outside our forecast area
   // (interior BC, Vancouver Island beyond the "south of Nanaimo" marine
@@ -1014,6 +1177,7 @@ async function main() {
     calibration_overrides: overrides,
     daily_takes: dailyTakes,
     live_verification_count: cappedEntries.length,
+    mos_score: await readFile(path.join(__dirname, "..", "data", "mos-score.json"), "utf8").then(JSON.parse).catch(() => null),
     surface_observations: surfaceObservations,
     spots: spotsOut,
   };

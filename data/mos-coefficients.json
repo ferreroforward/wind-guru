@@ -1,0 +1,478 @@
+{
+ "about": "Per point learned correction (MOS). Speed = coef . [1, model speeds..., u, v, sin(2pi h/24), cos(2pi h/24)] with h the UTC hour and u,v the mean wind vector (kt, blowing toward, u=-s sin d, v=-s cos d) of the uv models. Error model: typical miss = err[0] + err[1]*speed; sigma = 1.2533 * that. Variants are tried in order; the first whose models are all present for the hour is used. Trained on previous day runs vs EC hourly obs, Sep 2025 to Sep 2026.",
+ "trained": "2026-09-27",
+ "points": {
+  "garry": {
+   "station": "Sand Heads",
+   "climate_id": "1107010",
+   "lat": 49.115,
+   "lon": -123.27,
+   "variants": [
+    {
+     "id": "A",
+     "n": 8858,
+     "models": [
+      "nbm",
+      "hrdps",
+      "hrrr",
+      "ecmwf",
+      "gem_regional"
+     ],
+     "uv": [
+      "nbm",
+      "hrdps"
+     ],
+     "coef": [
+      1.4884,
+      0.1197,
+      0.2942,
+      0.0626,
+      0.3674,
+      0.1778,
+      -0.0178,
+      0.05,
+      -0.0649,
+      -0.2087
+     ],
+     "err": [
+      2.3789,
+      0.0374
+     ]
+    },
+    {
+     "id": "B",
+     "n": 8916,
+     "models": [
+      "nbm",
+      "ecmwf",
+      "gem_regional"
+     ],
+     "uv": [
+      "nbm",
+      "ecmwf"
+     ],
+     "coef": [
+      1.669,
+      0.301,
+      0.4823,
+      0.2402,
+      0.0195,
+      0.0395,
+      0.0362,
+      -0.2672
+     ],
+     "err": [
+      2.4133,
+      0.0426
+     ]
+    },
+    {
+     "id": "C",
+     "n": 9220,
+     "models": [
+      "nbm",
+      "ecmwf",
+      "gfs_global"
+     ],
+     "uv": [
+      "nbm",
+      "ecmwf"
+     ],
+     "coef": [
+      1.0353,
+      0.3662,
+      0.4951,
+      0.3227,
+      0.0164,
+      -0.02,
+      0.2689,
+      -0.3087
+     ],
+     "err": [
+      2.3626,
+      0.05
+     ]
+    },
+    {
+     "id": "D",
+     "n": 9371,
+     "models": [
+      "ecmwf",
+      "gfs_global"
+     ],
+     "uv": [
+      "ecmwf",
+      "gfs_global"
+     ],
+     "coef": [
+      1.5356,
+      0.7802,
+      0.4415,
+      -0.035,
+      -0.0243,
+      0.3449,
+      -0.3923
+     ],
+     "err": [
+      2.4899,
+      0.0442
+     ]
+    }
+   ]
+  },
+  "erwin": {
+   "station": "Point Atkinson",
+   "climate_id": "1106200",
+   "lat": 49.33,
+   "lon": -123.25,
+   "variants": [
+    {
+     "id": "A",
+     "n": 8856,
+     "models": [
+      "nbm",
+      "hrdps",
+      "hrrr",
+      "ecmwf",
+      "gem_regional"
+     ],
+     "uv": [
+      "nbm",
+      "hrdps"
+     ],
+     "coef": [
+      -0.0076,
+      0.2135,
+      0.9987,
+      -0.0717,
+      0.6653,
+      0.1934,
+      -0.0508,
+      0.313,
+      -0.4433,
+      -0.2775
+     ],
+     "err": [
+      1.8911,
+      0.1924
+     ]
+    },
+    {
+     "id": "B",
+     "n": 8914,
+     "models": [
+      "nbm",
+      "ecmwf",
+      "gem_regional"
+     ],
+     "uv": [
+      "nbm",
+      "ecmwf"
+     ],
+     "coef": [
+      -0.3447,
+      0.4987,
+      0.9188,
+      0.4266,
+      -0.2107,
+      0.2883,
+      -0.6288,
+      -0.1449
+     ],
+     "err": [
+      1.7311,
+      0.2357
+     ]
+    },
+    {
+     "id": "C",
+     "n": 9218,
+     "models": [
+      "nbm",
+      "ecmwf",
+      "gfs_global"
+     ],
+     "uv": [
+      "nbm",
+      "ecmwf"
+     ],
+     "coef": [
+      -0.173,
+      0.7044,
+      1.0778,
+      0.002,
+      -0.2011,
+      0.2733,
+      -0.5144,
+      -0.2335
+     ],
+     "err": [
+      1.7997,
+      0.2322
+     ]
+    },
+    {
+     "id": "D",
+     "n": 9369,
+     "models": [
+      "ecmwf",
+      "gfs_global"
+     ],
+     "uv": [
+      "ecmwf",
+      "gfs_global"
+     ],
+     "coef": [
+      0.2073,
+      1.5813,
+      0.4174,
+      -0.4808,
+      0.4067,
+      -0.8209,
+      0.191
+     ],
+     "err": [
+      1.7559,
+      0.2625
+     ]
+    }
+   ]
+  },
+  "tsaw": {
+   "station": "Tsawwassen Ferry Terminal",
+   "climate_id": "1108291",
+   "lat": 49.005,
+   "lon": -123.14,
+   "variants": [
+    {
+     "id": "A",
+     "n": 8860,
+     "models": [
+      "nbm",
+      "hrdps",
+      "hrrr",
+      "ecmwf",
+      "gem_regional"
+     ],
+     "uv": [
+      "nbm",
+      "hrdps"
+     ],
+     "coef": [
+      0.5458,
+      0.3973,
+      0.3427,
+      0.105,
+      0.2405,
+      0.212,
+      0.0274,
+      0.0794,
+      -0.4001,
+      -0.2824
+     ],
+     "err": [
+      1.9534,
+      0.0802
+     ]
+    },
+    {
+     "id": "B",
+     "n": 8918,
+     "models": [
+      "nbm",
+      "ecmwf",
+      "gem_regional"
+     ],
+     "uv": [
+      "nbm",
+      "ecmwf"
+     ],
+     "coef": [
+      0.7837,
+      0.8982,
+      0.2157,
+      0.3965,
+      0.0726,
+      0.0412,
+      -0.2793,
+      -0.7184
+     ],
+     "err": [
+      2.0477,
+      0.0876
+     ]
+    },
+    {
+     "id": "C",
+     "n": 9222,
+     "models": [
+      "nbm",
+      "ecmwf",
+      "gfs_global"
+     ],
+     "uv": [
+      "nbm",
+      "ecmwf"
+     ],
+     "coef": [
+      0.4967,
+      1.0274,
+      0.1938,
+      0.326,
+      0.0376,
+      0.0522,
+      -0.2192,
+      -0.7159
+     ],
+     "err": [
+      2.0438,
+      0.0879
+     ]
+    },
+    {
+     "id": "D",
+     "n": 9373,
+     "models": [
+      "ecmwf",
+      "gfs_global"
+     ],
+     "uv": [
+      "ecmwf",
+      "gfs_global"
+     ],
+     "coef": [
+      2.2225,
+      0.7172,
+      0.8099,
+      -0.0678,
+      -0.0309,
+      -0.1844,
+      -0.5594
+     ],
+     "err": [
+      2.6124,
+      0.0836
+     ]
+    }
+   ]
+  },
+  "pamrocks": {
+   "station": "Pam Rocks",
+   "climate_id": "10459NN",
+   "lat": 49.488,
+   "lon": -123.299,
+   "variants": [
+    {
+     "id": "A",
+     "n": 8859,
+     "models": [
+      "nbm",
+      "hrdps",
+      "hrrr",
+      "ecmwf",
+      "gem_regional"
+     ],
+     "uv": [
+      "nbm",
+      "hrdps"
+     ],
+     "coef": [
+      0.9858,
+      0.2355,
+      0.3453,
+      0.1009,
+      0.8235,
+      0.9584,
+      -0.01,
+      -0.4385,
+      -0.4981,
+      -0.075
+     ],
+     "err": [
+      2.3421,
+      0.1327
+     ]
+    },
+    {
+     "id": "B",
+     "n": 8917,
+     "models": [
+      "nbm",
+      "ecmwf",
+      "gem_regional"
+     ],
+     "uv": [
+      "nbm",
+      "ecmwf"
+     ],
+     "coef": [
+      1.0739,
+      0.3195,
+      0.7953,
+      1.1097,
+      -0.0461,
+      -0.4118,
+      -0.71,
+      0.21
+     ],
+     "err": [
+      2.2467,
+      0.149
+     ]
+    },
+    {
+     "id": "C",
+     "n": 9221,
+     "models": [
+      "nbm",
+      "ecmwf",
+      "gfs_global"
+     ],
+     "uv": [
+      "nbm",
+      "ecmwf"
+     ],
+     "coef": [
+      1.361,
+      0.476,
+      1.1301,
+      0.0212,
+      -0.0157,
+      -0.4115,
+      -0.5457,
+      0.207
+     ],
+     "err": [
+      2.1295,
+      0.1721
+     ]
+    },
+    {
+     "id": "D",
+     "n": 9372,
+     "models": [
+      "ecmwf",
+      "gfs_global"
+     ],
+     "uv": [
+      "ecmwf",
+      "gfs_global"
+     ],
+     "coef": [
+      1.4842,
+      1.8142,
+      0.4252,
+      -0.0766,
+      -0.5493,
+      -0.6713,
+      -0.0838
+     ],
+     "err": [
+      2.1741,
+      0.1907
+     ]
+    }
+   ]
+  }
+ }
+}

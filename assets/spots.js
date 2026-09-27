@@ -105,19 +105,27 @@ export const SPOTS = [
     favorable_deg: [[300, 40], [135, 260]], // N outflow, or S–SE–SW inflow/gradient wind
     pressureGradientAware: true,
     pamRocksAware: true, // SW-inflow-projection thermal nowcast on the current hour — see rules.js
-    // Per local rider knowledge: when Pam Rocks is reading 12kt+ from the
-    // South/SE, that meaningfully raises the odds Porteau itself is working
-    // (up toward the 20kt range) even on an hour the model's own signals
-    // came up empty — a distinct signal from the SW-inflow thermal check
-    // above (pamRocksAware). Same live-observation caveat: only ever
-    // applies to the current hour, not the rest of the forecast. See
-    // rules.js for how this is applied.
-    pamRocksTrigger: {
-      thresholdKt: 12,
-      dirSector: [135, 205], // South–SE
-      boostToKt: 18, // conservative floor toward the 20kt+ tier this signal is about, not a guarantee of exactly 20
-      note: "A South/SE marine push at the Sound's entrance reaching this far up is a good sign for Porteau, independent of the usual outflow/thermal patterns."
+    // Guillermo's rule (Sep 2026): "in an inflow you need at least 14 knots
+    // reading [at Pam Rocks] for Porteau to work, on an outflow you need a
+    // minimum of 25 to 30 knots". Used both for the live Pam Rocks reading
+    // (current hour) and, through the learned Pam Rocks forecast below, for
+    // every forecast hour. Sectors from a year of Pam Rocks readings at 14kt+:
+    // inflows come from 130 to 230 degrees, outflows from 320 to 50.
+    pamRocksRule: {
+      // modelDirSector: the same flows as the models' own direction sees them
+      // at Pam Rocks (a little wider; 87% of real outflow hours and 96% of
+      // real inflow hours fall inside), used for forecast hours.
+      inflow: { dirSector: [130, 230], modelDirSector: [125, 245], thresholdKt: 14 },
+      outflow: { dirSector: [320, 50], modelDirSector: [295, 65], thresholdKt: 25 },
+      worksAtKt: 12,
     },
+    // Learned correction (rules.js applyMos, data/mos-coefficients.json):
+    // fitted on a year of Pam Rocks hourly readings vs the day before models.
+    // The blend forecasts Pam Rocks; pamRocksRule turns that into Porteau.
+    // It replaces the borrowed Squamish thermal scaling here, since the rule
+    // is Guillermo's own, specific to this spot.
+    mos: { point: "pamrocks", overridesCalibration: true },
+    calibrationSince: "2026-09-28",
     // Porteau sits further down-Sound, more open water than the Spit's
     // thermal/outflow convergence zone at the head of Howe Sound — Pam
     // Rocks (a Coast Guard station right at the Sound's entrance, found via
@@ -179,7 +187,11 @@ export const SPOTS = [
     // wind — not just the afternoon sea breeze — produces the best waves
     // here).
     favorable_deg: [[230, 335]],
-    liveStation: { code: "whc", name: "Vancouver Harbour" },
+    // English Bay buoy (EC 46304) first: open water right off the beach.
+    // Jericho Sailing Centre's own sensor (via wtfbc.ca's board) when the
+    // buoy has nothing fresh. Per Guillermo, Sep 2026.
+    liveStation: { code: "46304", name: "English Bay buoy", fallback: { type: "swob", boardName: "Jericho Sailing Centre", name: "Jericho Sailing Centre" } },
+    calibrationSince: "2026-09-28",
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],
@@ -217,7 +229,11 @@ export const SPOTS = [
     excludeModels: ["icon"],
     // Forecast point moved on this date, so calibration history learned
     // against the old (land) point no longer describes this forecast.
-    calibrationSince: "2026-09-27",
+    calibrationSince: "2026-09-28",
+    // Learned correction (rules.js applyMos, data/mos-coefficients.json):
+    // fitted on a year of Sand Heads hourly readings vs the day before models.
+    // Riders read Sand Heads as Steveston's number, so no offset.
+    mos: { point: "garry", offsetKt: 0 },
     marineZone: "strait_of_georgia_south",
     marineAnchorFactor: 0.9,
     sports: ["kite", "windsurf", "wingfoil"],
@@ -316,9 +332,10 @@ export const SPOTS = [
     // are offshore here and not recommended (also very gusty) — so the
     // favorable arc runs NE through S, explicitly excluding the SW–N range.
     favorable_deg: [[45, 180]],
-    // White Rock's own official METAR station — found via igetwind.com's
-    // station API (see README "Live verification").
-    liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
+    // No live station: the White Rock METAR (CWWK) read a maximum of 6kt in
+    // six weeks, so it can't verify anything. Per Guillermo (Sep 2026), this
+    // spot is checked by rider reports only.
+    calibrationSince: "2026-09-28",
     thermal: { enabled: false },
     outflow: { enabled: false },
     synoptic_note: "Boundary Bay's biggest days are usually synoptic — a strong SE–S gradient wind ahead of an approaching frontal system funnels straight up the bay. Check the synoptic regime tag, not just the thermal one.",
@@ -344,7 +361,11 @@ export const SPOTS = [
     // W covers all of it (the engine doesn't grade "good" vs "excellent",
     // see direction_note for that texture).
     favorable_deg: [[90, 270]],
-    liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
+    // City of White Rock's East Beach weather station (the sensor behind
+    // whiterockcity.ca's waterfront page), in knots. Replaces the White Rock
+    // METAR (CWWK), which read a maximum of 6kt in six weeks. Per Guillermo.
+    liveStation: { type: "whiterockcity", name: "White Rock East Beach" },
+    calibrationSince: "2026-09-28",
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],
@@ -374,11 +395,12 @@ export const SPOTS = [
     // best when strong, SW also works well, N can work as long as it doesn't
     // carry much East in it (i.e. due N, not NE).
     favorable_deg: [[210, 280], [345, 10]],
-    // No dedicated nearby station — reusing the White Rock METAR (same
-    // South Delta cluster) as the closest available official reading,
-    // ~13km away. Distance caveat applies more here than at White Rock East
-    // itself, which is effectively co-located with this station.
-    liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
+    // City of White Rock's East Beach weather station (the sensor behind
+    // whiterockcity.ca's waterfront page), in knots. Replaces the White Rock
+    // METAR (CWWK), which read a maximum of 6kt in six weeks. Per Guillermo, also the
+    // best nearby reading for Crescent Beach (~7km).
+    liveStation: { type: "whiterockcity", name: "White Rock East Beach" },
+    calibrationSince: "2026-09-28",
     // No confirmed thermal timing/season pattern from local knowledge yet —
     // left disabled rather than assume it matches its South Delta
     // neighbors, same reasoning as Erwin Park's thermal field.
@@ -407,10 +429,14 @@ export const SPOTS = [
     level: "intermediate",
     // Flat water on NW/N; SW and S also work (bring more waves).
     favorable_deg: [[160, 230], [300, 20]],
-    // No dedicated nearby station — reusing the White Rock METAR as the
-    // closest available official reading (~19km away, the roughest distance
-    // caveat of any spot in this cluster).
-    liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
+    // EC's Tsawwassen Ferry Terminal station, right at the causeway, per
+    // Guillermo (Sep 2026). Replaces the White Rock METAR, 19km away.
+    liveStation: { code: "vtf", name: "Tsawwassen Ferry Terminal" },
+    calibrationSince: "2026-09-28",
+    // Learned correction (rules.js applyMos, data/mos-coefficients.json):
+    // fitted on a year of Ferry Terminal hourly readings vs the day before models.
+    // The spot is next to the station, so no offset.
+    mos: { point: "tsaw", offsetKt: 0 },
     thermal: { enabled: false },
     outflow: { enabled: false },
     direction_note: "South side of the causeway: NW or N gives flat-water conditions; SW brings more waves, S also works. (The north side of the causeway is the mirror image of this — flat when the south side is wavy and vice versa — but isn't separately modeled here.)",
@@ -456,6 +482,12 @@ export const SPOTS = [
     // breaking anything (same defensive fallback every igetwind station
     // uses).
     liveStation: { type: "igetwind", sid: "CWSB", lat: 49.3300, lon: -123.2650, name: "Point Atkinson" },
+    // Learned correction (rules.js applyMos, data/mos-coefficients.json):
+    // fitted on a year of Point Atkinson hourly readings vs the day before models.
+    // It forecasts Point Atkinson itself, so the riders' rule applies on top:
+    // Erwin runs about 4.5kt lighter (Point Atkinson 19kt+ = Erwin ~14.5kt).
+    mos: { point: "erwin", offsetKt: -4.5 },
+    calibrationSince: "2026-09-28",
     // Erwin sits right at the mouth of Howe Sound but faces east, so the
     // Strait of Georgia zone (which is what actually drives its E/SE days) is
     // the right marine bulletin to anchor against, not Howe Sound.

@@ -658,6 +658,92 @@ of them was worse than the 3km models alone. So the blend is weighted 6x for
 3km and finer, 2x for ~10km regional, 1x for coarse global: every model still
 counts, the high resolution ones lead.
 
+**Update after the year back test (Sep 27 2026):** the headline number now
+comes from the mean of NBM 2.5km and HRDPS West 1km (NAM 3km and HRDPS 2.5km
+when neither has a value, then the weighted mean above), `LEAD_MODELS` in
+rules.js. Over six weeks NBM had the smallest error of all 16 models and
+HRDPS West was next; over a year one of the two was best or within 0.3kt of
+best at every station. All 16 still feed the agreement rule and the
+uncertainty band. Spots with a learned correction (next section) use that
+instead.
+
+## Learned corrections (MOS), Sep 2026
+
+A year of day before model runs (Open-Meteo previous runs archive, Sep 2025
+to Sep 2026) was scored against Environment Canada's hourly climate data at
+Sand Heads, Point Atkinson, the Tsawwassen Ferry Terminal and Pam Rocks.
+Findings: no single model is best everywhere (NBM at Sand Heads and Pam
+Rocks, HRDPS West at Point Atkinson, HRDPS at the Ferry Terminal), every
+model reads Pam Rocks 4 to 5kt light, and a small linear blend fitted per
+station beats every single model by a wide margin. Scored leave one month
+out (each month predicted by a fit that never saw it), 12kt+ hours:
+
+| Station (spot) | Typical miss | Windy hours caught | False alarms | Brier (climatology) |
+|---|---|---|---|---|
+| Sand Heads (Steveston) | 2.8kt | 64 to 71% | 20 to 22% | 0.11 (0.21) |
+| Point Atkinson (Erwin, minus 4.5kt) | 2.7 to 3.2kt | 49 to 53% | 21 to 25% | 0.08 (0.15) |
+| Ferry Terminal (Tsawwassen) | 2.7kt | 49 to 63% | 23 to 28% | 0.08 (0.13) |
+| Pam Rocks (Porteau, via the rule) | 3.4 to 3.6kt | 47 to 56% | 26 to 29% | 0.10 (0.16) |
+
+The probabilities are calibrated: at Sand Heads, hours given 0 to 20%,
+20 to 40%, 40 to 60%, 60 to 80% and 80 to 100% verified 7%, 29%, 47%, 73%
+and 91% of the time. Replaying Sep 25 2026 from the evening before, the
+blend alone (no EC anchor, no live reading) gave 13kt at 7am rising to 19 to
+24kt from 9am to 2pm (Sand Heads: 18, 14, 21, 21, 24, 24, 22) and flagged
+the 9 to 10am epic window.
+
+How it works: inputs are NBM, HRDPS 2.5km, HRRR, ECMWF 25km and GEM
+Regional at the exact training point, plus the NBM and HRDPS mean wind
+vector and the hour of day. Past ~48h, when HRRR and HRDPS end, it drops to
+NBM + ECMWF + GEM Regional, then NBM + ECMWF + GFS, then ECMWF + GFS, each
+with its own fit. The error model (typical miss grows with speed) sets the
+probability band, widened a little with lead time. Output is capped at 2.2x
+the strongest input plus 3kt so an unusual hour can't extrapolate wildly.
+Coefficients: `data/mos-coefficients.json`. For these spots the EC marine
+anchor becomes a note (it ran +4.3kt high with 75% false alarms over six
+weeks) and the rider feedback multiplier is not applied (the blend is
+already bias corrected against a year of data).
+
+**Porteau:** the blend forecasts Pam Rocks and Guillermo's rule turns it into
+Porteau: an inflow (Pam Rocks from 130 to 230 degrees) needs 14kt+, an
+outflow (320 to 50 degrees) needs 25 to 30kt+. The estimate is shifted so
+the rule's threshold lands on 12kt (14 inflow = 12, 25 outflow = 12, 30
+outflow = 17), so the 12kt+ odds are exactly the odds Pam Rocks clears the
+rule. The same rule is applied to the live Pam Rocks reading for the
+current hour. Forecast directions use slightly wider sectors (125 to 245,
+295 to 65) because that's how the models' own direction sees those flows.
+
+**Nightly scoring and monthly refit:** `.github/workflows/mos-nightly.yml`
+runs `scripts/mos-train.mjs auto` at 3:40am: it scores the last 30 days
+(written to `data/mos-score.json` and shown under "How this works") and on
+the 1st of each month refits on the last 365 days, keeping the old fit if
+the new one is clearly worse. `node scripts/mos-train.mjs fit` refits by
+hand.
+
+Not yet covered: Squamish (the Spit meter has history by date on
+squamishwindsports.com, a good next fit), Jericho (the English Bay buoy
+isn't in EC's climate archive), and the South Delta beaches.
+
+## Live stations (Sep 2026)
+
+Per Guillermo: Tsawwassen South reads EC's Ferry Terminal station (`vtf`);
+White Rock East Beach and Crescent Beach read the City of White Rock's East
+Beach sensor (the JSON behind maps.whiterockcity.ca/weather, in knots);
+Jericho reads the English Bay buoy (EC 46304) first and the Jericho Sailing
+Centre sensor (from wtfbc.ca's board) when the buoy has nothing fresh;
+Boundary Bay has no live station and relies on rider reports. The White
+Rock METAR (CWWK, max 6kt in six weeks) and wtfbc's Tsawwassen Ferry Auto
+copy (mostly zeros) are retired. Calibration history for the spots whose
+station or forecast changed starts over on Sep 28 2026 (`calibrationSince`).
+
+## Marine forecast and tides on the page
+
+The EC marine forecast for Howe Sound and the Strait of Georgia (south of
+Nanaimo) is shown in full: any warning, the winds as EC wrote them with the
+issue time, and the extended outlook. Each spot card shows that day's high
+and low tides (time and height in feet) from its tide station (DFO
+`wlp-hilo`).
+
 **Agreement rule (Guillermo's):** when the models land on the same speed,
 within about 15%, it's normally a good forecast. `modelAgreement()` measures
 the share of model weight within ±15% of the weighted median; 80%+ from 4 or

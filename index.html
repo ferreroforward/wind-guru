@@ -70,6 +70,13 @@
   .epic-eyebrow{font-size:0.78rem;font-weight:700;letter-spacing:0.05em;color:#c25e12;text-transform:uppercase;margin-bottom:6px;}
   .epic-body{font-size:1.05rem;color:var(--text);line-height:1.45;}
   .epic-body .sub{display:block;font-size:0.86rem;color:var(--muted);margin-top:4px;}
+  .tide-line{font-size:0.84rem;color:var(--muted);margin:0 0 8px;}
+  .tide-line b{color:var(--text);font-weight:600;}
+  .bulletin-zone{margin-top:12px;padding-top:10px;border-top:1px solid var(--border);}
+  .bulletin-zone:first-of-type{border-top:none;padding-top:0;}
+  .bulletin-warn{display:inline-block;background:#fde8e8;color:#9b1c1c;border:1px solid #f5b5b5;border-radius:6px;padding:1px 8px;font-size:0.8rem;font-weight:700;margin:4px 0;}
+  .bulletin-text{color:var(--text);margin:4px 0;line-height:1.45;}
+  .bulletin-meta{font-size:0.8rem;opacity:0.85;}
   .epic-line{background:#fff3e6;border:1px solid #f0b27f;color:#8a3f06;border-radius:8px;padding:6px 10px;font-size:0.86rem;font-weight:600;margin:0 0 10px;}
   .hour-cell.epic{box-shadow:inset 0 0 0 2px #e8833a;}
   .hour-cell .agree-dot{position:absolute;bottom:2px;right:3px;font-size:0.6rem;line-height:1;color:#1f8a4c;font-weight:700;}
@@ -254,13 +261,13 @@
     </div>
   </div>
 
+  <div id="bulletinBox" style="display:none;background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:14px 16px;margin:16px 0;font-size:0.95rem;color:var(--muted);"></div>
+
   <div id="obsSection" style="display:none;">
     <h2 class="section">Live surface conditions around the region</h2>
     <div class="obs-note">Real-time station readings, not a forecast — includes our own spot stations plus the wider regional picture from <a href="https://wtfbc.ca/swob.php" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">wtfbc.ca</a>.</div>
     <div class="obs-grid" id="obsGrid"></div>
   </div>
-
-  <div id="bulletinBox" style="display:none;background:var(--panel);border:1px solid var(--border);box-shadow:var(--shadow);border-radius:12px;padding:14px 16px;margin:16px 0;font-size:0.95rem;color:var(--muted);"></div>
 
   <div class="about" style="margin-top:16px;">
     <b>Explore more</b>
@@ -282,6 +289,8 @@
     <br><br>
     <b>Tuned by local knowledge.</b> Some spots have quirky local wind patterns that generic forecasts miss — we adjust for that using real reports from local riders and nearby live wind stations, so the numbers get more accurate over time. Tap any hour on a spot’s forecast and use "Report actual conditions" to help tune it further.
     <br><br>
+    <b>Learned from a year of station data.</b> For Steveston, Tsawwassen, Erwin Park and Porteau (through Pam Rocks), the number comes from a blend of the best models fitted to a full year of Environment Canada station readings, which fixes each model's local habits. When it says 70%, it has happened about 70% of the time. It is rescored every night<span id="mosScoreText"></span>.
+    <br><br>
     <b>Only the good options are listed below.</b> The card at the top always calls out the single windiest good-conditions hour across every spot, no matter which quick pick is selected; the lists below only include spots with a decent shot at your chosen range, to keep the page short — every spot is still shown on the map above regardless of odds.
     <br><br>
     <b>Guillermo's take.</b> When it shows up, that's my own read on a specific day — not part of the model, just what I think based on my own research. It only appears for days I've actually commented on.
@@ -296,7 +305,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script type="module">
 import { SPOTS } from "./assets/spots.js";
-import { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, referenceStationSpeeds, dropModels } from "./assets/rules.js";
+import { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, referenceStationSpeeds, dropModels, buildMosUrl, reshapeMos, applyMos, currentPacificHourString } from "./assets/rules.js";
 
 let forecast = null; // loaded forecast.json shape
 let selectedDayIndex = 0;
@@ -744,9 +753,13 @@ function showTip(cellEl, h, spotId) {
   const summaryText = h.summary ? `<div style="margin-top:4px;opacity:0.85;font-weight:400;">${h.summary}</div>` : "";
   const tideText = h.tide ? `<div style="margin-top:4px;opacity:0.85;font-weight:400;">Tide ${h.tide.level_m.toFixed(1)}m (${h.tide.level_ft}ft)${h.tide.trend ? `, ${h.tide.trend}` : ""}</div>` : "";
   const agreeText = h.models_agree ? `<div style="margin-top:4px;opacity:0.9;font-weight:400;">✓ ${h.model_count ?? ""} models agree within 15%: higher confidence</div>` : "";
+  const m = h.mos;
+  const mosText = h.mos_used && m ? `<div style="margin-top:4px;opacity:0.9;font-weight:400;">${m.flow !== undefined
+      ? `Pam Rocks forecast ${Math.round(m.station_kt)}kt${m.flow ? ` (${m.flow}, Porteau needs ${m.flow === "inflow" ? "14kt+" : "25 to 30kt+"})` : ", not an inflow or outflow"}`
+      : `Learned from a year of ${m.station} readings`}, typically within ±${Math.round(m.sigma_kt * 0.8)}kt</div>` : "";
   const epicText = h.epic ? `<div style="margin-top:4px;font-weight:700;color:#ffcf9e;">🔥 Matches this spot's epic day setup</div>` : "";
   const spotName = (SPOTS.find(s => s.id === spotId) || {}).name ?? spotId;
-  globalTip.innerHTML = `<b>${regimeLabel(h.regime)}</b>${speedText}${summaryText}${tideText}${agreeText}${epicText}
+  globalTip.innerHTML = `<b>${regimeLabel(h.regime)}</b>${speedText}${summaryText}${tideText}${mosText}${agreeText}${epicText}
     <button type="button" class="report-trigger" data-spot="${spotId}" data-name="${spotName}" data-date="${h.time.slice(0, 10)}" data-time="${h.time.slice(11, 16)}" data-forecast="${h.speed_kt != null ? h.speed_kt : ""}">📝 Report actual conditions →</button>`;
   const rect = cellEl.getBoundingClientRect();
   globalTip.style.display = "block";
@@ -770,6 +783,16 @@ document.addEventListener("click", (e) => {
   if (pinned && !globalTip.contains(e.target) && !e.target.closest(".hour-cell")) hideTip();
 });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") hideTip(); });
+
+// That day's high and low tides at the spot's nearest DFO station, in feet
+// (Guillermo, Sep 2026), e.g. "Low 1:26am 4.9ft · High 6:39am 12.8ft".
+function tideLineForDay(spot) {
+  const day = dayBuckets()[selectedDayIndex];
+  const list = (spot.tide_extremes || []).filter(t => t.date === day);
+  if (!list.length) return "";
+  const fmt = (hm) => { const [H, M] = hm.split(":").map(Number); return `${((H + 11) % 12) + 1}:${String(M).padStart(2, "0")}${H < 12 ? "am" : "pm"}`; };
+  return `<div class="tide-line">🌊 Tides${spot.tide_station ? ` (${spot.tide_station})` : ""}: ${list.map(t => `<b>${t.type === "high" ? "High" : "Low"}</b> ${fmt(t.time)} ${t.height_ft}ft`).join(" · ")}</div>`;
+}
 
 function renderSpotCards() {
   spotCardsEl.innerHTML = "";
@@ -809,6 +832,7 @@ function renderSpotCards() {
         <div class="sports">${sp.sports.join(" · ")}</div>
       </div>
       ${epicWindowsForDay(spot).map(w => `<div class="epic-line">🔥 Possible epic day: ${hourLabel(Number(w.start.slice(0, 2)))} to ${hourLabel(Number(w.end.slice(0, 2)))}, up to ${w.peak_kt}kt${tideRangeText(w)}</div>`).join("")}
+      ${tideLineForDay(spot)}
       ${liveBadge}
       <div class="hour-strip"></div>
     `;
@@ -899,11 +923,12 @@ function renderSurfaceObservations() {
   }).join("");
 }
 
-// Official Environment Canada marine bulletins for the two zones our spots
-// span. We fetch these server-side (see generate.mjs) since EC doesn't
-// allow CORS; shown as plain links at the bottom of the page rather than
-// the full bulletin text — not the primary thing casual users need, but
-// useful for anyone who wants the official word before heading out.
+// Official Environment Canada marine forecasts for the two zones our spots
+// span, shown in full (Guillermo, Sep 2026: riders shouldn't have to click
+// through): warning, winds as EC wrote them with the issue time, and the
+// extended outlook. Fetched server side (see generate.mjs), since EC doesn't
+// allow CORS.
+function escapeHtml(t) { return String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 function renderBulletin() {
   const box = document.getElementById("bulletinBox");
   const bulletins = forecast.marine_bulletins || {};
@@ -912,8 +937,21 @@ function renderBulletin() {
     .filter(b => b && b.url);
   if (!entries.length) { box.style.display = "none"; return; }
   box.style.display = "block";
-  box.innerHTML = `<b style="color:var(--text);">Official marine forecasts</b><br>` +
-    entries.map(b => `${b.label}${b.warning ? " ⚠️" : ""} — <a href="${b.url}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">Environment Canada bulletin ↗</a>`).join("<br>");
+  box.innerHTML = `<b style="color:var(--text);font-size:1.02rem;">Environment Canada marine forecast</b>` +
+    entries.map(b => {
+      const body = b.full_text || b.text || "";
+      const warn = b.warning_headline && !/ENDED/.test(b.warning_headline)
+        ? `<div class="bulletin-warn">⚠️ ${escapeHtml(b.warning_headline)}</div>`
+        : (b.warning && !b.warning_headline ? `<div class="bulletin-warn">⚠️ Warning in effect</div>` : "");
+      const ext = b.extended_text ? `<div class="bulletin-text"><b>Extended:</b> ${escapeHtml(b.extended_text)}</div>` : "";
+      return `<div class="bulletin-zone">
+        <div><b style="color:var(--text);">${escapeHtml(b.label)}</b></div>
+        ${warn}
+        ${body ? `<div class="bulletin-text">${escapeHtml(body)}</div>` : ""}
+        ${ext}
+        <div class="bulletin-meta">${b.issued ? `Issued ${escapeHtml(b.issued)} · ` : ""}<a href="${b.url}" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">EC page ↗</a></div>
+      </div>`;
+    }).join("");
 }
 
 // The Action refreshes the snapshot roughly every 12h (5am/5pm Pacific).
@@ -964,9 +1002,21 @@ function renderAccuracyBadge() {
   el.innerHTML = `<span class="update-badge ${cls}" title="Based on ${acc.sample_size} rider reports comparing what Wind Guru forecast to what actually happened.">🎯 ${pct}% accurate within ${acc.tolerance_kt}kt (${acc.sample_size} reports)</span>`;
 }
 
+// Last 30 days of the learned blend vs the stations (scripts/mos-train.mjs,
+// copied into forecast.json by generate.mjs).
+function renderMosScore() {
+  const el = document.getElementById("mosScoreText");
+  if (!el) return;
+  const pts = forecast?.mos_score?.points;
+  if (!pts) { el.textContent = ""; return; }
+  const parts = Object.values(pts).filter(p => p.learned?.n).map(p => `${p.station} within ${p.learned.mae_kt}kt on average${p.plain_average?.mae_kt != null ? ` (plain model average ${p.plain_average.mae_kt}kt)` : ""}`);
+  el.textContent = parts.length ? `; last ${forecast.mos_score.window_days} days: ${parts.join(", ")}` : "";
+}
+
 function renderAll() {
   if (!forecast) return;
   renderFreshnessBadge();
+  renderMosScore();
   renderAccuracyBadge();
   if (!freshnessTimer) freshnessTimer = setInterval(renderFreshnessBadge, 60000); // keep "Xm ago" live while the tab is open
   renderBulletin();
@@ -999,6 +1049,12 @@ async function loadLive() {
   try {
     const spotsOut = [];
     const refCache = {};
+    const prev = forecast;
+    // Learned corrections, same as the server run (see applyMos).
+    let mosCoef = null;
+    try { const r = await fetch("data/mos-coefficients.json", { cache: "no-store" }); if (r.ok) mosCoef = await r.json(); } catch { /* optional */ }
+    const mosCache = {};
+    const nowHourStr = currentPacificHourString();
     for (const spot of SPOTS) {
       const pt = spot.modelPoint || spot;
       const url = buildForecastUrl(pt.lat, pt.lon, 4);
@@ -1020,12 +1076,32 @@ async function loadLive() {
         refMap = refCache[key];
       }
 
-      const hours = rows.map(row => {
+      const mosPoint = spot.mos ? mosCoef?.points?.[spot.mos.point] : null;
+      if (mosPoint && !(spot.mos.point in mosCache)) {
+        mosCache[spot.mos.point] = null;
+        try {
+          const r = await fetch(buildMosUrl(mosPoint.lat, mosPoint.lon, 4));
+          if (r.ok) mosCache[spot.mos.point] = reshapeMos(await r.json());
+        } catch { /* falls back to the model blend */ }
+      }
+      const mosInputs = mosPoint ? mosCache[spot.mos.point] : null;
+      const nowIdx = rows.findIndex(r => r.time === nowHourStr);
+
+      const prevSpot = prev?.spots?.find(s => s.id === spot.id);
+      const prevTide = Object.fromEntries((prevSpot?.hours || []).filter(h => h.tide).map(h => [h.time, h.tide]));
+      const hours = rows.map((row, rowIdx) => {
         const { hour, month } = localHourAndMonth(row.time);
         const refSpeedKt = refMap ? refMap[row.time] : null;
-        return classifyHour(spot, row, hour, month, refSpeedKt);
+        let mosNow = null;
+        if (mosPoint && mosInputs && mosInputs[row.time]) {
+          mosNow = applyMos(mosPoint, mosInputs[row.time]);
+          if (mosNow) mosNow.leadHours = nowIdx >= 0 ? Math.max(0, rowIdx - nowIdx) : null;
+        }
+        const h = classifyHour(spot, row, hour, month, refSpeedKt, null, null, null, null, null, mosNow);
+        if (prevTide[row.time]) h.tide = prevTide[row.time];
+        return h;
       });
-      spotsOut.push({ id: spot.id, name: spot.name, hours });
+      spotsOut.push({ id: spot.id, name: spot.name, hours, tide_station: prevSpot?.tide_station ?? null, tide_extremes: prevSpot?.tide_extremes || [] });
     }
     forecast = {
       generated_at: new Date().toISOString(),
@@ -1037,7 +1113,9 @@ async function loadLive() {
       // the number it shows is actually less complete than the regular
       // snapshot, even though it's more recent.
       generated_at_label: new Date().toLocaleString("en-US", { timeZone: "America/Los_Angeles", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" }) + " (live)",
-      models_used: ["GFS", "ECMWF", "ICON", "GEM/HRDPS"],
+      models_used: prev?.models_used || [],
+      marine_bulletins: prev?.marine_bulletins || {},
+      surface_observations: prev?.surface_observations,
       spots: spotsOut,
     };
     syncSelectedDayToToday();

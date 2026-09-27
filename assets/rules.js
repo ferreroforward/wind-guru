@@ -54,6 +54,24 @@ export const MODELS = [
 ];
 const MODEL_WEIGHT = Object.fromEntries(MODELS.map(m => [m.key, m.weight ?? 1]));
 
+// Which models set the headline number (spots with a learned correction use
+// that instead, see applyMos). From the Sep 2026 back tests: over six weeks
+// NBM had the smallest error of all 16 models (3.0kt) and HRDPS West 1km
+// was next; over a year, NBM or HRDPS West was best or within 0.3kt of best
+// at every station, while the plain average of all 16 caught only 9% of the
+// windy hours. So: the mean of NBM and HRDPS West where either has a value,
+// else NAM 3km and HRDPS 2.5km (the first ~54h of gem_seamless), else the
+// weighted mean of everything.
+export const LEAD_MODELS = [["nbm", "hrdps_west"], ["nam", "gem"]];
+export function leadModelMean(row, field) {
+  const vals = row[field] || {};
+  for (const set of LEAD_MODELS) {
+    const v = set.map(k => vals[k]).filter(x => x != null);
+    if (v.length) return v.reduce((a, b) => a + b, 0) / v.length;
+  }
+  return weightedMean(vals, row);
+}
+
 // Weight of a model in this row (after dedupe), default from MODELS.
 export function modelWeight(row, key) {
   return (row && row.weights && row.weights[key] != null) ? row.weights[key] : (MODEL_WEIGHT[key] ?? 1);
@@ -608,7 +626,8 @@ function clearSkyRadiationWm2(latDeg, doy, localHour) {
 // hour matches "right now" (see generate.mjs) since it's a live observation,
 // not a forecast time series. Two independent uses, both same-day-only:
 // an SW-inflow-projection thermal nowcast (spot.pamRocksAware) and a plain
-// threshold+direction trigger (spot.pamRocksTrigger, Porteau Cove).
+// Pam Rocks rule for Porteau Cove (spot.pamRocksRule: inflow 14kt+,
+// outflow 25kt+ at Pam Rocks).
 // Returns { regime, reason, direction_deg, speed_kt, gust_kt, agreement }
 // `marineAnchor`, if provided, is the EC marine-bulletin segment applicable to
 // this hour (see parseMarineWindText / marineAnchorForHour above), for spots
@@ -617,15 +636,17 @@ function clearSkyRadiationWm2(latDeg, doy, localHour) {
 // `liveRefNow`, if provided, is { speedKt, directionDeg } from the spot's own
 // reference station's LIVE observation (not its forecast), only ever passed for
 // the hour matching "right now" — same live-observation caveat as pamRocksNow.
-export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pressureGradients = null, overrideRecord = null, pamRocksNow = null, marineAnchor = null, liveRefNow = null) {
+// `mosNow`, if provided, is applyMos()'s result for this hour plus its
+// `leadHours` (see the learned correction section at the end of this file).
+export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pressureGradients = null, overrideRecord = null, pamRocksNow = null, marineAnchor = null, liveRefNow = null, mosNow = null) {
   const speedVals = Object.values(row.speeds).filter(v => v != null);
   const cloudVals = Object.values(row.cloud).filter(v => v != null);
   const radiationVals = Object.values(row.radiation || {}).filter(v => v != null);
 
-  // Weighted by model resolution (see MODELS): the 3km-and-finer models
-  // count 3x, regional 1.5x, coarse global 1x.
-  const speed_kt = weightedMean(row.speeds, row);
-  const gust_kt = weightedMean(row.gusts, row);
+  // Headline speed from the lead models (see LEAD_MODELS); every model
+  // still feeds the agreement check and the uncertainty below.
+  const speed_kt = leadModelMean(row, "speeds");
+  const gust_kt = leadModelMean(row, "gusts");
   // Weight each model's direction by that same model's speed (see
   // circularMeanDeg) — a near-calm model shouldn't get an equal vote on
   // "which way is the wind coming from" against a model showing real wind.
@@ -817,6 +838,52 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     }
   }
 
+  // Learned per spot correction (see applyMos at the end of this file).
+  // Replaces the weighted model average as the headline number wherever a
+  // spot has one; the rules below still add their notes, and live readings
+  // still take over for the current hour. For Porteau the blend forecasts
+  // Pam Rocks and Guillermo's Pam Rocks rule turns that into Porteau.
+  let mosUsed = false, mosSigma = null, mosInfo = null;
+  if (spot.mos && mosNow && mosNow.speed != null && (!calibrated || spot.mos.overridesCalibration)) {
+    let est = mosNow.speed;
+    let ruleInfo = null;
+    if (spot.pamRocksRule) {
+      ruleInfo = pamRocksRuleEstimate(spot.pamRocksRule, mosNow.speed, mosNow.directionDeg, true);
+      est = ruleInfo.estimateKt;
+    } else {
+      est = Math.max(0, est + (spot.mos.offsetKt ?? 0));
+    }
+    // Keep the models' own gust factor, within sane bounds.
+    const gustRatio = (speed_kt != null && speed_kt > 3 && gust_kt != null) ? Math.min(1.8, Math.max(1.15, gust_kt / speed_kt)) : 1.3;
+    mosUsed = true;
+    calibrated = false;
+    displaySpeed = est;
+    displayGust = est * gustRatio;
+    displayModels = row.speeds;
+    mosSigma = mosNow.sigma * mosLeadFactor(mosNow.leadHours);
+    mosInfo = {
+      station: mosNow.station,
+      station_kt: Math.round(mosNow.speed * 10) / 10,
+      variant: mosNow.variant,
+      sigma_kt: Math.round(mosSigma * 10) / 10,
+      ...(ruleInfo ? { flow: ruleInfo.flow, threshold_kt: ruleInfo.thresholdKt, works: ruleInfo.works } : {}),
+    };
+    if ((regime === "calm" || regime === "mixed") && est >= 10) {
+      regime = "synoptic";
+      reason = `Wind from the ${degToLabel(direction_deg)} expected.`;
+    } else if (regime !== "calm" && est < 5 && maxSpeed != null) {
+      regime = "calm";
+      reason = "Light: this spot's learned forecast is under 5kt even though some models show more.";
+    }
+    if (ruleInfo) {
+      reason += ruleInfo.flow
+        ? ` Pam Rocks forecast ~${Math.round(mosNow.speed)}kt (${ruleInfo.flow}). Porteau works in an ${ruleInfo.flow} once Pam Rocks reads ${ruleInfo.flow === "inflow" ? "14kt+" : "25 to 30kt+"}${ruleInfo.works ? ", which this clears" : ", which this doesn't reach"}.`
+        : ` Pam Rocks forecast ~${Math.round(mosNow.speed)}kt, but not from an inflow (south) or outflow (north) direction, so it doesn't reach Porteau well.`;
+    } else {
+      reason += ` Learned forecast for this spot (a year of ${mosNow.station} readings vs the models): ~${Math.round(est)}kt.`;
+    }
+  }
+
   // Pressure gradient check (MSLP), Howe Sound spots only. Squamish wind
   // isn't purely thermal — it's also a function of the actual pressure
   // gradient along the corridor (see kiteloop.vercel.app's "MSLP — two
@@ -919,7 +986,7 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
       if (dirOk) {
         const estSpeed = Math.max(0, refSpeedKt + rs.offsetKt);
         const offsetLabel = `${Math.abs(rs.offsetKt)}kt ${rs.offsetKt < 0 ? "lighter" : "stronger"}`;
-        if ((regime === "calm" || regime === "mixed") && estSpeed >= 5) {
+        if ((regime === "calm" || regime === "mixed") && estSpeed >= 5 && !mosUsed) {
           referenceTriggered = true;
           regime = "synoptic";
           displaySpeed = estSpeed;
@@ -932,7 +999,7 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
       }
     } else if (rs.thresholdKt != null && refSpeedKt >= rs.thresholdKt) {
       referenceTriggered = true;
-      if (regime === "calm" || regime === "mixed") {
+      if ((regime === "calm" || regime === "mixed") && !mosUsed) {
         regime = "synoptic";
         displaySpeed = Math.max(displaySpeed ?? 0, rs.thresholdKt);
         displayGust = displaySpeed * 1.3;
@@ -943,28 +1010,24 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     }
   }
 
-  // Pam Rocks threshold+direction trigger (Porteau Cove specific, per local
-  // rider knowledge): distinct from the SW-inflow-projection nowcast above —
-  // this one is a plain threshold + direction sector check, not a vector
-  // projection. Same live-observation caveat: only ever fires on the hour
-  // matching "right now." Mirrors the reference-station trigger pattern
-  // (upgrades a calm/mixed hour, corroborates otherwise) but is sourced from
-  // a live buoy reading + direction rather than a forecast reference
-  // station.
+  // Pam Rocks live reading, Porteau Cove (spot.pamRocksRule), per Guillermo:
+  // inflow needs 14kt+ at Pam Rocks, outflow 25 to 30kt+. Same rule the
+  // forecast hours use (see pamRocksRuleEstimate), applied to the actual
+  // reading. Only ever passed for the hour matching "right now".
   let pamRocksTriggered = false;
-  if (spot.pamRocksTrigger && pamRocksNow && pamRocksNow.speedKt != null && pamRocksNow.directionDeg != null) {
-    const trig = spot.pamRocksTrigger;
-    const met = pamRocksNow.speedKt >= trig.thresholdKt && inSector(pamRocksNow.directionDeg, trig.dirSector);
-    if (met) {
+  if (spot.pamRocksRule && pamRocksNow && pamRocksNow.speedKt != null) {
+    const r = pamRocksRuleEstimate(spot.pamRocksRule, pamRocksNow.speedKt, pamRocksNow.directionDeg);
+    const where = `Pam Rocks is reading ~${Math.round(pamRocksNow.speedKt)}kt${pamRocksNow.directionDeg != null ? ` from ${degToLabel(pamRocksNow.directionDeg)}` : ""} right now`;
+    if (r.works) {
       pamRocksTriggered = true;
-      if (regime === "calm" || regime === "mixed") {
-        regime = "synoptic";
-        displaySpeed = Math.max(displaySpeed ?? 0, trig.boostToKt);
-        displayGust = displaySpeed * 1.3;
-        reason = `Pam Rocks is reading ~${Math.round(pamRocksNow.speedKt)}kt from ${degToLabel(pamRocksNow.directionDeg)}, above this spot's ${trig.thresholdKt}kt South/SE trigger. ${trig.note}`;
-      } else {
-        reason += ` Also corroborated by Pam Rocks reading ~${Math.round(pamRocksNow.speedKt)}kt from ${degToLabel(pamRocksNow.directionDeg)}, above its ${trig.thresholdKt}kt South/SE trigger for this spot.`;
+      if (regime === "calm" || regime === "mixed") regime = "synoptic";
+      if (r.estimateKt > (displaySpeed ?? 0)) {
+        displaySpeed = r.estimateKt;
+        displayGust = Math.max(displayGust ?? 0, displaySpeed * 1.3);
       }
+      reason += ` ${where}: an ${r.flow} at or above the ${r.thresholdKt}kt it needs for Porteau to work.`;
+    } else if (r.flow) {
+      reason += ` ${where}: an ${r.flow}, but under the ${r.thresholdKt}kt it needs for Porteau to work.`;
     }
   }
 
@@ -1044,7 +1107,7 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     // have left the spot below the display threshold.
     const ecMidKt = (marineAnchor.loKt + marineAnchor.hiKt) / 2;
     const floorKt = ecMidKt * (spot.marineAnchorFactor ?? 1);
-    if (anchorDirOk && floorKt >= 5 && (displaySpeed == null || displaySpeed < floorKt)) {
+    if (anchorDirOk && floorKt >= 5 && !mosUsed && (displaySpeed == null || displaySpeed < floorKt)) {
       marineAnchored = true;
       displaySpeed = floorKt;
       displayGust = Math.max(displayGust ?? 0, floorKt * 1.3);
@@ -1086,7 +1149,7 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   // multiplier doesn't apply to them. Scaling them anyway double counted:
   // on Sep 25 2026 Garry Point's EC anchored morning was cut a further 23%
   // by a multiplier learned from ordinary model hours.
-  const externallySet = liveRefTriggered || marineAnchored;
+  const externallySet = liveRefTriggered || marineAnchored || mosUsed;
   if (overrideMultiplier != null && Math.abs(overrideMultiplier - 1) > 0.02 && !externallySet) {
     feedbackAdjusted = true;
     if (displaySpeed != null) displaySpeed *= overrideMultiplier;
@@ -1150,6 +1213,8 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     live_reference_triggered: liveRefTriggered,
     model_speed_kt: modelBlendSpeed != null ? Math.round(modelBlendSpeed * 10) / 10 : null,
     marine_anchored: marineAnchored,
+    mos_used: mosUsed,
+    mos: mosInfo,
     // Direction EC named for this hour, kept so pattern checks (epic day
     // signature) can still recognise the setup when the models' own
     // direction is muddled on a weak model hour.
@@ -1227,7 +1292,13 @@ export function probabilityInRange(hourResult, lo) {
   // agreeing," just a floor value substituted in — that gets a wider base
   // sigma so it doesn't read as more certain than it actually is.
   let sigma;
-  if (hourResult.calibrated) {
+  const liveSet = hourResult.live_reference_triggered || hourResult.pam_rocks_triggered;
+  const useMos = hourResult.mos_used && hourResult.mos && hourResult.mos.sigma_kt != null && !liveSet;
+  if (useMos) {
+    // Learned blend: its own measured error (see applyMos), normal shaped,
+    // which is what made its probabilities come out calibrated in the back test.
+    sigma = hourResult.mos.sigma_kt;
+  } else if (hourResult.calibrated) {
     sigma = 1.8;
   } else {
     // Weighted standard deviation across models (the old max-minus-min
@@ -1249,9 +1320,12 @@ export function probabilityInRange(hourResult, lo) {
     if (hourResult.models_agree && !triggered) sigma = Math.max(1.5, Math.min(sigma, 0.1 * center + 1));
   }
 
-  // P(true value >= lo) = 1 - F(lo) under the logistic band.
-  let probability = 1 - logisticCdf(lo, center, sigma);
-  probability = Math.min(probability, 0.92); // never claim near-total certainty
+  // P(true value >= lo) = 1 - F(lo) under the logistic band (normal for the
+  // learned blend, matching how its error was measured).
+  let probability = useMos ? 1 - normCdf((lo - center) / sigma) : 1 - logisticCdf(lo, center, sigma);
+  // Never claim near-total certainty. The learned blend's top bucket verified
+  // at about 91 to 95% in the back test, so it may go a little higher.
+  probability = Math.min(probability, useMos ? 0.95 : 0.92);
 
   // Confidence: how much to trust the probability figure above. Pattern
   // match (regime detected + right season/hour/direction) is worth more
@@ -1273,6 +1347,8 @@ export function probabilityInRange(hourResult, lo) {
   // Guillermo's rule of thumb: when the models all land on the same speed
   // (within about 15%), it's normally a good forecast for the location.
   if (hourResult.models_agree) confidence = Math.max(confidence, 0.85);
+  // The learned blend's probabilities verified well over a full year.
+  if (useMos) confidence = Math.max(confidence, 0.8);
   // A live reading at a nearby station is the strongest single signal we have
   // for "right now" — stronger than any model agreement, since it's an actual
   // observation rather than a forecast.
@@ -1408,7 +1484,7 @@ export function flagEpicHours(spot, hours) {
       (h.marine_direction_deg != null && inSector(h.marine_direction_deg, sig.dirSector));
     const windOk = h.speed_kt != null && h.speed_kt >= sig.minKt;
     const modelsAtStrength = Object.values(h.raw_models || {}).filter(v => v != null && v >= sig.minKt).length;
-    const supported = h.marine_anchored || h.live_reference_triggered || modelsAtStrength >= 2;
+    const supported = h.marine_anchored || h.live_reference_triggered || h.mos_used || modelsAtStrength >= 2;
     const tideKnown = !!(h.tide && h.tide.trend);
     const tideOk = !sig.tide || !tideKnown || h.tide.trend === sig.tide;
     return inWin(hr) && dirOk && windOk && supported && tideOk ? { tideKnown } : null;
@@ -1462,4 +1538,136 @@ export function dropModels(rows, keys) {
     if (row.weights) for (const k of keys) delete row.weights[k];
   }
   return rows;
+}
+
+// ---------------------------------------------------------------------------
+// Learned per spot correction (MOS, "model output statistics")
+//
+// Year back test (Sep 2025 to Sep 2026, day before model runs vs EC hourly
+// observations) showed no single model is best everywhere, and that the
+// hand built rule layer was losing skill the raw models had. A small linear
+// blend fitted per station fixes most of it: at Sand Heads it catches 64% of
+// the 12kt+ hours with 20% false alarms (the plain 16 model average caught
+// 9%), and the probabilities it gives are calibrated (when it says 70% it
+// happens about 70% of the time).
+//
+// Coefficients live in data/mos-coefficients.json (written by
+// scripts/mos-train.mjs). Inputs come from a separate Open-Meteo request at
+// the exact point the blend was trained on, with the pure models (HRRR and
+// HRDPS on their own, not the seamless blends), so a later change to the
+// display model set can't silently break the fit.
+// ---------------------------------------------------------------------------
+export const MOS_MODEL_PARAMS = {
+  nbm: "ncep_nbm_conus",
+  hrdps: "gem_hrdps_continental",
+  hrrr: "ncep_hrrr_conus",
+  ecmwf: "ecmwf_ifs025",
+  gem_regional: "gem_regional",
+  gfs_global: "gfs_global",
+};
+
+export function buildMosUrl(lat, lon, days = 4) {
+  const models = Object.values(MOS_MODEL_PARAMS).join(",");
+  return `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+    `&hourly=wind_speed_10m,wind_direction_10m&models=${models}&wind_speed_unit=kn&timezone=GMT&forecast_days=${days + 1}`;
+}
+
+// Open-Meteo (timezone=GMT) -> { "<local YYYY-MM-DDTHH:00>": { utcHour, speeds: {nbm,...}, dirs: {...} } }
+export function reshapeMos(json) {
+  const hourly = json?.hourly || {};
+  const out = {};
+  (hourly.time || []).forEach((t, i) => {
+    const d = new Date(t + ":00Z");
+    const rec = { utcHour: d.getUTCHours(), speeds: {}, dirs: {} };
+    for (const [key, param] of Object.entries(MOS_MODEL_PARAMS)) {
+      const s = hourly[`wind_speed_10m_${param}`]?.[i];
+      const dd = hourly[`wind_direction_10m_${param}`]?.[i];
+      if (s != null) rec.speeds[key] = s;
+      if (dd != null) rec.dirs[key] = dd;
+    }
+    out[currentPacificHourString(d)] = rec;
+  });
+  return out;
+}
+
+const SQRT_HALF_PI = 1.2533; // mean absolute error -> standard deviation, for a normal error
+function normCdf(z) {
+  // Abramowitz and Stegun 7.1.26, good to ~1e-7
+  const t = 1 / (1 + 0.3275911 * Math.abs(z) / Math.SQRT2);
+  const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-z * z / 2);
+  return z >= 0 ? (1 + y) / 2 : (1 - y) / 2;
+}
+export { normCdf };
+
+// Uncertainty grows with lead time. The fit was scored on day before runs
+// (about 24 to 48h out), so that range keeps the fitted width; nearer hours
+// get a little tighter and day 3 to 4 wider. The growth rate is an
+// assumption until the nightly scoring has a few weeks of day 2 to 4 misses.
+export function mosLeadFactor(leadHours) {
+  if (leadHours == null || !isFinite(leadHours)) return 1;
+  return Math.min(1.3, Math.max(0.9, 0.9 + leadHours / 240));
+}
+
+// Apply one point's coefficients to one hour. Returns null when no variant
+// has all its models (e.g. a model feed is down).
+export function applyMos(point, input) {
+  if (!point || !input) return null;
+  for (const v of point.variants || []) {
+    const x = [1];
+    let ok = true;
+    for (const m of v.models) {
+      const s = input.speeds[m];
+      if (s == null) { ok = false; break; }
+      x.push(s);
+    }
+    if (!ok) continue;
+    let u = 0, w = 0;
+    for (const m of v.uv) {
+      const s = input.speeds[m], d = input.dirs[m];
+      if (s == null || d == null) { ok = false; break; }
+      u += -s * Math.sin(d * Math.PI / 180);
+      w += -s * Math.cos(d * Math.PI / 180);
+    }
+    if (!ok) continue;
+    u /= v.uv.length; w /= v.uv.length;
+    const h = input.utcHour;
+    x.push(u, w, Math.sin(2 * Math.PI * h / 24), Math.cos(2 * Math.PI * h / 24));
+    if (x.length !== v.coef.length) continue;
+    // Guard against extrapolating outside anything seen in training (the
+    // models never all read the same strong wind there, so an unusual hour
+    // could otherwise produce a silly number): at most 2.2x the strongest
+    // input plus 3kt (the 99th percentile in the back test was 1.2x to 1.9x),
+    // and never above 45kt.
+    const maxIn = Math.max(...v.models.map(m => input.speeds[m]));
+    const speed = Math.min(45, maxIn * 2.2 + 3, Math.max(0, x.reduce((a, xi, i) => a + xi * v.coef[i], 0)));
+    const sigma = Math.max(1, (v.err[0] + v.err[1] * speed) * SQRT_HALF_PI);
+    // Direction the wind blows FROM, from the mean vector (u, w point where it goes).
+    const directionDeg = (u === 0 && w === 0) ? null : (Math.atan2(-u, -w) * 180 / Math.PI + 360) % 360;
+    return { speed, sigma, variant: v.id, directionDeg, station: point.station };
+  }
+  return null;
+}
+
+// Porteau Cove, per Guillermo: "in an inflow you need at least 14 knots
+// reading [at Pam Rocks] for Porteau to work, on an outflow you need a
+// minimum of 25 to 30 knots". The Pam Rocks forecast is turned into a
+// Porteau estimate by shifting it so the rule's threshold lands on 12kt, the
+// app's usual "it's working" floor: 14kt inflow -> 12, 25kt outflow -> 12,
+// 30kt outflow -> 17. So P(Porteau >= 12) is exactly P(Pam Rocks clears the
+// rule). Directions outside both sectors don't reach Porteau well.
+export function pamRocksRuleEstimate(rule, pamKt, pamDirDeg, fromModels = false) {
+  if (pamKt == null) return null;
+  const flows = [
+    { flow: "inflow", ...rule.inflow },
+    { flow: "outflow", ...rule.outflow },
+  ];
+  const hit = pamDirDeg != null ? flows.find(f => inSector(pamDirDeg, (fromModels && f.modelDirSector) || f.dirSector)) : null;
+  const target = rule.worksAtKt ?? 12;
+  if (!hit) return { flow: null, thresholdKt: null, works: false, estimateKt: Math.max(0, pamKt * 0.5) };
+  return {
+    flow: hit.flow,
+    thresholdKt: hit.thresholdKt,
+    works: pamKt >= hit.thresholdKt,
+    estimateKt: Math.max(0, pamKt - (hit.thresholdKt - target)),
+  };
 }
