@@ -51,6 +51,15 @@ export const SPOTS = [
     // Spit proper, especially on marginal days — worth knowing even though
     // they share one entry here.
     id: "squamish-spit",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Floods north, ebbs south. Best riding on an incoming tide, but swell here is mostly fetch and time: 25 to 30kt for 3 hours builds the biggest swell. Less swell on a flood (it runs with the inflow).
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 0, ebb: 180 },
+    swell: { fetchKm: [[[150, 260], 12], [[300, 40], 3]], defaultFetchKm: 5 },
+    // Tide: Darrell Bay (nearest DFO station, 1.6km; Squamish Inner (1.8km) reads within ~0.05m). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07808", id: "5cebf1e43d0f4a073c4bc40e", name: "Darrell Bay" },
     name: "Squamish (Spit & Nexen Beach)",
     region: "Howe Sound",
     lat: 49.682811, lon: -123.172443,
@@ -90,6 +99,15 @@ export const SPOTS = [
     // was merged in here rather than kept as its own entry. Coordinates
     // refined (Aug 2026) to Guillermo's exact water-access point.
     id: "porteau-cove",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Same as Squamish: floods north, ebbs south.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 0, ebb: 180 },
+    swell: { fetchKm: [[[135, 260], 20], [[300, 40], 15]], defaultFetchKm: 6 },
+    // Tide: Darrell Bay (nearest DFO station, 13km up Howe Sound). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07808", id: "5cebf1e43d0f4a073c4bc40e", name: "Darrell Bay" },
     name: "Porteau Cove",
     region: "Howe Sound",
     lat: 49.560074, lon: -123.239163,
@@ -99,19 +117,27 @@ export const SPOTS = [
     favorable_deg: [[300, 40], [135, 260]], // N outflow, or S–SE–SW inflow/gradient wind
     pressureGradientAware: true,
     pamRocksAware: true, // SW-inflow-projection thermal nowcast on the current hour — see rules.js
-    // Per local rider knowledge: when Pam Rocks is reading 12kt+ from the
-    // South/SE, that meaningfully raises the odds Porteau itself is working
-    // (up toward the 20kt range) even on an hour the model's own signals
-    // came up empty — a distinct signal from the SW-inflow thermal check
-    // above (pamRocksAware). Same live-observation caveat: only ever
-    // applies to the current hour, not the rest of the forecast. See
-    // rules.js for how this is applied.
-    pamRocksTrigger: {
-      thresholdKt: 12,
-      dirSector: [135, 205], // South–SE
-      boostToKt: 18, // conservative floor toward the 20kt+ tier this signal is about, not a guarantee of exactly 20
-      note: "A South/SE marine push at the Sound's entrance reaching this far up is a good sign for Porteau, independent of the usual outflow/thermal patterns."
+    // Guillermo's rule (Sep 2026): "in an inflow you need at least 14 knots
+    // reading [at Pam Rocks] for Porteau to work, on an outflow you need a
+    // minimum of 25 to 30 knots". Used both for the live Pam Rocks reading
+    // (current hour) and, through the learned Pam Rocks forecast below, for
+    // every forecast hour. Sectors from a year of Pam Rocks readings at 14kt+:
+    // inflows come from 130 to 230 degrees, outflows from 320 to 50.
+    pamRocksRule: {
+      // modelDirSector: the same flows as the models' own direction sees them
+      // at Pam Rocks (a little wider; 87% of real outflow hours and 96% of
+      // real inflow hours fall inside), used for forecast hours.
+      inflow: { dirSector: [130, 230], modelDirSector: [125, 245], thresholdKt: 14 },
+      outflow: { dirSector: [320, 50], modelDirSector: [295, 65], thresholdKt: 25 },
+      worksAtKt: 12,
     },
+    // Learned correction (rules.js applyMos, data/mos-coefficients.json):
+    // fitted on a year of Pam Rocks hourly readings vs the day before models.
+    // The blend forecasts Pam Rocks; pamRocksRule turns that into Porteau.
+    // It replaces the borrowed Squamish thermal scaling here, since the rule
+    // is Guillermo's own, specific to this spot.
+    mos: { point: "pamrocks", overridesCalibration: true },
+    calibrationSince: "2026-09-28",
     // Porteau sits further down-Sound, more open water than the Spit's
     // thermal/outflow convergence zone at the head of Howe Sound — Pam
     // Rocks (a Coast Guard station right at the Sound's entrance, found via
@@ -153,11 +179,25 @@ export const SPOTS = [
     // ids stops being read (a fresh id starts with no calibration bias,
     // same as any brand-new spot).
     id: "jericho-spanish-banks",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Floods east, ebbs west, so a W or NW wind runs against the ebb.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 90, ebb: 270 },
+    swell: { fetchKm: [[[240, 330], 35]], defaultFetchKm: 8 },
     name: "Jericho - Spanish Banks",
     region: "English Bay",
     lat: 49.281646, lon: -123.235223,
     marineZone: "strait_of_georgia_south",
     marineAnchorFactor: 0.85,
+    // EC often words the Strait bulletin "... except northwest 5 to 15 near
+    // Vancouver"; that lighter wording is the one for English Bay. On Sep 25
+    // 2026 the zone ran NW 20-30 while Jericho peaked at 17kt, which the
+    // "near Vancouver" wording (scaled, see marineAnchorForHour) matches.
+    marineExceptionAreas: ["near vancouver", "english bay"],
+    // DFO Point Atkinson (07795), the reference port for English Bay.
+    // See tide_note: low tide means a long walk to the water here.
+    tideStation: { code: "07795", id: "5cebf1de3d0f4a073c4bb94c", name: "Point Atkinson" },
     sports: ["windsurf", "wingfoil", "kite"],
     level: "beginner-friendly",
     // Broadened from the old [230,320] westerly-thermal-only sector to
@@ -165,7 +205,11 @@ export const SPOTS = [
     // wind — not just the afternoon sea breeze — produces the best waves
     // here).
     favorable_deg: [[230, 335]],
-    liveStation: { code: "whc", name: "Vancouver Harbour" },
+    // English Bay buoy (EC 46304) first: open water right off the beach.
+    // Jericho Sailing Centre's own sensor (via wtfbc.ca's board) when the
+    // buoy has nothing fresh. Per Guillermo, Sep 2026.
+    liveStation: { code: "46304", name: "English Bay buoy", fallback: { type: "swob", boardName: "Jericho Sailing Centre", name: "Jericho Sailing Centre" } },
+    calibrationSince: "2026-09-28",
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],
@@ -186,17 +230,79 @@ export const SPOTS = [
     // the Fraser's South Arm. Coordinates refined (Aug 2026) to Guillermo's
     // exact water-access point.
     id: "garry-point",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Floods east, ebbs west (same as Jericho). The Fraser outflow adds to the ebb, which is why it gets a boost.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 90, ebb: 270, ebbBoost: 1.3 },
+    swell: { fetchKm: [[[180, 345], 40]], defaultFetchKm: 10 },
     name: "Steveston - Garry Point Park",
     region: "Fraser Delta",
     lat: 49.123665, lon: -123.196088,
+    // Where we ask the weather models for wind, as opposed to lat/lon above
+    // (the beach access, used for the map pin). The beach sits in a land
+    // grid cell for every model, and land roughness cuts the forecast wind
+    // hard: on Sep 25 2026 the day before runs gave ~3-4kt at the beach cell
+    // for 9-10am (ECMWF) while the same runs gave 19-21kt over the water at
+    // this point, and Sand Heads actually blew NNW 21 gusting 26. Riders
+    // ride the water, and locals already read Sand Heads as the go/no-go, so
+    // forecast for the water. This point (~5km WSW of the beach, inside Sand
+    // Heads) is the closest one that is open water for GEM, GFS and ECMWF.
+    modelPoint: { lat: 49.115, lon: -123.27 },
+    // See dropModels() in rules.js: ICON only resolves land here.
+    excludeModels: ["icon"],
+    // Forecast point moved on this date, so calibration history learned
+    // against the old (land) point no longer describes this forecast.
+    calibrationSince: "2026-09-28",
+    // Learned correction (rules.js applyMos, data/mos-coefficients.json):
+    // fitted on a year of Sand Heads hourly readings vs the day before models.
+    // Riders read Sand Heads as Steveston's number, so no offset.
+    mos: { point: "garry", offsetKt: 0 },
     marineZone: "strait_of_georgia_south",
     marineAnchorFactor: 0.9,
     sports: ["kite", "windsurf", "wingfoil"],
     level: "intermediate",
-    // Widened slightly from [180,300] to fully include NW (315°) — the
-    // strong-current note below specifically calls out W/NW/SW as the best
-    // directions here.
-    favorable_deg: [[180, 320]],
+    // Widened to take in NNW: Guillermo's best ever session here (Sep 25
+    // 2026) was in NNW 21 gusting 26 at Sand Heads. W, NW and SW remain the
+    // core directions (see current_note).
+    favorable_deg: [[180, 345]],
+    // Tides from Tsawwassen (DFO 07590), per Guillermo: better for Steveston
+    // and south of it. The Steveston gauge (07607) is closer (0.3km) but sits
+    // in the river mouth and reads ~0.6m lower and ~20min later than the
+    // coast (Sep 25 2026 low: 1.08m Steveston vs 1.68m Tsawwassen), so its
+    // numbers don't match the tide tables riders use. Tide matters a lot
+    // here: see current_note and epicSignature.
+    tideStation: { code: "07590", id: "5cebf1de3d0f4a073c4bb935", name: "Tsawwassen" },
+    // Sand Heads is the local go/no-go read (see liveStation below). When it
+    // is already blowing from a direction that works here, trust the reading
+    // over the models for this hour, and carry it a couple of hours forward.
+    // On Sep 25 2026 Sand Heads was NW 18-20 by 7am while our 7:52am
+    // forecast said 2kt for the same hour.
+    liveReferenceTrigger: {
+      name: "Sand Heads",
+      thresholdKt: 12,
+      offsetKt: 0,
+      dirSector: [180, 350],
+      persistHours: 2,
+      note: "Local riders use Sand Heads as the go/no-go read for Steveston."
+    },
+    // The setup behind Guillermo's best ever session here, Fri Sep 25 2026
+    // around 9:40am: a post frontal NW surge down the Strait (EC strong wind
+    // warning, "northwest 20 to 30 this morning"; Point Atkinson pressure
+    // climbing from 1004 to 1010 hPa through the day), Sand Heads NNW 21
+    // gusting 26, and a falling tide (Steveston ~1.7m and dropping ~0.45m an
+    // hour from a 3.2m high at 5:11am toward a 1.1m low at 11:44am), so the
+    // ebb and the river outflow ran straight against the wind. Every
+    // condition below has to hold for 2+ consecutive hours to flag.
+    epicSignature: {
+      label: "Possible epic day",
+      summary: "Strong NW to NNW down the Strait with a falling tide running against it: the Sep 25 2026 setup.",
+      dirSector: [295, 350],
+      minKt: 17,
+      tide: "falling",
+      hourWindow: [7, 17],
+      minHours: 2
+    },
     // Swapped from the YVR airport EC station to Sand Heads — the Coast
     // Guard lightstation right at the mouth of the Fraser's South Arm, a few
     // hundred meters offshore from this spot. Per North Shore Wing Group
@@ -236,6 +342,15 @@ export const SPOTS = [
     // the right idea (this spot's biggest days are gradient-driven, not
     // thermal) — tightened to name SE specifically as the core direction.
     id: "boundary-bay",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Floods north, ebbs south.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 0, ebb: 180 },
+    swell: { fetchKm: [[[90, 200], 15]], defaultFetchKm: 6 },
+    // Tide: Tsawwassen (nearest DFO station, 7km). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07590", id: "5cebf1de3d0f4a073c4bb935", name: "Tsawwassen" },
     name: "Boundary Bay (Centennial Beach)",
     region: "South Delta",
     lat: 49.008345, lon: -123.034898,
@@ -247,9 +362,10 @@ export const SPOTS = [
     // are offshore here and not recommended (also very gusty) — so the
     // favorable arc runs NE through S, explicitly excluding the SW–N range.
     favorable_deg: [[45, 180]],
-    // White Rock's own official METAR station — found via igetwind.com's
-    // station API (see README "Live verification").
-    liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
+    // No live station: the White Rock METAR (CWWK) read a maximum of 6kt in
+    // six weeks, so it can't verify anything. Per Guillermo (Sep 2026), this
+    // spot is checked by rider reports only.
+    calibrationSince: "2026-09-28",
     thermal: { enabled: false },
     outflow: { enabled: false },
     synoptic_note: "Boundary Bay's biggest days are usually synoptic — a strong SE–S gradient wind ahead of an approaching frontal system funnels straight up the bay. Check the synoptic regime tag, not just the thermal one.",
@@ -261,6 +377,15 @@ export const SPOTS = [
     // makes clear these two beaches take different winds and have somewhat
     // different tide behavior, so they're now independently forecastable.
     id: "white-rock-east",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Same as Centennial: floods north, ebbs south.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 0, ebb: 180 },
+    swell: { fetchKm: [[[190, 280], 15], [[90, 190], 8]], defaultFetchKm: 6 },
+    // Tide: White Rock (nearest DFO station, 0.7km). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07577", id: "5cebf1de3d0f4a073c4bb933", name: "White Rock" },
     name: "White Rock - East Beach",
     region: "South Delta",
     lat: 49.015658, lon: -122.790661,
@@ -272,7 +397,11 @@ export const SPOTS = [
     // W covers all of it (the engine doesn't grade "good" vs "excellent",
     // see direction_note for that texture).
     favorable_deg: [[90, 270]],
-    liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
+    // City of White Rock's East Beach weather station (the sensor behind
+    // whiterockcity.ca's waterfront page), in knots. Replaces the White Rock
+    // METAR (CWWK), which read a maximum of 6kt in six weeks. Per Guillermo.
+    liveStation: { type: "whiterockcity", name: "White Rock East Beach" },
+    calibrationSince: "2026-09-28",
     thermal: {
       enabled: true,
       months: [4,5,6,7,8,9],
@@ -288,6 +417,15 @@ export const SPOTS = [
     // New spot (Aug 2026) — see white-rock-east above for why this was
     // split out on its own.
     id: "crescent-beach",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Same as Centennial: floods north, ebbs south.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 0, ebb: 180 },
+    swell: { fetchKm: [[[210, 280], 12]], defaultFetchKm: 5 },
+    // Tide: Crescent Beach (nearest DFO station, 2.7km). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07579", id: "5dd3064fe0fdc4b9b4be69d7", name: "Crescent Beach" },
     name: "Crescent Beach",
     region: "South Delta",
     lat: 49.057512, lon: -122.888188,
@@ -299,11 +437,12 @@ export const SPOTS = [
     // best when strong, SW also works well, N can work as long as it doesn't
     // carry much East in it (i.e. due N, not NE).
     favorable_deg: [[210, 280], [345, 10]],
-    // No dedicated nearby station — reusing the White Rock METAR (same
-    // South Delta cluster) as the closest available official reading,
-    // ~13km away. Distance caveat applies more here than at White Rock East
-    // itself, which is effectively co-located with this station.
-    liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
+    // City of White Rock's East Beach weather station (the sensor behind
+    // whiterockcity.ca's waterfront page), in knots. Replaces the White Rock
+    // METAR (CWWK), which read a maximum of 6kt in six weeks. Per Guillermo, also the
+    // best nearby reading for Crescent Beach (~7km).
+    liveStation: { type: "whiterockcity", name: "White Rock East Beach" },
+    calibrationSince: "2026-09-28",
     // No confirmed thermal timing/season pattern from local knowledge yet —
     // left disabled rather than assume it matches its South Delta
     // neighbors, same reasoning as Erwin Park's thermal field.
@@ -320,6 +459,15 @@ export const SPOTS = [
     // now rather than add a second "north causeway" entry with the inverse
     // rules. Revisit if the north side turns out to be worth its own spot.
     id: "tsawwassen-south",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Same as Centennial: floods north, ebbs south. NW and N are flat water on this side of the causeway.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 0, ebb: 180 },
+    swell: { fetchKm: [[[160, 240], 25], [[300, 20], 2]], defaultFetchKm: 8 },
+    // Tide: Tsawwassen (nearest DFO station, 1.4km). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07590", id: "5cebf1de3d0f4a073c4bb935", name: "Tsawwassen" },
     name: "Tsawwassen Ferry Terminal (South Causeway)",
     region: "South Delta",
     lat: 49.015191, lon: -123.114600,
@@ -329,10 +477,14 @@ export const SPOTS = [
     level: "intermediate",
     // Flat water on NW/N; SW and S also work (bring more waves).
     favorable_deg: [[160, 230], [300, 20]],
-    // No dedicated nearby station — reusing the White Rock METAR as the
-    // closest available official reading (~19km away, the roughest distance
-    // caveat of any spot in this cluster).
-    liveStation: { type: "igetwind", sid: "CWWK", lat: 49.02, lon: -122.78, name: "White Rock, BC" },
+    // EC's Tsawwassen Ferry Terminal station, right at the causeway, per
+    // Guillermo (Sep 2026). Replaces the White Rock METAR, 19km away.
+    liveStation: { code: "vtf", name: "Tsawwassen Ferry Terminal" },
+    calibrationSince: "2026-09-28",
+    // Learned correction (rules.js applyMos, data/mos-coefficients.json):
+    // fitted on a year of Ferry Terminal hourly readings vs the day before models.
+    // The spot is next to the station, so no offset.
+    mos: { point: "tsaw", offsetKt: 0 },
     thermal: { enabled: false },
     outflow: { enabled: false },
     direction_note: "South side of the causeway: NW or N gives flat-water conditions; SW brings more waves, S also works. (The north side of the causeway is the mirror image of this — flat when the south side is wavy and vice versa — but isn't separately modeled here.)",
@@ -350,6 +502,15 @@ export const SPOTS = [
     // location was corrected. Coordinates refined again (Aug 2026) to
     // Guillermo's exact water-access point.
     id: "erwin-park",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Same as Jericho: floods east, ebbs west.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 90, ebb: 270 },
+    swell: { fetchKm: [[[90, 150], 8], [[240, 300], 30]], defaultFetchKm: 6 },
+    // Tide: Sandy Cove (nearest DFO station, 0.6km; same as Point Atkinson within ~0.05m). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07786", id: "5cebf1e43d0f4a073c4bc43b", name: "Sandy Cove" },
     name: "Erwin Park",
     region: "West Vancouver",
     lat: 49.338035, lon: -123.238878,
@@ -375,6 +536,12 @@ export const SPOTS = [
     // breaking anything (same defensive fallback every igetwind station
     // uses).
     liveStation: { type: "igetwind", sid: "CWSB", lat: 49.3300, lon: -123.2650, name: "Point Atkinson" },
+    // Learned correction (rules.js applyMos, data/mos-coefficients.json):
+    // fitted on a year of Point Atkinson hourly readings vs the day before models.
+    // It forecasts Point Atkinson itself, so the riders' rule applies on top:
+    // Erwin runs about 4.5kt lighter (Point Atkinson 19kt+ = Erwin ~14.5kt).
+    mos: { point: "erwin", offsetKt: -4.5 },
+    calibrationSince: "2026-09-28",
     // Erwin sits right at the mouth of Howe Sound but faces east, so the
     // Strait of Georgia zone (which is what actually drives its E/SE days) is
     // the right marine bulletin to anchor against, not Howe Sound.
@@ -446,6 +613,15 @@ export const SPOTS = [
     // Ambleside refinement below — the two are "almost identical" per his
     // description, sharing the same tide/wind mechanic (see current_note).
     id: "dundarave-pier",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Same as Jericho: floods east, ebbs west, so the big waves come on the ebb with a NW or W wind.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 90, ebb: 270 },
+    swell: { fetchKm: [[[230, 320], 30]], defaultFetchKm: 6 },
+    // Tide: Ambleside (nearest DFO station, 2.2km; same as Point Atkinson within ~0.05m). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07780", id: "5cebf1e43d0f4a073c4bc45a", name: "Ambleside" },
     name: "Dundarave Pier Beach",
     region: "West Vancouver",
     lat: 49.332129, lon: -123.183767,
@@ -478,6 +654,15 @@ export const SPOTS = [
     // thermal/direction config the way there is for e.g. Squamish or Erwin
     // Park. Flag if this needs correcting.
     id: "ambleside",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Same as Jericho: floods east, ebbs west; the last hour or two of the ebb with a west wind gives a good rip.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 90, ebb: 270 },
+    swell: { fetchKm: [[[230, 320], 30]], defaultFetchKm: 6 },
+    // Tide: Ambleside (nearest DFO station, 0.4km; same as Point Atkinson within ~0.05m). Rule: always the nearest DFO station,
+    // except Steveston (Tsawwassen, see garry-point).
+    tideStation: { code: "07780", id: "5cebf1e43d0f4a073c4bc45a", name: "Ambleside" },
     name: "Ambleside Beach",
     region: "West Vancouver",
     lat: 49.322244, lon: -123.151668,

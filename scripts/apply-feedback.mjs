@@ -14,6 +14,7 @@
 import { writeFile, mkdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { SPOTS } from "../assets/spots.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_PATH = path.join(__dirname, "..", "data", "calibration-overrides.json");
@@ -44,6 +45,17 @@ const MULTIPLIER_CLAMP = [0.75, 1.5]; // never let one bad/joke report send this
 // half-strength, and it keeps approaching (never quite reaching) full
 // strength as reports accumulate toward MAX_REPORTS_PER_SPOT.
 const SHRINKAGE_PRIOR = 2;
+// Live station comparisons logged before this date are ignored. Until then
+// generate.mjs only logged a comparison when WE had forecast 8kt+, so the log
+// could record "forecast too high" but never "forecast 2kt, station blowing
+// 20" (Sep 25 2026 at Garry Point). That one sided sample walked nearly every
+// spot down to the 0.75 floor. Rider reports are unaffected and kept.
+const LIVE_STATION_EPOCH = "2026-09-27";
+// Per spot reset: a spot whose forecast method changed (e.g. a new
+// modelPoint) sets calibrationSince in spots.js; everything older than that,
+// rider reports included, described a different forecast and is dropped.
+const SPOT_SINCE = Object.fromEntries(SPOTS.filter(s => s.calibrationSince).map(s => [s.id, s.calibrationSince]));
+const onOrAfter = (dateLike, since) => !since || (dateLike && String(dateLike).slice(0, 10) >= since);
 function confidenceFor(n) { return n / (n + SHRINKAGE_PRIOR); }
 // Automated live-station checks now run 2-3x/day/spot (see generate.mjs H4)
 // and log EVERY comparison, not just mismatches — within the 20-sample
@@ -219,11 +231,14 @@ async function main() {
       console.log(`  Skipping issue #${issue.number} — forecasted=${forecasted}kt actual=${actual}kt is outside plausible bounds.`);
       continue;
     }
+    if (!onOrAfter(issue.created_at, SPOT_SINCE[spot])) continue;
     (bySpotGeneral[spot] ||= []).push({ date: issue.created_at, forecasted, actual, ratio, source: "rider-report", gust: isFinite(gust) ? gust : null });
     accuracyPoints.push({ forecasted, actual });
   }
   for (const e of liveEntries) {
     if (!e.spot || !isFinite(e.forecasted) || !isFinite(e.actual) || e.forecasted <= 0) continue;
+    const when = e.checked_at || e.time;
+    if (!onOrAfter(when, LIVE_STATION_EPOCH) || !onOrAfter(when, SPOT_SINCE[e.spot])) continue;
     const point = { date: e.checked_at || e.time, forecasted: e.forecasted, actual: e.actual, ratio: e.ratio ?? (e.actual / e.forecasted), source: "live-station" };
     (bySpotGeneral[e.spot] ||= []).push(point);
     if (e.regime) {

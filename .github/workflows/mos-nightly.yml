@@ -1,0 +1,45 @@
+name: Score and retrain learned corrections
+
+on:
+  schedule:
+    # 3:40am Pacific Daylight Time, after EC has published the previous
+    # day's hourly climate data. Scores the learned blend on the last 30
+    # days every night, and refits it on the 1st of each month (see
+    # scripts/mos-train.mjs "auto").
+    - cron: "40 10 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "score, fit or auto"
+        default: "auto"
+
+permissions:
+  contents: write
+
+jobs:
+  mos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Score (and on the 1st, refit) the learned corrections
+        run: node scripts/mos-train.mjs ${{ github.event.inputs.mode || 'auto' }}
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "wind-guru-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/mos-coefficients.json data/mos-score.json data/mos-recent.json
+          git diff --staged --quiet && exit 0
+          git commit -m "Update learned corrections [skip ci]"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push && exit 0
+            echo "Push attempt $i failed, retrying..."
+            sleep $((RANDOM % 5 + 2))
+          done
+          echo "Failed to push after 5 attempts"
+          exit 1

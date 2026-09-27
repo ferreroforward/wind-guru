@@ -575,6 +575,237 @@ This board is server-side-only, like the marine bulletin and MSLP data
 "Refresh live" client-side fallback path, and only updates on the regular
 twice(-now-thrice)-daily Action run.
 
+## Sep 25 2026 case study: the epic Steveston morning we missed
+
+On Friday Sep 25 2026 Guillermo had his best ever session at Steveston
+(Garry Point) around 9:40am, then an excellent one at Jericho at 1:24pm. Our
+forecast that morning showed Garry Point at 2 to 5kt for 7 to 10am. What
+actually happened:
+
+| Local time | Sand Heads (EC) | Steveston tide | Our 7:52am forecast, Garry Point |
+|---|---|---|---|
+| 7am | NW 18 | 2.8m falling | 1.9kt |
+| 8am | NW 14 gusting 22 | 2.4m falling | 2.6kt |
+| 9am | NNW 21 gusting 26 | 2.0m falling | 3.6kt |
+| 10am | NNW 21 gusting 27 | 1.5m falling | 5.4kt |
+| 11am | NW 24 gusting 31 | 1.2m falling | 6.6kt |
+| 12pm | NW 24 gusting 30 | 1.1m (low 11:44) | 8.5kt |
+| 1pm | NW 22 | 1.4m rising | 9.6kt |
+
+A post frontal NW surge ran down the Strait (EC strong wind warning,
+"northwest 20 to 30 this morning"; Point Atkinson pressure climbing from
+1004 to 1010 hPa through the day) while the ebb, plus the river, ran straight
+against it. Five separate problems stacked up:
+
+1. **The forecast point was on land.** Every model's grid cell at the beach
+   is a land cell, and land roughness cuts the wind hard. The same day before
+   model runs gave ECMWF 3 to 4kt at the beach cell for 9 to 10am and 19 to
+   21kt over the water 5km offshore; GEM and GFS showed the same pattern.
+   Fix: `modelPoint` in spots.js (forecast for the water riders are on),
+   and `excludeModels: ["icon"]` for Garry Point, since ICON's cell there is
+   land even at Sand Heads.
+2. **The EC anchor ignored which day a phrase named.** The bulletin's last
+   clause, "becoming light Saturday morning", overwrote "northwest 20 to 30
+   this morning" for Friday's hours, so the anchor built for exactly this day
+   never fired. The same bug fired a bogus 17kt at Jericho the day before
+   (Thursday), from a "Friday morning" clause. Fix: the parser now puts every
+   clause on a real date and hour resolved from the bulletin's issue time,
+   and each condition holds until the next clause starts
+   (`parseMarineWindText`, `marineAnchorForHour`).
+3. **Sand Heads was already blowing 20kt at 7am** when the 7:52am forecast
+   ran, and nothing used it. Fix: a Sand Heads `liveReferenceTrigger` for
+   Garry Point, carried two hours forward and fading back to the models.
+4. **The calibration had learned to distrust wind.** Live checks were only
+   logged when we forecast 8kt or more, so a miss like this one (forecast 2,
+   actual 20) was never recorded, and nearly every spot drifted down to the
+   0.75 floor. That multiplier also scaled EC anchored hours (cutting Garry
+   Point's anchored morning a further 23%). Fixes: log a check when either
+   side shows real wind; compare against the model blend; ignore live checks
+   before 2026-09-27 (`LIVE_STATION_EPOCH`); reset Garry Point's history for
+   its new forecast point (`calibrationSince`); never apply the multiplier to
+   anchored or observed hours.
+5. **NNW counted as a bad direction** at Garry Point. Fix: favorable sector
+   widened to 345°.
+
+Replaying Sep 25 through the new logic (same inputs the runs would have had)
+gives Garry Point ~22kt NW for 7am to 2pm on the morning run and ~22kt for
+9 to 11am on the evening before run, with a "Possible epic day" window flagged
+both times (7 to 11am and 9 to 11am). Jericho with EC's "near Vancouver"
+wording reads ~12kt against an observed 11 to 17.
+
+### Possible epic day
+
+A spot can carry an `epicSignature` (spots.js): direction sector, minimum
+wind, tide state, time window and minimum run length, all of which must hold,
+with the wind backed by EC, a live reading, or at least two models. The first
+one is Garry Point's: NW to NNW 17kt+, falling tide, 7am to 5pm, 2+ hours.
+Tide comes from DFO's public tide API (`tideStation`, see "Tide stations")
+and is shown in each hour's popup. Only the scheduled server run computes tides and
+epic windows; the "Refresh live" button doesn't.
+
+## Models, weighting and agreement (Sep 2026)
+
+We request every model Open-Meteo has with real data for this area (16
+sources, see `MODELS` in rules.js): HRRR 3km (inside the GFS blend for its
+first ~60h), HRDPS 2.5km (inside the GEM blend for ~54h), NAM 3km, HRDPS West
+1km, NBM 2.5km, GEM Regional 10km, ECMWF 9km, UK Met Office 10km, and the
+global runs (ECMWF 25km, GFS 13km, ICON 13km, GEM Global, ARPEGE, JMA, CMA,
+ECMWF AIFS). HRW 3km isn't available from Open-Meteo.
+
+Scored against Sand Heads on Sep 25 2026, the 3km and finer models were
+within ~3 to 6kt and the coarse globals off by ~10kt; an equal average of all
+of them was worse than the 3km models alone. So the blend is weighted 6x for
+3km and finer, 2x for ~10km regional, 1x for coarse global: every model still
+counts, the high resolution ones lead.
+
+**Update after the year back test (Sep 27 2026):** the headline number now
+comes from the mean of NBM 2.5km and HRDPS West 1km (NAM 3km and HRDPS 2.5km
+when neither has a value, then the weighted mean above), `LEAD_MODELS` in
+rules.js. Over six weeks NBM had the smallest error of all 16 models and
+HRDPS West was next; over a year one of the two was best or within 0.3kt of
+best at every station. All 16 still feed the agreement rule and the
+uncertainty band. Spots with a learned correction (next section) use that
+instead.
+
+## Learned corrections (MOS), Sep 2026
+
+A year of day before model runs (Open-Meteo previous runs archive, Sep 2025
+to Sep 2026) was scored against Environment Canada's hourly climate data at
+Sand Heads, Point Atkinson, the Tsawwassen Ferry Terminal and Pam Rocks.
+Findings: no single model is best everywhere (NBM at Sand Heads and Pam
+Rocks, HRDPS West at Point Atkinson, HRDPS at the Ferry Terminal), every
+model reads Pam Rocks 4 to 5kt light, and a small linear blend fitted per
+station beats every single model by a wide margin. Scored leave one month
+out (each month predicted by a fit that never saw it), 12kt+ hours:
+
+| Station (spot) | Typical miss | Windy hours caught | False alarms | Brier (climatology) |
+|---|---|---|---|---|
+| Sand Heads (Steveston) | 2.8kt | 64 to 71% | 20 to 22% | 0.11 (0.21) |
+| Point Atkinson (Erwin, minus 4.5kt) | 2.7 to 3.2kt | 49 to 53% | 21 to 25% | 0.08 (0.15) |
+| Ferry Terminal (Tsawwassen) | 2.7kt | 49 to 63% | 23 to 28% | 0.08 (0.13) |
+| Pam Rocks (Porteau, via the rule) | 3.4 to 3.6kt | 47 to 56% | 26 to 29% | 0.10 (0.16) |
+
+The probabilities are calibrated: at Sand Heads, hours given 0 to 20%,
+20 to 40%, 40 to 60%, 60 to 80% and 80 to 100% verified 7%, 29%, 47%, 73%
+and 91% of the time. Replaying Sep 25 2026 from the evening before, the
+blend alone (no EC anchor, no live reading) gave 13kt at 7am rising to 19 to
+24kt from 9am to 2pm (Sand Heads: 18, 14, 21, 21, 24, 24, 22) and flagged
+the 9 to 10am epic window.
+
+How it works: inputs are NBM, HRDPS 2.5km, HRRR, ECMWF 25km and GEM
+Regional at the exact training point, plus the NBM and HRDPS mean wind
+vector and the hour of day. Past ~48h, when HRRR and HRDPS end, it drops to
+NBM + ECMWF + GEM Regional, then NBM + ECMWF + GFS, then ECMWF + GFS, each
+with its own fit. The error model (typical miss grows with speed) sets the
+probability band, widened a little with lead time. Output is capped at 2.2x
+the strongest input plus 3kt so an unusual hour can't extrapolate wildly.
+Coefficients: `data/mos-coefficients.json`. For these spots the EC marine
+anchor becomes a note (it ran +4.3kt high with 75% false alarms over six
+weeks) and the rider feedback multiplier is not applied (the blend is
+already bias corrected against a year of data).
+
+**Porteau:** the blend forecasts Pam Rocks and Guillermo's rule turns it into
+Porteau: an inflow (Pam Rocks from 130 to 230 degrees) needs 14kt+, an
+outflow (320 to 50 degrees) needs 25 to 30kt+. The estimate is shifted so
+the rule's threshold lands on 12kt (14 inflow = 12, 25 outflow = 12, 30
+outflow = 17), so the 12kt+ odds are exactly the odds Pam Rocks clears the
+rule. The same rule is applied to the live Pam Rocks reading for the
+current hour. Forecast directions use slightly wider sectors (125 to 245,
+295 to 65) because that's how the models' own direction sees those flows.
+
+**Nightly scoring and monthly refit:** `.github/workflows/mos-nightly.yml`
+runs `scripts/mos-train.mjs auto` at 3:40am: it scores the last 30 days
+(written to `data/mos-score.json` and shown under "How this works") and on
+the 1st of each month refits on the last 365 days, keeping the old fit if
+the new one is clearly worse. `node scripts/mos-train.mjs fit` refits by
+hand.
+
+Not yet covered: Squamish (the Spit meter has history by date on
+squamishwindsports.com, a good next fit), Jericho (the English Bay buoy
+isn't in EC's climate archive), and the South Delta beaches.
+
+**Recent correction (added Sep 27 2026):** each night `mos-train.mjs score`
+also writes `data/mos-recent.json`: the blend's average miss over the last 7
+days (hours where the forecast or the reading was 6kt+, shrunk when there are
+few hours, capped at ±2kt), applied as an offset, and a spread factor (1 to
+1.5x) if the last 30 days missed by more than the error model expects. It's
+ignored if more than a week old. Replaying the year with each day corrected
+only from the days before it: probability score better at every station (1 to
+3% over the year, 7 to 8% at Sand Heads and Point Atkinson over the last
+month), typical miss unchanged. The spread factor rarely triggered and was
+neutral. At Sand Heads this September the middle odds ran generous (said
+about 50%, happened about 25%) even after the offset, which neither fix
+changes; worth watching in the nightly score.
+
+## Live stations (Sep 2026)
+
+Per Guillermo: Tsawwassen South reads EC's Ferry Terminal station (`vtf`);
+White Rock East Beach and Crescent Beach read the City of White Rock's East
+Beach sensor (the JSON behind maps.whiterockcity.ca/weather, in knots);
+Jericho reads the English Bay buoy (EC 46304) first and the Jericho Sailing
+Centre sensor (from wtfbc.ca's board) when the buoy has nothing fresh;
+Boundary Bay has no live station and relies on rider reports. The White
+Rock METAR (CWWK, max 6kt in six weeks) and wtfbc's Tsawwassen Ferry Auto
+copy (mostly zeros) are retired. Calibration history for the spots whose
+station or forecast changed starts over on Sep 28 2026 (`calibrationSince`).
+
+## Swell index (Sep 2026)
+
+Guillermo's rule: wind blowing 4 hours or more with the tide against it
+builds swell; at Squamish it's mostly fetch and time (25 to 30kt for 3 hours
+gives the biggest swell). `swellForHours()` in rules.js, per hour:
+
+1. How long the wind has blown from about this direction (10kt+, within 45
+   degrees) and the open water upwind (`swell.fetchKm` per spot, by wind
+   direction; rough map estimates).
+2. Wave height and period from the standard fetch and duration growth curves
+   (Shore Protection Manual). NW 21kt for 3 hours gives ~0.8m at 3.7s, which
+   is what the MFWAM wave model showed at Sand Heads on Sep 25 2026.
+3. The tide: rising is the flood, falling the ebb (DFO), and `currents` says
+   which way the water flows on each at that spot. Against the wind (120
+   degrees or more apart) steepens the waves up to ~1.4x on a strong tide;
+   with it flattens them up to ~15%. Steveston's ebb gets a 1.3x boost for
+   the Fraser.
+
+Current directions from Guillermo (the direction the water flows toward):
+Squamish and Porteau flood north, ebb south; Jericho, Steveston, Erwin Park,
+Dundarave and Ambleside flood east, ebb west; Boundary Bay, White Rock East,
+Crescent Beach and Tsawwassen South flood north, ebb south.
+
+Labels: flat (under 0.25m), chop, waves (0.5m+), good swell (0.9m+). Hours
+with waves or better get a 🌊 on the hour, the popup gives the height in feet
+and metres with the period and why, and each card names the day's best wave
+window. Replaying Sep 25 at Steveston: good swell 9 to 10am (3.2 to 4.4ft,
+NW against the ebb, 4h of wind at 10am), easing once the tide turned.
+"Report actual conditions" now has an optional Waves field (flat, chop,
+waves, good swell) so the fetch and current numbers can be tuned; the
+Cloudflare Worker needs redeploying (`wrangler deploy` in worker/) for it to
+reach the issue.
+
+## Marine forecast and tides on the page
+
+The EC marine forecast for Howe Sound and the Strait of Georgia (south of
+Nanaimo) is shown in full: any warning, the winds as EC wrote them with the
+issue time, and the extended outlook. Each spot card shows that day's high
+and low tides (time and height in feet) from its tide station (DFO
+`wlp-hilo`).
+
+**Agreement rule (Guillermo's):** when the models land on the same speed,
+within about 15%, it's normally a good forecast. `modelAgreement()` measures
+the share of model weight within ±15% of the weighted median; 80%+ from 4 or
+more models marks the hour `models_agree`, which raises confidence and
+narrows the probability band. The hour shows a ✓ and says so in its popup.
+
+## Tide stations
+
+Always the nearest DFO station to the spot, except Steveston, which uses
+Tsawwassen (Guillermo: better for Steveston and south; the Steveston gauge
+sits in the river mouth and reads ~0.6m lower and ~20min later than the
+coast). Squamish and Porteau: Darrell Bay. Jericho: Point Atkinson. Erwin
+Park: Sandy Cove. Ambleside and Dundarave: Ambleside. White Rock, Crescent
+Beach: their own stations. Boundary Bay, Tsawwassen: Tsawwassen. The North
+Shore stations read within ~0.05m of Point Atkinson.
+
 ## Known limitations / good next steps
 
 - Tide state and current isn't factored in, even though it matters a lot at
