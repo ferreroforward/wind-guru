@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 import { SPOTS, PRESSURE_REFERENCE, degToLabel, DEG_LABELS } from "../assets/spots.js";
-import { MODELS, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch, parseMarineWindText, marineAnchorForHour, parseEcIssued, dropModels, tideForHour, flagEpicHours, buildMosUrl, reshapeMos, applyMos } from "../assets/rules.js";
+import { MODELS, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch, parseMarineWindText, marineAnchorForHour, parseEcIssued, dropModels, tideForHour, flagEpicHours, buildMosUrl, reshapeMos, applyMos, swellForHours } from "../assets/rules.js";
 
 // Minutes between "now" and a Pacific-local "HH:MM" observation time, on the
 // (safe) assumption the observation is from earlier today — used to catch a
@@ -948,6 +948,8 @@ async function main() {
     const tideLevels = spot.tideStation ? await fetchTideLevels(spot.tideStation, startedAt) : null;
     const tideExtremes = spot.tideStation ? await fetchTideHilo(spot.tideStation, startedAt) : null;
     if (tideLevels) for (const h of hours) h.tide = tideForHour(tideLevels, h.time);
+    // Swell index per hour (needs the tide trend above).
+    swellForHours(spot, hours);
     const epicWindows = flagEpicHours(spot, hours);
     if (epicWindows.length) console.log(`  [epic:${spot.id}] ${epicWindows.map(w => `${w.date} ${w.start}-${w.end} peak ${w.peak_kt}kt`).join("; ")}`);
 

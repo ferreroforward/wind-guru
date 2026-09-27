@@ -1671,3 +1671,98 @@ export function pamRocksRuleEstimate(rule, pamKt, pamDirDeg, fromModels = false)
     estimateKt: Math.max(0, pamKt - (hit.thresholdKt - target)),
   };
 }
+
+// ---------------------------------------------------------------------------
+// Swell index
+//
+// Guillermo: "when the wind blows for more than 4 hours and the tide is
+// against it, the likelihood of swell increases", and at Squamish "it's
+// really more about fetch: the more it blows, say 25 to 30 knots for 3
+// hours, the bigger the swell". So per hour:
+//   1. How long the wind has blown from about this direction (10kt+, within
+//      45 degrees), and how far it has had to blow over water (the spot's
+//      `swell.fetchKm` for that wind direction).
+//   2. Wave height and period from the standard fetch and duration growth
+//      curves (US Army Corps Shore Protection Manual): whichever of the two
+//      limits first. NW 21kt for 3 hours gives ~0.8m at 3.7s, which is what
+//      the MFWAM wave model showed at Sand Heads on Sep 25 2026.
+//   3. Which way the tide is running (DFO trend: rising = flood, falling =
+//      ebb) and which way that water flows at the spot (`currents`, from
+//      Guillermo, Sep 2026). Current running against the wind (120 degrees
+//      or more apart) shortens and steepens these short wind waves, up to
+//      ~1.4x at a strong tide; running with it flattens them a little.
+// The fetch numbers are rough map estimates, and the current factor a first
+// guess to be tuned from rider wave reports ("Report actual conditions").
+// ---------------------------------------------------------------------------
+const G = 9.81, KT_TO_MS = 0.514444;
+export function waveGrowth(speedKt, durationH, fetchKm) {
+  const U = speedKt * KT_TO_MS;
+  if (!(U > 2) || !(durationH > 0) || !(fetchKm > 0)) return { hs_m: 0, period_s: 0, limited_by: null };
+  const k = G / (U * U);
+  const xFetch = fetchKm * 1000 * k;
+  const xDur = Math.pow((G * durationH * 3600) / (68.8 * U), 1.5); // fetch the waves could have grown over in that time
+  const x = Math.min(xFetch, xDur);
+  const hs = Math.min((0.0016 * Math.sqrt(x)) / k, 0.2433 / k);
+  const tp = Math.min((0.2857 * Math.cbrt(x) * U) / G, (8.134 * U) / G);
+  return { hs_m: hs, period_s: tp, limited_by: xDur < xFetch ? "duration" : "fetch" };
+}
+
+function fetchForDirection(spot, dirFromDeg) {
+  const sw = spot.swell || {};
+  for (const [sector, km] of sw.fetchKm || []) if (inSector(dirFromDeg, sector)) return km;
+  return sw.defaultFetchKm ?? 5;
+}
+
+const SWELL_MIN_KT = 10;
+export function swellForHours(spot, hours) {
+  if (!spot.currents || !Array.isArray(hours)) return;
+  for (let i = 0; i < hours.length; i++) {
+    const h = hours[i];
+    const spd = h.speed_kt, dir = h.direction_deg;
+    if (spd == null || dir == null || spd < 8) {
+      h.swell = { label: "flat", hs_m: 0, hs_ft: 0, period_s: null, duration_h: 0 };
+      continue;
+    }
+    // Hours in a row the wind has blown from about this direction.
+    let dur = 1;
+    for (let j = i - 1; j >= 0; j--) {
+      const p = hours[j];
+      if (p.speed_kt == null || p.speed_kt < SWELL_MIN_KT || p.direction_deg == null || angularDiff(p.direction_deg, dir) > 45) break;
+      dur++;
+    }
+    const fetchKm = fetchForDirection(spot, dir);
+    const g = waveGrowth(spd, dur, fetchKm);
+
+    // Tide current vs the wind (wind blows toward dir + 180).
+    let current = null, vsWind = null, factor = 1;
+    const t = h.tide;
+    if (t && t.trend && t.trend !== "slack") {
+      current = t.trend === "rising" ? "flood" : "ebb";
+      const flowTo = spot.currents[current];
+      if (flowTo != null) {
+        const boost = current === "ebb" ? (spot.currents.ebbBoost ?? 1) : 1;
+        const s = Math.min(1, (Math.abs(t.rate_m_per_h ?? 0) / 0.4) * boost);
+        const diff = angularDiff((dir + 180) % 360, flowTo);
+        if (diff >= 120) { vsWind = "against"; factor = 1 + 0.4 * s; }
+        else if (diff <= 60) { vsWind = "with"; factor = 1 - 0.15 * s; }
+        else vsWind = "across";
+      }
+    }
+    const hs = g.hs_m * factor;
+    const label = hs < 0.25 ? "flat" : hs < 0.5 ? "chop" : hs < 0.9 ? "waves" : "good swell";
+    h.swell = {
+      label,
+      hs_m: Math.round(hs * 100) / 100,
+      hs_ft: Math.round(hs * 3.28084 * 10) / 10,
+      period_s: g.period_s ? Math.round(g.period_s * 10) / 10 : null,
+      duration_h: dur,
+      fetch_km: fetchKm,
+      limited_by: g.limited_by,
+      current,
+      vs_wind: vsWind,
+      current_factor: Math.round(factor * 100) / 100,
+      // Guillermo's rule of thumb: 4h+ of wind with the tide against it.
+      building: vsWind === "against" && dur >= 4 && spd >= 12,
+    };
+  }
+}

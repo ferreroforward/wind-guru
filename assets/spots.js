@@ -51,6 +51,12 @@ export const SPOTS = [
     // Spit proper, especially on marginal days — worth knowing even though
     // they share one entry here.
     id: "squamish-spit",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Floods north, ebbs south. Best riding on an incoming tide, but swell here is mostly fetch and time: 25 to 30kt for 3 hours builds the biggest swell. Less swell on a flood (it runs with the inflow).
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 0, ebb: 180 },
+    swell: { fetchKm: [[[150, 260], 12], [[300, 40], 3]], defaultFetchKm: 5 },
     // Tide: Darrell Bay (nearest DFO station, 1.6km; Squamish Inner (1.8km) reads within ~0.05m). Rule: always the nearest DFO station,
     // except Steveston (Tsawwassen, see garry-point).
     tideStation: { code: "07808", id: "5cebf1e43d0f4a073c4bc40e", name: "Darrell Bay" },
@@ -93,6 +99,12 @@ export const SPOTS = [
     // was merged in here rather than kept as its own entry. Coordinates
     // refined (Aug 2026) to Guillermo's exact water-access point.
     id: "porteau-cove",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Same as Squamish: floods north, ebbs south.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 0, ebb: 180 },
+    swell: { fetchKm: [[[135, 260], 20], [[300, 40], 15]], defaultFetchKm: 6 },
     // Tide: Darrell Bay (nearest DFO station, 13km up Howe Sound). Rule: always the nearest DFO station,
     // except Steveston (Tsawwassen, see garry-point).
     tideStation: { code: "07808", id: "5cebf1e43d0f4a073c4bc40e", name: "Darrell Bay" },
@@ -167,6 +179,12 @@ export const SPOTS = [
     // ids stops being read (a fresh id starts with no calibration bias,
     // same as any brand-new spot).
     id: "jericho-spanish-banks",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Floods east, ebbs west, so a W or NW wind runs against the ebb.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 90, ebb: 270 },
+    swell: { fetchKm: [[[240, 330], 35]], defaultFetchKm: 8 },
     name: "Jericho - Spanish Banks",
     region: "English Bay",
     lat: 49.281646, lon: -123.235223,
@@ -212,6 +230,12 @@ export const SPOTS = [
     // the Fraser's South Arm. Coordinates refined (Aug 2026) to Guillermo's
     // exact water-access point.
     id: "garry-point",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Floods east, ebbs west (same as Jericho). The Fraser outflow adds to the ebb, which is why it gets a boost.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 90, ebb: 270, ebbBoost: 1.3 },
+    swell: { fetchKm: [[[180, 345], 40]], defaultFetchKm: 10 },
     name: "Steveston - Garry Point Park",
     region: "Fraser Delta",
     lat: 49.123665, lon: -123.196088,
@@ -318,6 +342,12 @@ export const SPOTS = [
     // the right idea (this spot's biggest days are gradient-driven, not
     // thermal) — tightened to name SE specifically as the core direction.
     id: "boundary-bay",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Floods north, ebbs south.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 0, ebb: 180 },
+    swell: { fetchKm: [[[90, 200], 15]], defaultFetchKm: 6 },
     // Tide: Tsawwassen (nearest DFO station, 7km). Rule: always the nearest DFO station,
     // except Steveston (Tsawwassen, see garry-point).
     tideStation: { code: "07590", id: "5cebf1de3d0f4a073c4bb935", name: "Tsawwassen" },
@@ -347,6 +377,12 @@ export const SPOTS = [
     // makes clear these two beaches take different winds and have somewhat
     // different tide behavior, so they're now independently forecastable.
     id: "white-rock-east",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Same as Centennial: floods north, ebbs south.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 0, ebb: 180 },
+    swell: { fetchKm: [[[190, 280], 15], [[90, 190], 8]], defaultFetchKm: 6 },
     // Tide: White Rock (nearest DFO station, 0.7km). Rule: always the nearest DFO station,
     // except Steveston (Tsawwassen, see garry-point).
     tideStation: { code: "07577", id: "5cebf1de3d0f4a073c4bb933", name: "White Rock" },
@@ -381,6 +417,12 @@ export const SPOTS = [
     // New spot (Aug 2026) — see white-rock-east above for why this was
     // split out on its own.
     id: "crescent-beach",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Same as Centennial: floods north, ebbs south.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 0, ebb: 180 },
+    swell: { fetchKm: [[[210, 280], 12]], defaultFetchKm: 5 },
     // Tide: Crescent Beach (nearest DFO station, 2.7km). Rule: always the nearest DFO station,
     // except Steveston (Tsawwassen, see garry-point).
     tideStation: { code: "07579", id: "5dd3064fe0fdc4b9b4be69d7", name: "Crescent Beach" },
@@ -417,6 +459,12 @@ export const SPOTS = [
     // now rather than add a second "north causeway" entry with the inverse
     // rules. Revisit if the north side turns out to be worth its own spot.
     id: "tsawwassen-south",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Same as Centennial: floods north, ebbs south. NW and N are flat water on this side of the causeway.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 0, ebb: 180 },
+    swell: { fetchKm: [[[160, 240], 25], [[300, 20], 2]], defaultFetchKm: 8 },
     // Tide: Tsawwassen (nearest DFO station, 1.4km). Rule: always the nearest DFO station,
     // except Steveston (Tsawwassen, see garry-point).
     tideStation: { code: "07590", id: "5cebf1de3d0f4a073c4bb935", name: "Tsawwassen" },
@@ -454,6 +502,12 @@ export const SPOTS = [
     // location was corrected. Coordinates refined again (Aug 2026) to
     // Guillermo's exact water-access point.
     id: "erwin-park",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Same as Jericho: floods east, ebbs west.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 90, ebb: 270 },
+    swell: { fetchKm: [[[90, 150], 8], [[240, 300], 30]], defaultFetchKm: 6 },
     // Tide: Sandy Cove (nearest DFO station, 0.6km; same as Point Atkinson within ~0.05m). Rule: always the nearest DFO station,
     // except Steveston (Tsawwassen, see garry-point).
     tideStation: { code: "07786", id: "5cebf1e43d0f4a073c4bc43b", name: "Sandy Cove" },
@@ -559,6 +613,12 @@ export const SPOTS = [
     // Ambleside refinement below — the two are "almost identical" per his
     // description, sharing the same tide/wind mechanic (see current_note).
     id: "dundarave-pier",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Same as Jericho: floods east, ebbs west, so the big waves come on the ebb with a NW or W wind.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 90, ebb: 270 },
+    swell: { fetchKm: [[[230, 320], 30]], defaultFetchKm: 6 },
     // Tide: Ambleside (nearest DFO station, 2.2km; same as Point Atkinson within ~0.05m). Rule: always the nearest DFO station,
     // except Steveston (Tsawwassen, see garry-point).
     tideStation: { code: "07780", id: "5cebf1e43d0f4a073c4bc45a", name: "Ambleside" },
@@ -594,6 +654,12 @@ export const SPOTS = [
     // thermal/direction config the way there is for e.g. Squamish or Erwin
     // Park. Flag if this needs correcting.
     id: "ambleside",
+    // Swell index (rules.js swellForHours). currents: the compass direction
+    // the water flows TOWARD on each tide, per Guillermo (Sep 2026): Same as Jericho: floods east, ebbs west; the last hour or two of the ebb with a west wind gives a good rip.
+    // fetchKm: rough open water distance upwind, by the direction the wind
+    // comes from (map estimates, to be tuned from rider wave reports).
+    currents: { flood: 90, ebb: 270 },
+    swell: { fetchKm: [[[230, 320], 30]], defaultFetchKm: 6 },
     // Tide: Ambleside (nearest DFO station, 0.4km; same as Point Atkinson within ~0.05m). Rule: always the nearest DFO station,
     // except Steveston (Tsawwassen, see garry-point).
     tideStation: { code: "07780", id: "5cebf1e43d0f4a073c4bc45a", name: "Ambleside" },

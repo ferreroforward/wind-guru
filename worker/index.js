@@ -56,7 +56,7 @@ export default {
       return jsonResponse({ error: "Invalid JSON" }, 400, env);
     }
 
-    const { spot, date, time, forecast_speed, actual_speed, actual_gust } = data || {};
+    const { spot, date, time, forecast_speed, actual_speed, actual_gust, wave_size } = data || {};
 
     // --- Validation. Every field here is untrusted, public-internet input
     // — this is the one place standing between an anonymous POST and a
@@ -76,6 +76,11 @@ export default {
     }
     if (actual_gust != null && !isNum(actual_gust, 0, 90)) {
       return jsonResponse({ error: "actual_gust must be a number 0-90" }, 400, env);
+    }
+    // Optional, for tuning the swell index (added Sep 2026).
+    const WAVE_SIZES = ["flat", "chop", "waves", "good swell"];
+    if (wave_size != null && wave_size !== "" && !WAVE_SIZES.includes(wave_size)) {
+      return jsonResponse({ error: "Unknown wave_size" }, 400, env);
     }
     // Loose sanity window (30 days back, 1 day forward) so this can't be
     // used to backdate/postdate junk far outside anything the calibration
@@ -103,6 +108,7 @@ export default {
       "### Forecasted speed (kt)", "", forecastText, "",
       "### Actual speed (kt)", "", String(actual_speed), "",
       "### Actual gust (kt)", "", actual_gust != null ? String(actual_gust) : "_No response_", "",
+      "### Waves", "", wave_size ? wave_size : "_No response_", "",
       "### Notes — any idea why it differed?", "", "Submitted via the in-page report popup.", "",
     ].join("\n");
 

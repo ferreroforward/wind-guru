@@ -736,6 +736,39 @@ Rock METAR (CWWK, max 6kt in six weeks) and wtfbc's Tsawwassen Ferry Auto
 copy (mostly zeros) are retired. Calibration history for the spots whose
 station or forecast changed starts over on Sep 28 2026 (`calibrationSince`).
 
+## Swell index (Sep 2026)
+
+Guillermo's rule: wind blowing 4 hours or more with the tide against it
+builds swell; at Squamish it's mostly fetch and time (25 to 30kt for 3 hours
+gives the biggest swell). `swellForHours()` in rules.js, per hour:
+
+1. How long the wind has blown from about this direction (10kt+, within 45
+   degrees) and the open water upwind (`swell.fetchKm` per spot, by wind
+   direction; rough map estimates).
+2. Wave height and period from the standard fetch and duration growth curves
+   (Shore Protection Manual). NW 21kt for 3 hours gives ~0.8m at 3.7s, which
+   is what the MFWAM wave model showed at Sand Heads on Sep 25 2026.
+3. The tide: rising is the flood, falling the ebb (DFO), and `currents` says
+   which way the water flows on each at that spot. Against the wind (120
+   degrees or more apart) steepens the waves up to ~1.4x on a strong tide;
+   with it flattens them up to ~15%. Steveston's ebb gets a 1.3x boost for
+   the Fraser.
+
+Current directions from Guillermo (the direction the water flows toward):
+Squamish and Porteau flood north, ebb south; Jericho, Steveston, Erwin Park,
+Dundarave and Ambleside flood east, ebb west; Boundary Bay, White Rock East,
+Crescent Beach and Tsawwassen South flood north, ebb south.
+
+Labels: flat (under 0.25m), chop, waves (0.5m+), good swell (0.9m+). Hours
+with waves or better get a 🌊 on the hour, the popup gives the height in feet
+and metres with the period and why, and each card names the day's best wave
+window. Replaying Sep 25 at Steveston: good swell 9 to 10am (3.2 to 4.4ft,
+NW against the ebb, 4h of wind at 10am), easing once the tide turned.
+"Report actual conditions" now has an optional Waves field (flat, chop,
+waves, good swell) so the fetch and current numbers can be tuned; the
+Cloudflare Worker needs redeploying (`wrangler deploy` in worker/) for it to
+reach the issue.
+
 ## Marine forecast and tides on the page
 
 The EC marine forecast for Howe Sound and the Strait of Georgia (south of

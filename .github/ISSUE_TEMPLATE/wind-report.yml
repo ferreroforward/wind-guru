@@ -57,6 +57,16 @@ body:
       placeholder: "e.g. 30"
     validations:
       required: true
+  - type: dropdown
+    id: wave_size
+    attributes:
+      label: Waves
+      description: Optional, helps tune the swell forecast
+      options:
+        - flat
+        - chop
+        - waves
+        - good swell
   - type: input
     id: actual_direction
     attributes:

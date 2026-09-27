@@ -81,6 +81,7 @@
   .hour-cell.epic{box-shadow:inset 0 0 0 2px #e8833a;}
   .hour-cell .agree-dot{position:absolute;bottom:2px;right:3px;font-size:0.6rem;line-height:1;color:#1f8a4c;font-weight:700;}
   .hour-cell .epic-dot{position:absolute;bottom:2px;left:3px;font-size:0.65rem;line-height:1;}
+  .hour-cell .swell-dot{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:0.65rem;line-height:1;}
   .gusty-tag{display:inline-block;margin-left:6px;background:#fdeecb;color:#9a6400;font-weight:700;font-size:0.76rem;padding:2px 7px;border-radius:8px;white-space:nowrap;cursor:help;}
   .offshore-tag{display:inline-block;margin-left:6px;background:var(--red-bg);color:var(--red);font-weight:700;font-size:0.76rem;padding:2px 7px;border-radius:8px;white-space:nowrap;cursor:help;}
 
@@ -119,8 +120,8 @@
   .report-modal-context{color:var(--muted);font-size:0.88rem;margin-bottom:16px;line-height:1.4;}
   .report-field{display:block;font-size:0.88rem;color:var(--muted);margin-bottom:14px;}
   .report-field .optional{font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0;font-size:0.8rem;}
-  .report-field input{display:block;width:100%;margin-top:5px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:1rem;color:var(--text);background:var(--panel);}
-  .report-field input:focus{outline:2px solid var(--accent);outline-offset:1px;}
+  .report-field input,.report-field select{display:block;width:100%;margin-top:5px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:1rem;color:var(--text);background:var(--panel);}
+  .report-field input:focus,.report-field select:focus{outline:2px solid var(--accent);outline-offset:1px;}
   .report-modal-msg{font-size:0.85rem;min-height:1.3em;margin-bottom:6px;}
   .report-modal-msg.error{color:var(--red);}
   .report-modal-msg.success{color:var(--green);}
@@ -253,6 +254,15 @@
       <label class="report-field">Gust (kt) <span class="optional">optional</span>
         <input type="number" id="reportActualGust" min="0" max="90" step="1" inputmode="numeric" placeholder="e.g. 25">
       </label>
+      <label class="report-field">Waves <span class="optional">optional, helps tune the swell forecast</span>
+        <select id="reportWaveSize">
+          <option value="">Not sure</option>
+          <option value="flat">Flat</option>
+          <option value="chop">Chop</option>
+          <option value="waves">Waves</option>
+          <option value="good swell">Good swell</option>
+        </select>
+      </label>
       <div class="report-modal-msg" id="reportModalMsg"></div>
       <div class="report-modal-actions">
         <button type="button" class="secondary" id="reportModalCancel">Cancel</button>
@@ -305,7 +315,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script type="module">
 import { SPOTS } from "./assets/spots.js";
-import { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, referenceStationSpeeds, dropModels, buildMosUrl, reshapeMos, applyMos, currentPacificHourString } from "./assets/rules.js";
+import { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, referenceStationSpeeds, dropModels, buildMosUrl, reshapeMos, applyMos, currentPacificHourString, swellForHours } from "./assets/rules.js";
 
 let forecast = null; // loaded forecast.json shape
 let selectedDayIndex = 0;
@@ -653,6 +663,7 @@ const reportModalBackdrop = document.getElementById("reportModalBackdrop");
 const reportModalContext = document.getElementById("reportModalContext");
 const reportActualMin = document.getElementById("reportActualMin");
 const reportActualGust = document.getElementById("reportActualGust");
+const reportWaveSize = document.getElementById("reportWaveSize");
 const reportModalMsg = document.getElementById("reportModalMsg");
 const reportModalSubmit = document.getElementById("reportModalSubmit");
 const reportModalCancel = document.getElementById("reportModalCancel");
@@ -665,6 +676,7 @@ function openReportModal(ds) {
   reportModalContext.textContent = `${ds.name} · ${whenText}${forecastText}`;
   reportActualMin.value = "";
   reportActualGust.value = "";
+  reportWaveSize.value = "";
   reportModalMsg.textContent = "";
   reportModalMsg.className = "report-modal-msg";
   reportModalSubmit.disabled = false;
@@ -707,7 +719,7 @@ async function submitReport() {
     const res = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...reportModalCtx, actual_speed: actual, actual_gust: gust }),
+      body: JSON.stringify({ ...reportModalCtx, actual_speed: actual, actual_gust: gust, wave_size: reportWaveSize.value || null }),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     reportModalMsg.textContent = "Thanks — that's logged and feeds straight into the forecast.";
@@ -757,9 +769,11 @@ function showTip(cellEl, h, spotId) {
   const mosText = h.mos_used && m ? `<div style="margin-top:4px;opacity:0.9;font-weight:400;">${m.flow !== undefined
       ? `Pam Rocks forecast ${Math.round(m.station_kt)}kt${m.flow ? ` (${m.flow}, Porteau needs ${m.flow === "inflow" ? "14kt+" : "25 to 30kt+"})` : ", not an inflow or outflow"}`
       : `Learned from a year of ${m.station} readings`}, typically within ±${Math.round(m.sigma_kt * 0.8)}kt</div>` : "";
+  const sw = h.swell;
+  const swellText = sw && sw.label !== "flat" ? `<div style="margin-top:4px;opacity:0.9;font-weight:400;">🌊 ${swellLabel(sw.label)}: about ${sw.hs_ft}ft (${sw.hs_m.toFixed(1)}m)${sw.period_s ? `, ${sw.period_s}s` : ""} after ${sw.duration_h}h of wind${sw.vs_wind ? `, ${sw.vs_wind === "against" ? `wind against the ${sw.current}` : sw.vs_wind === "with" ? `${sw.current} running with the wind` : `${sw.current} across the wind`}` : ""}${sw.building ? " (4h+ against the tide: building)" : ""}</div>` : "";
   const epicText = h.epic ? `<div style="margin-top:4px;font-weight:700;color:#ffcf9e;">🔥 Matches this spot's epic day setup</div>` : "";
   const spotName = (SPOTS.find(s => s.id === spotId) || {}).name ?? spotId;
-  globalTip.innerHTML = `<b>${regimeLabel(h.regime)}</b>${speedText}${summaryText}${tideText}${mosText}${agreeText}${epicText}
+  globalTip.innerHTML = `<b>${regimeLabel(h.regime)}</b>${speedText}${summaryText}${tideText}${swellText}${mosText}${agreeText}${epicText}
     <button type="button" class="report-trigger" data-spot="${spotId}" data-name="${spotName}" data-date="${h.time.slice(0, 10)}" data-time="${h.time.slice(11, 16)}" data-forecast="${h.speed_kt != null ? h.speed_kt : ""}">📝 Report actual conditions →</button>`;
   const rect = cellEl.getBoundingClientRect();
   globalTip.style.display = "block";
@@ -792,6 +806,24 @@ function tideLineForDay(spot) {
   if (!list.length) return "";
   const fmt = (hm) => { const [H, M] = hm.split(":").map(Number); return `${((H + 11) % 12) + 1}:${String(M).padStart(2, "0")}${H < 12 ? "am" : "pm"}`; };
   return `<div class="tide-line">🌊 Tides${spot.tide_station ? ` (${spot.tide_station})` : ""}: ${list.map(t => `<b>${t.type === "high" ? "High" : "Low"}</b> ${fmt(t.time)} ${t.height_ft}ft`).join(" · ")}</div>`;
+}
+
+function swellLabel(l) { return l === "good swell" ? "Good swell" : l === "waves" ? "Waves" : l === "chop" ? "Chop" : "Flat"; }
+// The day's best wave hours, e.g. "🌊 Waves 9am to 11am, up to 3.6ft, wind
+// against the ebb". Only shown when the swell index says waves or better.
+function swellLineForDay(hours) {
+  const isGood = (h) => h.swell && (h.swell.label === "waves" || h.swell.label === "good swell");
+  const good = hours.filter(isGood);
+  if (!good.length) return "";
+  const peak = good.reduce((a, b) => (b.swell.hs_ft > a.swell.hs_ft ? b : a));
+  // The unbroken run of wave hours around the peak.
+  let i0 = hours.indexOf(peak), i1 = i0;
+  while (i0 > 0 && isGood(hours[i0 - 1])) i0--;
+  while (i1 < hours.length - 1 && isGood(hours[i1 + 1])) i1++;
+  const hr = (h) => hourLabel(Number(h.time.slice(11, 13)));
+  const span = i1 > i0 ? `${hr(hours[i0])} to ${hr(hours[i1])}` : hr(hours[i0]);
+  const why = peak.swell.vs_wind === "against" ? `, wind against the ${peak.swell.current}` : "";
+  return `<div class="tide-line">🌊 <b>${swellLabel(peak.swell.label)}</b> ${span}, up to about ${peak.swell.hs_ft}ft${why}</div>`;
 }
 
 function renderSpotCards() {
@@ -833,6 +865,7 @@ function renderSpotCards() {
       </div>
       ${epicWindowsForDay(spot).map(w => `<div class="epic-line">🔥 Possible epic day: ${hourLabel(Number(w.start.slice(0, 2)))} to ${hourLabel(Number(w.end.slice(0, 2)))}, up to ${w.peak_kt}kt${tideRangeText(w)}</div>`).join("")}
       ${tideLineForDay(spot)}
+      ${swellLineForDay(hours)}
       ${liveBadge}
       <div class="hour-strip"></div>
     `;
@@ -851,6 +884,7 @@ function renderSpotCards() {
         cellEl.innerHTML = `
           ${h.gusty ? `<div class="gusty-dot" title="Gusty — strong upper-level wind">💨</div>` : ""}
           ${h.epic ? `<div class="epic-dot" title="Matches this spot's epic day setup">🔥</div>` : ""}
+          ${h.swell && (h.swell.label === "waves" || h.swell.label === "good swell") ? `<div class="swell-dot" title="${swellLabel(h.swell.label)}: about ${h.swell.hs_ft}ft">🌊</div>` : ""}
           ${h.models_agree ? `<div class="agree-dot" title="Models agree within 15%: higher confidence">✓</div>` : ""}
           ${h.favorable_direction === false ? `<div class="offshore-dot" title="Offshore / unfavorable direction">⚠️</div>` : ""}
           <div class="t">${h.time.slice(11,16)}</div>
@@ -1101,6 +1135,7 @@ async function loadLive() {
         if (prevTide[row.time]) h.tide = prevTide[row.time];
         return h;
       });
+      swellForHours(spot, hours);
       spotsOut.push({ id: spot.id, name: spot.name, hours, tide_station: prevSpot?.tide_station ?? null, tide_extremes: prevSpot?.tide_extremes || [] });
     }
     forecast = {
