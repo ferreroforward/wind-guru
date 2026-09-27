@@ -156,57 +156,149 @@ const DIR_WORD_DEG = {
 // "south" — otherwise a substring match would silently mis-assign direction.
 const DIR_WORDS = Object.keys(DIR_WORD_DEG).sort((a, b) => b.length - a.length);
 
-// Timing phrase -> [startHour, endHour] local. A window whose start is greater
-// than its end wraps through midnight (see hourInWindow below).
-const TIMING_WINDOWS = [
-  [/\blate (?:this )?(?:tonight|evening)\b/i, [21, 23]],
-  [/\bnear midnight\b/i,                      [22, 2]],
-  [/\bovernight\b/i,                          [21, 5]],
-  [/\bearly (?:this )?evening\b/i,            [17, 20]],
-  [/\bthis evening\b/i,                       [17, 22]],
-  [/\btonight\b/i,                            [20, 5]],
-  [/\bearly\s+\w+day morning\b/i,             [4, 9]],
-  [/\bearly (?:this )?morning\b/i,            [4, 9]],
-  [/\b\w+day morning\b/i,                     [6, 11]],
-  [/\bthis morning\b/i,                       [6, 11]],
-  [/\bnear noon\b/i,                          [11, 14]],
-  [/\bthis afternoon\b/i,                     [12, 17]],
-  [/\blate in the day\b/i,                    [15, 20]],
-  [/\b\w+day evening\b/i,                     [17, 22]],
-  [/\b\w+day afternoon\b/i,                   [12, 17]],
-];
+// ---------------------------------------------------------------------------
+// Timing: EC chains a day's conditions as a sequence ("northwest 15 to 20
+// knots ... increasing to northwest 20 to 30 this morning then diminishing to
+// westerly 5 to 15 late this afternoon ... becoming light Saturday morning").
+// Each clause says when a change STARTS; the condition then holds until the
+// next clause takes over. So we place every clause on a real calendar
+// timeline (date + hour), resolved against the bulletin's own issue time, and
+// look hours up on that timeline.
+//
+// The earlier version matched timing phrases by hour of day only, ignoring
+// which DAY they named. Two real failures came straight out of that, both
+// the same week (see README "Sep 25 2026 case study"):
+//   - Thu Sep 24: "northwest 15 to 25 Friday morning" was applied to
+//     Thursday morning, putting a flat, bogus 17kt on Jericho while it was
+//     calm.
+//   - Fri Sep 25: "light Saturday morning" (the last clause) overwrote
+//     "northwest 20 to 30 this morning" for Friday's 6 to 11am, so the anchor
+//     never fired on the very morning it existed for. Sand Heads blew NW 21
+//     to 24kt from 9am to 1pm.
+// ---------------------------------------------------------------------------
 
-function hourInWindow(hour, [start, end]) {
-  return start <= end ? (hour >= start && hour <= end) : (hour >= start || hour <= end);
+const WEEKDAY_NAMES = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+const MONTH_NAMES = ["january", "february", "march", "april", "may", "june", "july",
+  "august", "september", "october", "november", "december"];
+
+// Hour a named part of the day starts, with EC's early/late qualifiers.
+const PART_START = {
+  morning:   { early: 4,  plain: 6,  late: 9 },
+  afternoon: { early: 12, plain: 12, late: 15 },
+  evening:   { early: 17, plain: 17, late: 21 },
+  night:     { early: 20, plain: 20, late: 23 },
+};
+
+const pad2 = (n) => String(n).padStart(2, "0");
+export function addDaysToDateStr(dateStr, n) {
+  const d = new Date(dateStr + "T12:00:00Z");
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+function weekdayOfDateStr(dateStr) { return new Date(dateStr + "T12:00:00Z").getUTCDay(); }
+// Local wall clock as a sortable number of hours. Only ever compared with
+// other values from this same function, so treating the local date as if it
+// were UTC is fine (no DST arithmetic involved).
+function hourKey(dateStr, hour) { return Date.parse(dateStr + "T00:00:00Z") / 3600000 + hour; }
+
+// "04:38 AM PDT 25 September 2026" -> { dateStr: "2026-09-25", hour: 4 }
+export function parseEcIssued(issued) {
+  if (!issued) return null;
+  const m = String(issued).match(/(\d{1,2}):(\d{2})\s*(AM|PM)?\s*[A-Z]{3,4}\s+(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/i);
+  if (!m) return null;
+  let hour = Number(m[1]);
+  const ampm = (m[3] || "").toUpperCase();
+  if (ampm) hour = (hour % 12) + (ampm === "PM" ? 12 : 0);
+  const mon = MONTH_NAMES.indexOf(m[5].toLowerCase());
+  if (mon < 0) return null;
+  return { dateStr: `${m[6]}-${pad2(mon + 1)}-${pad2(Number(m[4]))}`, hour };
 }
 
-// Turn an EC marine wind paragraph into structured segments.
-// Returns null if nothing parseable was found — callers must treat the whole
-// EC anchor as simply unavailable in that case rather than guessing.
-export function parseMarineWindText(text) {
-  if (!text) return null;
-  const clean = String(text).replace(/\s+/g, " ").trim();
+// Pull the timing phrase out of one clause. Returns
+// { timing, dayRef, startHour } where dayRef is "this" (issue day), a weekday
+// index 0-6, "next" (the day after the previous clause, for "after
+// midnight") or "same" (the previous clause's day), or null when the clause
+// names no time at all.
+function parseTiming(chunk) {
+  const c = chunk.toLowerCase();
+  let m;
+  if ((m = c.match(/\bafter midnight\b/))) return { timing: m[0], dayRef: "next", startHour: 0 };
+  if ((m = c.match(/\b(?:near midnight|overnight)\b/))) return { timing: m[0], dayRef: "same", startHour: 23 };
+  if ((m = c.match(/\blate in the day\b/))) return { timing: m[0], dayRef: "this", startHour: 16 };
+  if ((m = c.match(/\bnear noon(?:\s+(today|[a-z]+day))?\b/))) {
+    const d = m[1] && m[1] !== "today" ? WEEKDAY_NAMES.indexOf(m[1]) : -1;
+    return { timing: m[0], dayRef: d >= 0 ? d : "this", startHour: 11 };
+  }
+  if ((m = c.match(/\b(early |late )?tonight\b/))) {
+    return { timing: m[0], dayRef: "this", startHour: m[1]?.trim() === "late" ? 23 : 20 };
+  }
+  if ((m = c.match(/\b(?:(early|late) )?(this|today|[a-z]+day) (morning|afternoon|evening|night)\b/))) {
+    const qual = m[1] || "plain";
+    const startHour = PART_START[m[3]][qual];
+    const d = WEEKDAY_NAMES.indexOf(m[2]);
+    return { timing: m[0], dayRef: d >= 0 ? d : "this", startHour };
+  }
+  if ((m = c.match(/\b(sunday|monday|tuesday|wednesday|thursday|friday|saturday)\b/))) {
+    return { timing: m[0], dayRef: WEEKDAY_NAMES.indexOf(m[1]), startHour: 6 };
+  }
+  return null;
+}
 
-  // Split on the transition markers EC uses to chain conditions through a day.
-  const parts = clean.split(/\b(?:then|becoming|increasing to|diminishing to|rising to|easing to)\b/i);
+function resolveDay(dayRef, issueDate, prevDate, prevHour) {
+  if (dayRef === "this") return issueDate;
+  if (dayRef === "same") return prevDate;
+  if (dayRef === "next") return prevHour >= 12 ? addDaysToDateStr(prevDate, 1) : prevDate;
+  // Weekday: the first date on or after the issue date with that weekday.
+  let d = issueDate;
+  for (let i = 0; i < 7 && weekdayOfDateStr(d) !== dayRef; i++) d = addDaysToDateStr(d, 1);
+  return d;
+}
+
+// How long the LAST clause is assumed to hold when nothing follows it.
+const MARINE_TAIL_HOURS = 12;
+// Clauses with no timing phrase after the first one ("... then easing to
+// 10") can't be placed exactly; assume the change comes a few hours on.
+const UNTIMED_STEP_HOURS = 3;
+
+// Turn an EC marine wind paragraph into timed segments. `issued` is EC's
+// "Issued" string (or an already parsed { dateStr, hour }); every timing
+// phrase is resolved against it. Returns null if nothing parseable was
+// found; callers must then treat the EC anchor as unavailable rather than
+// guessing.
+export function parseMarineWindText(text, issued = null) {
+  if (!text) return null;
+  let clean = String(text).replace(/\s+/g, " ").trim();
+  // Drop EC's period label ("Today Tonight and Saturday.", "Tonight and
+  // Friday.") so its "tonight" isn't mistaken for the first clause's timing.
+  clean = clean.replace(/^(?:(?:today|tonight|tomorrow|this (?:morning|afternoon|evening)|[a-z]+day(?: night)?)(?:\s*,\s*|\s+and\s+|\s+)?)+\.\s*/i, "");
+
+  const iss = typeof issued === "string" ? parseEcIssued(issued) : issued;
+
+  // Split on the transition markers EC uses to chain conditions through a
+  // day, including the "... and to northwest 20 to 30 late Friday morning"
+  // form that chains a second change onto the same verb.
+  const parts = clean.split(/\b(?:then|becoming|increasing to|diminishing to|rising to|easing to|veering to|backing to|and to)\b/i);
 
   const segments = [];
+  let prevDate = iss?.dateStr ?? null, prevHour = iss?.hour ?? 0, prevKey = null;
   for (const rawPart of parts) {
     // "southeast 10 to 15 early this evening except southwest 15 to 20 over
-    // southern sections" — everything before "except" is the zone's main
-    // forecast; the tail is a sub-area caveat. Split so the main value isn't
-    // wrongly discarded, and mark the tail so callers can ignore it.
+    // southern sections": before "except" is the zone's main forecast, the
+    // tail is a sub area caveat. Kept, but only used by spots that sit in
+    // that sub area (see marineExceptionAreas in spots.js).
     const pieces = rawPart.split(/\bexcept\b/i);
+    let parent = null;
     for (let pi = 0; pi < pieces.length; pi++) {
       const chunk = pieces[pi].trim();
       if (!chunk) continue;
 
-      // "light" with no number is a real EC value meaning near-calm.
+      // "light" with no number is a real EC value meaning near calm.
       const isLight = /\blight\b/i.test(chunk) && !/\d/.test(chunk);
-
       let loKt = null, hiKt = null;
       const range = chunk.match(/\b(\d{1,2})\s+to\s+(\d{1,3})\b/);
-      const single = chunk.match(/\b(\d{1,3})\s*knots?\b/);
+      // A lone number ("southwesterly inflow 25 near noon") is a speed too;
+      // the old "knots" requirement silently dropped clauses like that.
+      const single = chunk.match(/\b(\d{1,2})\b(?!\s*(?:to\b|:))/);
       if (range) { loKt = Number(range[1]); hiKt = Number(range[2]); }
       else if (single) { loKt = hiKt = Number(single[1]); }
       else if (isLight) { loKt = 0; hiKt = 5; }
@@ -218,27 +310,54 @@ export function parseMarineWindText(text) {
           directionLabel = w; directionDeg = DIR_WORD_DEG[w]; break;
         }
       }
-
       const regime = /\boutflow\b/i.test(chunk) ? "outflow"
         : /\binflow\b/i.test(chunk) ? "inflow" : null;
 
-      let timing = null, hourWindow = null;
-      for (const [re, win] of TIMING_WINDOWS) {
-        const m = chunk.match(re);
-        if (m) { timing = m[0].toLowerCase(); hourWindow = win; break; }
+      if (pi > 0) {
+        const areaM = chunk.match(/\b(?:near|over|in|for|along|off)\b.*$/i);
+        const ex = { raw: chunk, loKt, hiKt, directionLabel, directionDeg, regime,
+          area: (areaM ? areaM[0] : chunk).split(".")[0].toLowerCase().trim(), isException: true };
+        if (parent) parent.exceptions.push(ex);
+        segments.push(ex);
+        continue;
       }
 
-      segments.push({
-        raw: chunk, loKt, hiKt, directionLabel, directionDeg,
-        regime, timing, hourWindow, isException: pi > 0,
-      });
+      const t = parseTiming(chunk);
+      let dateStr = null, startHour = null;
+      if (prevDate) {
+        if (t) {
+          dateStr = resolveDay(t.dayRef, iss?.dateStr ?? prevDate, prevDate, prevHour);
+          startHour = t.startHour;
+        } else if (prevKey == null) {
+          dateStr = prevDate; startHour = prevHour; // opening clause: from issue time on
+        } else {
+          dateStr = addDaysToDateStr(prevDate, Math.floor((prevHour + UNTIMED_STEP_HOURS) / 24));
+          startHour = (prevHour + UNTIMED_STEP_HOURS) % 24;
+        }
+      }
+      let startKey = dateStr ? hourKey(dateStr, startHour) : null;
+      // EC's clauses always run forward in time; if our reading of a phrase
+      // would put a clause before the previous one, nudge it after instead.
+      if (startKey != null && prevKey != null && startKey <= prevKey) {
+        startKey = prevKey + 1;
+        startHour = (prevHour + 1) % 24;
+        if (startHour === 0) dateStr = addDaysToDateStr(prevDate, 1);
+      }
+      const seg = {
+        raw: chunk, loKt, hiKt, directionLabel, directionDeg, regime,
+        timing: t?.timing ?? null, dateStr, startHour, startKey,
+        isException: false, exceptions: [],
+      };
+      segments.push(seg);
+      parent = seg;
+      if (startKey != null) { prevDate = dateStr; prevHour = startHour; prevKey = startKey; }
     }
   }
 
-  if (!segments.length) return null;
   const main = segments.filter(s => !s.isException);
   if (!main.length) return null;
   return {
+    issued: iss ?? null,
     segments,
     maxKt: Math.max(...main.map(s => s.hiKt)),
     minKt: Math.min(...main.map(s => s.loKt)),
@@ -247,17 +366,47 @@ export function parseMarineWindText(text) {
   };
 }
 
-// Pick the EC segment that applies to a given local hour. Prefers an explicit
-// timing window; falls back to the first untimed segment (EC's opening clause,
-// which describes conditions from issue time onward). Exception clauses
-// ("except ... over southern sections") are never returned — they describe a
-// different part of the zone than the one our spots sit in.
-export function marineAnchorForHour(parsed, localHour) {
-  if (!parsed || !parsed.segments) return null;
-  const usable = parsed.segments.filter(s => !s.isException);
-  const timed = usable.filter(s => s.hourWindow && hourInWindow(localHour, s.hourWindow));
-  if (timed.length) return timed[timed.length - 1]; // latest matching clause wins
-  return usable.find(s => !s.hourWindow) || null;
+function angularDiff(a, b) {
+  if (a == null || b == null) return 999;
+  const d = Math.abs(a - b) % 360;
+  return d > 180 ? 360 - d : d;
+}
+const midKt = (s) => (s.loKt + s.hiKt) / 2;
+
+// The EC clause in force at a given local date + hour, or null outside the
+// bulletin's timeline (before issue, or well past its last clause).
+//
+// Sub area exceptions ("except northwest 5 to 15 near Vancouver") only apply
+// to spots listing a matching phrase in `marineExceptionAreas`. EC states
+// the exception once, on the opening clause, and doesn't repeat it when the
+// wind later builds; we read it as "that area keeps running lighter by the
+// same proportion" until the direction changes. Verified against Sep 25
+// 2026: zone NW 20 to 30 this morning, Jericho actually peaked at 17kt, which
+// is what the proportional reading gives.
+export function marineAnchorForHour(parsed, localHour, dateStr, spot = null) {
+  if (!parsed || !parsed.segments || !dateStr) return null;
+  const main = parsed.segments.filter(s => !s.isException && s.startKey != null);
+  if (!main.length) return null;
+  const t = hourKey(dateStr, localHour);
+  let idx = -1;
+  for (let i = 0; i < main.length; i++) if (main[i].startKey <= t) idx = i;
+  if (idx < 0) return null;
+  const seg = main[idx];
+  if (idx === main.length - 1 && t >= seg.startKey + MARINE_TAIL_HOURS) return null;
+
+  const areas = (spot?.marineExceptionAreas || []).map(a => a.toLowerCase());
+  if (areas.length) {
+    for (let j = idx; j >= 0; j--) {
+      const s = main[j];
+      if (j < idx && angularDiff(s.directionDeg, seg.directionDeg) > 30) break;
+      const ex = (s.exceptions || []).find(e => areas.some(a => e.area.includes(a)));
+      if (!ex) continue;
+      if (j === idx) return { ...seg, loKt: ex.loKt, hiKt: ex.hiKt, directionLabel: ex.directionLabel ?? seg.directionLabel, directionDeg: ex.directionDeg ?? seg.directionDeg, exceptionApplied: ex.area };
+      const ratio = midKt(s) > 0 ? midKt(ex) / midKt(s) : 1;
+      return { ...seg, loKt: Math.round(seg.loKt * ratio), hiKt: Math.round(seg.hiKt * ratio), exceptionApplied: ex.area, exceptionScaled: true };
+    }
+  }
+  return seg;
 }
 
 function mean(arr) { return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null; }
@@ -739,6 +888,10 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   // this is meant to catch, because the reference station's own forecast is
   // under-read by the same coarse models — so a live reading is strictly
   // better information when it's available.
+  // The pure model blend for this hour, before any live reading or EC
+  // anchor replaced it. Live verification compares observations against
+  // this (not against a number that was itself set from an observation).
+  const modelBlendSpeed = displaySpeed;
   let liveRefTriggered = false;
   if (spot.liveReferenceTrigger && liveRefNow && liveRefNow.speedKt != null) {
     const t = spot.liveReferenceTrigger;
@@ -747,13 +900,25 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
       : inSector(liveRefNow.directionDeg, t.dirSector);
     if (dirOk && liveRefNow.speedKt >= t.thresholdKt) {
       liveRefTriggered = true;
-      const estSpeed = Math.max(0, liveRefNow.speedKt + (t.offsetKt ?? 0));
-      if (estSpeed > (displaySpeed ?? 0)) {
+      const obsEst = Math.max(0, liveRefNow.speedKt + (t.offsetKt ?? 0));
+      // hoursAhead > 0: the same reading carried a short way forward (see
+      // `persistHours` on the trigger). Wind that's already blowing hard
+      // rarely just switches off, but trust fades quickly, so later hours
+      // blend back toward the model: 1 hour ahead keeps 2/3 of the gap, 2
+      // hours ahead 1/3 (with persistHours = 2).
+      const ahead = liveRefNow.hoursAhead ?? 0;
+      const persist = t.persistHours ?? 0;
+      const weight = ahead === 0 ? 1 : Math.max(0, 1 - ahead / (persist + 1));
+      const base = displaySpeed ?? 0;
+      const estSpeed = base + (obsEst - base) * weight;
+      if (estSpeed > base) {
         displaySpeed = estSpeed;
-        displayGust = displaySpeed * 1.3;
+        displayGust = Math.max(displayGust ?? 0, displaySpeed * 1.3);
       }
       if (regime === "calm" || regime === "mixed") regime = "synoptic";
-      reason += ` ${t.name} is reading ~${Math.round(liveRefNow.speedKt)}kt right now, above this spot's ${t.thresholdKt}kt live trigger — estimated ~${Math.round(estSpeed)}kt here. ${t.note}`;
+      reason += ahead === 0
+        ? ` ${t.name} is reading ~${Math.round(liveRefNow.speedKt)}kt right now, above this spot's ${t.thresholdKt}kt live trigger, so estimated ~${Math.round(estSpeed)}kt here. ${t.note}`
+        : ` ${t.name} was reading ~${Math.round(liveRefNow.speedKt)}kt at the last update; carried ${ahead}h forward and blended with the models (~${Math.round(estSpeed)}kt).`;
     }
   }
 
@@ -789,7 +954,7 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
       displaySpeed = floorKt;
       displayGust = Math.max(displayGust ?? 0, floorKt * 1.3);
       if (regime === "calm" || regime === "mixed") regime = "synoptic";
-      reason += ` Environment Canada's marine forecast for this area calls for ${marineAnchor.directionLabel} ${marineAnchor.loKt}${marineAnchor.hiKt !== marineAnchor.loKt ? `-${marineAnchor.hiKt}` : ""}kt${marineAnchor.timing ? ` ${marineAnchor.timing}` : ""}${marineAnchor.regime ? ` (${marineAnchor.regime})` : ""}, from a direction this spot works on — raised to EC's lower bound, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten.`;
+      reason += ` Environment Canada's marine forecast for this area calls for ${marineAnchor.directionLabel} ${marineAnchor.loKt}${marineAnchor.hiKt !== marineAnchor.loKt ? `-${marineAnchor.hiKt}` : ""}kt${marineAnchor.timing ? ` ${marineAnchor.timing}` : ""}${marineAnchor.regime ? ` (${marineAnchor.regime})` : ""}${marineAnchor.exceptionApplied ? ` (using EC's lighter "${marineAnchor.exceptionApplied}" wording for this spot)` : ""}, from a direction this spot works on. Raised toward the middle of EC's range, since the raw models are reading well under that and EC's forecasters catch gradient events the models flatten.`;
     } else if (anchorDirOk) {
       marineNote = `EC marine forecast for this area: ${marineAnchor.directionLabel} ${marineAnchor.loKt}-${marineAnchor.hiKt}kt${marineAnchor.timing ? ` ${marineAnchor.timing}` : ""}.`;
       reason += ` ${marineNote}`;
@@ -821,7 +986,13 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     ? (overrideRecord[regime]?.multiplier ?? overrideRecord.general?.multiplier ?? null)
     : null;
   let feedbackAdjusted = false;
-  if (overrideMultiplier != null && Math.abs(overrideMultiplier - 1) > 0.02) {
+  // Hours whose number came from an actual observation (live trigger) or
+  // from EC's marine forecast aren't model blend output, so the model bias
+  // multiplier doesn't apply to them. Scaling them anyway double counted:
+  // on Sep 25 2026 Garry Point's EC anchored morning was cut a further 23%
+  // by a multiplier learned from ordinary model hours.
+  const externallySet = liveRefTriggered || marineAnchored;
+  if (overrideMultiplier != null && Math.abs(overrideMultiplier - 1) > 0.02 && !externallySet) {
     feedbackAdjusted = true;
     if (displaySpeed != null) displaySpeed *= overrideMultiplier;
     if (displayGust != null) displayGust *= overrideMultiplier;
@@ -879,7 +1050,12 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
     calibrated,
     reference_triggered: referenceTriggered,
     live_reference_triggered: liveRefTriggered,
+    model_speed_kt: modelBlendSpeed != null ? Math.round(modelBlendSpeed * 10) / 10 : null,
     marine_anchored: marineAnchored,
+    // Direction EC named for this hour, kept so pattern checks (epic day
+    // signature) can still recognise the setup when the models' own
+    // direction is muddled on a weak model hour.
+    marine_direction_deg: marineAnchored && marineAnchor ? marineAnchor.directionDeg : null,
     pam_rocks_triggered: pamRocksTriggered,
     pressure_support: pressureSupport,
     upper_suppression: upperSuppression,
@@ -1064,4 +1240,113 @@ export function explainMismatch(hourResult, errorPct) {
   if (hourResult.calibrated) notes.push("This hour already had the Squamish field calibration applied.");
   if (hourResult.feedback_adjusted) notes.push("This hour already had a rider-feedback adjustment applied.");
   return notes.join(" ");
+}
+
+
+// ---------------------------------------------------------------------------
+// Tides
+// ---------------------------------------------------------------------------
+
+// Hourly water level lookup ({ "2026-09-25T09:00": 1.98, ... }, local time,
+// metres above chart datum) -> per hour { level_m, level_ft, trend,
+// rate_m_per_h }. Trend comes from the level an hour either side; under
+// ~0.08 m/h of change counts as slack.
+export function tideForHour(levels, time) {
+  if (!levels) return null;
+  const level = levels[time];
+  if (level == null) return null;
+  const d = new Date(time + ":00Z");
+  const shift = (h) => { const x = new Date(d.getTime() + h * 3600000); return x.toISOString().slice(0, 13) + ":00"; };
+  const prev = levels[shift(-1)], next = levels[shift(1)];
+  let rate = null;
+  if (prev != null && next != null) rate = (next - prev) / 2;
+  else if (next != null) rate = next - level;
+  else if (prev != null) rate = level - prev;
+  const trend = rate == null ? null : rate > 0.08 ? "rising" : rate < -0.08 ? "falling" : "slack";
+  return {
+    level_m: Math.round(level * 100) / 100,
+    level_ft: Math.round(level * 3.28084 * 10) / 10,
+    trend,
+    rate_m_per_h: rate != null ? Math.round(rate * 100) / 100 : null,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// "Possible epic day" signatures
+//
+// A spot can carry an `epicSignature` in spots.js describing a specific,
+// rider verified setup that produced an exceptional session (direction,
+// strength, tide state, time of day). Hours matching it are flagged
+// `epic: true`, and a run of at least `minHours` of them on one day becomes
+// an epic window the UI calls out. The first one is Steveston on Fri Sep 25
+// 2026 (see spots.js and README "Sep 25 2026 case study").
+//
+// Deliberately strict: every condition has to hold, and the wind has to be
+// backed by something beyond one model (EC's marine forecast, a live
+// reading, or at least two models independently at strength). A missing
+// tide feed doesn't block the flag, but the window says so.
+// ---------------------------------------------------------------------------
+export function flagEpicHours(spot, hours) {
+  const sig = spot.epicSignature;
+  if (!sig || !Array.isArray(hours)) return [];
+  const inWin = (hr) => hr >= sig.hourWindow[0] && hr <= sig.hourWindow[1];
+  const cand = hours.map((h) => {
+    const hr = Number(h.time.slice(11, 13));
+    const dirOk = (h.direction_deg != null && inSector(h.direction_deg, sig.dirSector)) ||
+      (h.marine_direction_deg != null && inSector(h.marine_direction_deg, sig.dirSector));
+    const windOk = h.speed_kt != null && h.speed_kt >= sig.minKt;
+    const modelsAtStrength = Object.values(h.raw_models || {}).filter(v => v != null && v >= sig.minKt).length;
+    const supported = h.marine_anchored || h.live_reference_triggered || modelsAtStrength >= 2;
+    const tideKnown = !!(h.tide && h.tide.trend);
+    const tideOk = !sig.tide || !tideKnown || h.tide.trend === sig.tide;
+    return inWin(hr) && dirOk && windOk && supported && tideOk ? { tideKnown } : null;
+  });
+
+  const windows = [];
+  let i = 0;
+  while (i < hours.length) {
+    if (!cand[i]) { i++; continue; }
+    const date = hours[i].time.slice(0, 10);
+    let j = i;
+    while (j + 1 < hours.length && cand[j + 1] && hours[j + 1].time.slice(0, 10) === date) j++;
+    const len = j - i + 1;
+    if (len >= (sig.minHours ?? 2)) {
+      let peak = 0, tideKnown = true;
+      for (let k = i; k <= j; k++) {
+        hours[k].epic = true;
+        peak = Math.max(peak, hours[k].speed_kt ?? 0);
+        if (!cand[k].tideKnown) tideKnown = false;
+      }
+      windows.push({
+        date,
+        start: hours[i].time.slice(11, 16),
+        end: hours[j].time.slice(11, 16),
+        hours: len,
+        peak_kt: Math.round(peak),
+        tide_known: tideKnown,
+        tide_start_m: hours[i].tide?.level_m ?? null,
+        tide_end_m: hours[j].tide?.level_m ?? null,
+        label: sig.label || "Possible epic day",
+        why: sig.summary || null,
+      });
+    }
+    i = j + 1;
+  }
+  return windows;
+}
+
+// Remove specific models from reshaped rows (spot.excludeModels). Used where
+// a model's grid is too coarse to see the water a spot sits on: ICON's cell
+// at Steveston is the same land cell whether you ask for the beach or for
+// Sand Heads 8km offshore (identical numbers at both on Sep 25 2026), so it
+// can only ever drag the blend toward land sheltered wind there.
+export function dropModels(rows, keys) {
+  if (!keys || !keys.length) return rows;
+  for (const row of rows) {
+    for (const field of ["speeds", "gusts", "dirs", "cloud", "pressure", "precip", "temp", "upperSpeeds", "upperDirs", "radiation"]) {
+      if (!row[field]) continue;
+      for (const k of keys) delete row[field][k];
+    }
+  }
+  return rows;
 }

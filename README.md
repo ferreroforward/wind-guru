@@ -575,6 +575,74 @@ This board is server-side-only, like the marine bulletin and MSLP data
 "Refresh live" client-side fallback path, and only updates on the regular
 twice(-now-thrice)-daily Action run.
 
+## Sep 25 2026 case study: the epic Steveston morning we missed
+
+On Friday Sep 25 2026 Guillermo had his best ever session at Steveston
+(Garry Point) around 9:40am, then an excellent one at Jericho at 1:24pm. Our
+forecast that morning showed Garry Point at 2 to 5kt for 7 to 10am. What
+actually happened:
+
+| Local time | Sand Heads (EC) | Steveston tide | Our 7:52am forecast, Garry Point |
+|---|---|---|---|
+| 7am | NW 18 | 2.8m falling | 1.9kt |
+| 8am | NW 14 gusting 22 | 2.4m falling | 2.6kt |
+| 9am | NNW 21 gusting 26 | 2.0m falling | 3.6kt |
+| 10am | NNW 21 gusting 27 | 1.5m falling | 5.4kt |
+| 11am | NW 24 gusting 31 | 1.2m falling | 6.6kt |
+| 12pm | NW 24 gusting 30 | 1.1m (low 11:44) | 8.5kt |
+| 1pm | NW 22 | 1.4m rising | 9.6kt |
+
+A post frontal NW surge ran down the Strait (EC strong wind warning,
+"northwest 20 to 30 this morning"; Point Atkinson pressure climbing from
+1004 to 1010 hPa through the day) while the ebb, plus the river, ran straight
+against it. Five separate problems stacked up:
+
+1. **The forecast point was on land.** Every model's grid cell at the beach
+   is a land cell, and land roughness cuts the wind hard. The same day before
+   model runs gave ECMWF 3 to 4kt at the beach cell for 9 to 10am and 19 to
+   21kt over the water 5km offshore; GEM and GFS showed the same pattern.
+   Fix: `modelPoint` in spots.js (forecast for the water riders are on),
+   and `excludeModels: ["icon"]` for Garry Point, since ICON's cell there is
+   land even at Sand Heads.
+2. **The EC anchor ignored which day a phrase named.** The bulletin's last
+   clause, "becoming light Saturday morning", overwrote "northwest 20 to 30
+   this morning" for Friday's hours, so the anchor built for exactly this day
+   never fired. The same bug fired a bogus 17kt at Jericho the day before
+   (Thursday), from a "Friday morning" clause. Fix: the parser now puts every
+   clause on a real date and hour resolved from the bulletin's issue time,
+   and each condition holds until the next clause starts
+   (`parseMarineWindText`, `marineAnchorForHour`).
+3. **Sand Heads was already blowing 20kt at 7am** when the 7:52am forecast
+   ran, and nothing used it. Fix: a Sand Heads `liveReferenceTrigger` for
+   Garry Point, carried two hours forward and fading back to the models.
+4. **The calibration had learned to distrust wind.** Live checks were only
+   logged when we forecast 8kt or more, so a miss like this one (forecast 2,
+   actual 20) was never recorded, and nearly every spot drifted down to the
+   0.75 floor. That multiplier also scaled EC anchored hours (cutting Garry
+   Point's anchored morning a further 23%). Fixes: log a check when either
+   side shows real wind; compare against the model blend; ignore live checks
+   before 2026-09-27 (`LIVE_STATION_EPOCH`); reset Garry Point's history for
+   its new forecast point (`calibrationSince`); never apply the multiplier to
+   anchored or observed hours.
+5. **NNW counted as a bad direction** at Garry Point. Fix: favorable sector
+   widened to 345°.
+
+Replaying Sep 25 through the new logic (same inputs the runs would have had)
+gives Garry Point ~22kt NW for 7am to 2pm on the morning run and ~22kt for
+9 to 11am on the evening before run, with a "Possible epic day" window flagged
+both times (7 to 11am and 9 to 11am). Jericho with EC's "near Vancouver"
+wording reads ~12kt against an observed 11 to 17.
+
+### Possible epic day
+
+A spot can carry an `epicSignature` (spots.js): direction sector, minimum
+wind, tide state, time window and minimum run length, all of which must hold,
+with the wind backed by EC, a live reading, or at least two models. The first
+one is Garry Point's: NW to NNW 17kt+, falling tide, 7am to 5pm, 2+ hours.
+Tide comes from DFO's public tide API (`tideStation`, Steveston 07607) and is
+shown in each hour's popup. Only the scheduled server run computes tides and
+epic windows; the "Refresh live" button doesn't.
+
 ## Known limitations / good next steps
 
 - Tide state and current isn't factored in, even though it matters a lot at

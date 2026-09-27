@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 import { SPOTS, PRESSURE_REFERENCE, degToLabel } from "../assets/spots.js";
-import { buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch, parseMarineWindText, marineAnchorForHour } from "../assets/rules.js";
+import { buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch, parseMarineWindText, marineAnchorForHour, parseEcIssued, dropModels, tideForHour, flagEpicHours } from "../assets/rules.js";
 
 // Minutes between "now" and a Pacific-local "HH:MM" observation time, on the
 // (safe) assumption the observation is from earlier today — used to catch a
@@ -45,6 +45,8 @@ const LIVE_LOG_MAX_PER_SPOT = 40; // cap so the log file doesn't grow forever
 // noise (a 1kt miss on a 2kt forecast is "50% error"). Raised to 8kt so the
 // calibration loop only ever learns from hours with real wind to measure.
 const LIVE_MIN_FORECAST_KT = 8;
+// Smallest forecast value used as the denominator of a live check ratio.
+const LIVE_RATIO_FLOOR_KT = 5;
 // Ignore a live observation older than this when comparing against "right
 // now" — a frozen/stale sensor reading as unchanging for hours shouldn't be
 // treated as live corroboration or logged as a calibration data point. Same
@@ -297,14 +299,57 @@ async function getLiveObservation(station) {
 }
 
 async function fetchSpot(spot) {
-  const url = buildForecastUrl(spot.lat, spot.lon, FORECAST_DAYS);
+  // modelPoint (spots.js): where to ask the models, when the beach itself
+  // sits in a land grid cell. Falls back to the spot's own coordinates.
+  const pt = spot.modelPoint || spot;
+  const url = buildForecastUrl(pt.lat, pt.lon, FORECAST_DAYS);
   const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
   if (!res.ok) {
     console.error(`[${spot.id}] fetch failed: ${res.status} ${res.statusText}`);
     return null;
   }
   const json = await res.json();
-  return reshapeOpenMeteo(json);
+  return dropModels(reshapeOpenMeteo(json), spot.excludeModels);
+}
+
+// DFO (Canadian Hydrographic Service) hourly tide predictions for a spot's
+// tideStation, keyed by local "YYYY-MM-DDTHH:00" like the forecast hours.
+// Public API, no key: https://api-iwls.dfo-mpo.gc.ca (IWLS). Predictions
+// (wlp) rather than observations, since we need the hours ahead. Cached per
+// station; any failure just means no tide info this run.
+const tideCache = {};
+async function fetchTideLevels(station, startedAt) {
+  if (!station) return null;
+  const key = station.code;
+  if (key in tideCache) return tideCache[key];
+  tideCache[key] = null;
+  try {
+    const base = "https://api-iwls.dfo-mpo.gc.ca/api/v1";
+    let id = station.id;
+    if (!id) {
+      const r = await fetch(`${base}/stations?code=${station.code}`, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
+      if (!r.ok) throw new Error(`station lookup HTTP ${r.status}`);
+      id = (await r.json())?.[0]?.id;
+      if (!id) throw new Error("station not found");
+    }
+    const from = new Date(startedAt.getTime() - 24 * 3600000);
+    const to = new Date(startedAt.getTime() + (FORECAST_DAYS + 1) * 24 * 3600000);
+    const iso = (d) => d.toISOString().slice(0, 19) + "Z";
+    const url = `${base}/stations/${id}/data?time-series-code=wlp&from=${iso(from)}&to=${iso(to)}&resolution=SIXTY_MINUTES`;
+    const res = await fetch(url, { headers: { "User-Agent": "wind-guru-agent/1.0" } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const arr = await res.json();
+    const levels = {};
+    for (const e of arr || []) {
+      if (e.value == null || !e.eventDate) continue;
+      levels[currentPacificHourString(new Date(e.eventDate))] = e.value;
+    }
+    console.log(`  [tide:${station.name}] ${Object.keys(levels).length} hourly predictions`);
+    tideCache[key] = Object.keys(levels).length ? levels : null;
+  } catch (err) {
+    console.log(`  [tide:${station.name}] fetch failed: ${err.message}`);
+  }
+  return tideCache[key];
 }
 
 // Environment Canada's marine text bulletin — per a 12-year local rider
@@ -373,7 +418,12 @@ async function fetchMarineBulletin(zone) {
     const winds = extractMarineSection(html, "Winds", ["Weather & Visibility", "Extended Forecast", "Stay connected"])
       || extractMarineSection(html, "Marine Forecast", ["Winds", "Weather & Visibility", "Extended Forecast", "Stay connected"]);
     const text = winds ? winds.text.slice(0, 900) : "";
-    const parsed = winds ? parseMarineWindText(winds.text) : null;
+    // Timing phrases ("Friday morning", "this afternoon") only mean
+    // something relative to the bulletin's issue time, so hand it over.
+    // Fallback if EC ever drops the Issued line: assume it was just issued.
+    const nowStr = currentPacificHourString(new Date());
+    const issuedInfo = parseEcIssued(winds?.issued) || { dateStr: nowStr.slice(0, 10), hour: Number(nowStr.slice(11, 13)) };
+    const parsed = winds ? parseMarineWindText(winds.text, issuedInfo) : null;
     if (parsed) {
       console.log(`  [marine:${zone.id}] parsed ${parsed.segments.length} segment(s), ${parsed.minKt}-${parsed.maxKt}kt${parsed.hasOutflow ? ", OUTFLOW named" : ""}${parsed.hasInflow ? ", INFLOW named" : ""}`);
     } else {
@@ -693,10 +743,15 @@ async function main() {
     const zoneBulletin = spot.marineZone ? bulletins[spot.marineZone] : null;
     const marineParsed = zoneBulletin?.parsed ?? null;
 
-    const hours = rows.map((row) => {
+    // Index of "right now" in this spot's rows, so a live reading can be
+    // carried a few hours forward (liveReferenceTrigger.persistHours).
+    const nowIdx = rows.findIndex((r) => r.time === nowHourStr);
+    const persistHours = spot.liveReferenceTrigger?.persistHours ?? 0;
+
+    const hours = rows.map((row, rowIdx) => {
       const { hour, month } = localHourAndMonth(row.time);
       const refSpeedKt = refMap ? refMap[row.time] : null;
-      const marineAnchor = marineParsed ? marineAnchorForHour(marineParsed, hour) : null;
+      const marineAnchor = marineParsed ? marineAnchorForHour(marineParsed, hour, row.time.slice(0, 10), spot) : null;
 
       let pressureGradients = null;
       if (gm) {
@@ -717,14 +772,23 @@ async function main() {
         ? { speedKt: pamRocksObs.speedKt, directionDeg: pamRocksObs.directionDeg }
         : null;
 
-      // Live station readings only ever describe "right now", never a future
-      // hour — same rule as pamRocksNow above.
-      const liveRefNow = (liveRefObs && row.time === nowHourStr)
-        ? { speedKt: liveRefObs.speedKt, directionDeg: liveRefObs.directionDeg }
+      // Live station readings describe "right now". A spot's trigger may
+      // opt in to carrying the reading a couple of hours forward (fading
+      // back toward the models, see rules.js); never further than that.
+      const ahead = nowIdx >= 0 ? rowIdx - nowIdx : -1;
+      const liveRefNow = (liveRefObs && ahead >= 0 && ahead <= persistHours)
+        ? { speedKt: liveRefObs.speedKt, directionDeg: liveRefObs.directionDeg, hoursAhead: ahead }
         : null;
 
       return classifyHour(spot, row, hour, month, refSpeedKt, pressureGradients, overrideRecord, pamRocksNow, marineAnchor, liveRefNow);
     });
+
+    // Tide state per hour (for spots with a tideStation), then the spot's
+    // "possible epic day" signature, which can depend on it.
+    const tideLevels = spot.tideStation ? await fetchTideLevels(spot.tideStation, startedAt) : null;
+    if (tideLevels) for (const h of hours) h.tide = tideForHour(tideLevels, h.time);
+    const epicWindows = flagEpicHours(spot, hours);
+    if (epicWindows.length) console.log(`  [epic:${spot.id}] ${epicWindows.map(w => `${w.date} ${w.start}-${w.end} peak ${w.peak_kt}kt`).join("; ")}`);
 
     // Live verification: compare the forecast for THIS hour against what
     // the nearest station is actually observing right now, and log EVERY
@@ -740,8 +804,23 @@ async function main() {
       try {
         const obs = await getLiveObservation(spot.liveStation);
         const forecastHour = hours.find((h) => h.time === nowHourStr);
-        if (obs && forecastHour && forecastHour.speed_kt != null && forecastHour.speed_kt >= LIVE_MIN_FORECAST_KT) {
-          const errorPct = (obs.speedKt - forecastHour.speed_kt) / forecastHour.speed_kt;
+        // Log when EITHER side shows real wind. Logging only when we had
+        // forecast 8kt+ meant a big miss the other way (forecast 2kt, Sand
+        // Heads blowing 20, as on Sep 25 2026) was never recorded, so the
+        // calibration could only ever learn "we forecast too high" and every
+        // spot drifted down toward the 0.75 floor. The forecast side of the
+        // ratio is floored so a near zero forecast can't blow the ratio up.
+        const qualifies = obs && forecastHour && forecastHour.speed_kt != null &&
+          (forecastHour.speed_kt >= LIVE_MIN_FORECAST_KT || obs.speedKt >= LIVE_MIN_FORECAST_KT);
+        if (qualifies) {
+          // Compare against the model blend, not a value a live reading or
+          // EC's bulletin already set (that would just measure itself).
+          const modelKt = forecastHour.model_speed_kt ?? forecastHour.speed_kt;
+          const fcFloor = Math.max(modelKt, LIVE_RATIO_FLOOR_KT);
+          // What the page showed vs what happened (for the UI pill and the
+          // mismatch flag); the calibration log below uses the model blend.
+          const shownFloor = Math.max(forecastHour.speed_kt, LIVE_RATIO_FLOOR_KT);
+          const errorPct = (obs.speedKt - shownFloor) / shownFloor;
           const mismatch = Math.abs(errorPct) >= LIVE_ERROR_THRESHOLD;
           liveCheck = {
             checked_hour: nowHourStr,
@@ -765,9 +844,9 @@ async function main() {
           liveVerifications.push({
             spot: spot.id,
             time: nowHourStr,
-            forecasted: forecastHour.speed_kt,
+            forecasted: modelKt,
             actual: obs.speedKt,
-            ratio: obs.speedKt / forecastHour.speed_kt,
+            ratio: obs.speedKt / fcFloor,
             source: "live-station",
             station: spot.liveStation.name,
             regime: forecastHour.regime,
@@ -791,6 +870,8 @@ async function main() {
       level: spot.level,
       hours,
       live_check: liveCheck,
+      tide_station: spot.tideStation?.name ?? null,
+      epic_windows: epicWindows,
     });
 
     // Be polite to the free API.

@@ -158,6 +158,14 @@ export const SPOTS = [
     lat: 49.281646, lon: -123.235223,
     marineZone: "strait_of_georgia_south",
     marineAnchorFactor: 0.85,
+    // EC often words the Strait bulletin "... except northwest 5 to 15 near
+    // Vancouver"; that lighter wording is the one for English Bay. On Sep 25
+    // 2026 the zone ran NW 20-30 while Jericho peaked at 17kt, which the
+    // "near Vancouver" wording (scaled, see marineAnchorForHour) matches.
+    marineExceptionAreas: ["near vancouver", "english bay"],
+    // DFO Point Atkinson (07795), the reference port for English Bay.
+    // See tide_note: low tide means a long walk to the water here.
+    tideStation: { code: "07795", id: "5cebf1de3d0f4a073c4bb94c", name: "Point Atkinson" },
     sports: ["windsurf", "wingfoil", "kite"],
     level: "beginner-friendly",
     // Broadened from the old [230,320] westerly-thermal-only sector to
@@ -189,14 +197,62 @@ export const SPOTS = [
     name: "Steveston - Garry Point Park",
     region: "Fraser Delta",
     lat: 49.123665, lon: -123.196088,
+    // Where we ask the weather models for wind, as opposed to lat/lon above
+    // (the beach access, used for the map pin). The beach sits in a land
+    // grid cell for every model, and land roughness cuts the forecast wind
+    // hard: on Sep 25 2026 the day before runs gave ~3-4kt at the beach cell
+    // for 9-10am (ECMWF) while the same runs gave 19-21kt over the water at
+    // this point, and Sand Heads actually blew NNW 21 gusting 26. Riders
+    // ride the water, and locals already read Sand Heads as the go/no-go, so
+    // forecast for the water. This point (~5km WSW of the beach, inside Sand
+    // Heads) is the closest one that is open water for GEM, GFS and ECMWF.
+    modelPoint: { lat: 49.115, lon: -123.27 },
+    // See dropModels() in rules.js: ICON only resolves land here.
+    excludeModels: ["icon"],
+    // Forecast point moved on this date, so calibration history learned
+    // against the old (land) point no longer describes this forecast.
+    calibrationSince: "2026-09-27",
     marineZone: "strait_of_georgia_south",
     marineAnchorFactor: 0.9,
     sports: ["kite", "windsurf", "wingfoil"],
     level: "intermediate",
-    // Widened slightly from [180,300] to fully include NW (315°) — the
-    // strong-current note below specifically calls out W/NW/SW as the best
-    // directions here.
-    favorable_deg: [[180, 320]],
+    // Widened to take in NNW: Guillermo's best ever session here (Sep 25
+    // 2026) was in NNW 21 gusting 26 at Sand Heads. W, NW and SW remain the
+    // core directions (see current_note).
+    favorable_deg: [[180, 345]],
+    // DFO tide station right at Garry Point (07607). Tide matters a lot
+    // here: see current_note and epicSignature.
+    tideStation: { code: "07607", id: "5cebf1e13d0f4a073c4bbf8c", name: "Steveston" },
+    // Sand Heads is the local go/no-go read (see liveStation below). When it
+    // is already blowing from a direction that works here, trust the reading
+    // over the models for this hour, and carry it a couple of hours forward.
+    // On Sep 25 2026 Sand Heads was NW 18-20 by 7am while our 7:52am
+    // forecast said 2kt for the same hour.
+    liveReferenceTrigger: {
+      name: "Sand Heads",
+      thresholdKt: 12,
+      offsetKt: 0,
+      dirSector: [180, 350],
+      persistHours: 2,
+      note: "Local riders use Sand Heads as the go/no-go read for Steveston."
+    },
+    // The setup behind Guillermo's best ever session here, Fri Sep 25 2026
+    // around 9:40am: a post frontal NW surge down the Strait (EC strong wind
+    // warning, "northwest 20 to 30 this morning"; Point Atkinson pressure
+    // climbing from 1004 to 1010 hPa through the day), Sand Heads NNW 21
+    // gusting 26, and a falling tide (Steveston ~1.7m and dropping ~0.45m an
+    // hour from a 3.2m high at 5:11am toward a 1.1m low at 11:44am), so the
+    // ebb and the river outflow ran straight against the wind. Every
+    // condition below has to hold for 2+ consecutive hours to flag.
+    epicSignature: {
+      label: "Possible epic day",
+      summary: "Strong NW to NNW down the Strait with a falling tide running against it: the Sep 25 2026 setup.",
+      dirSector: [295, 350],
+      minKt: 17,
+      tide: "falling",
+      hourWindow: [7, 17],
+      minHours: 2
+    },
     // Swapped from the YVR airport EC station to Sand Heads — the Coast
     // Guard lightstation right at the mouth of the Fraser's South Arm, a few
     // hundred meters offshore from this spot. Per North Shore Wing Group

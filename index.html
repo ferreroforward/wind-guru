@@ -66,6 +66,13 @@
   .bet-info{flex:1;min-width:0;}
   .bet-info .name{font-weight:600;font-size:1.1rem;}
   .bet-info .detail{color:var(--muted);font-size:0.92rem;margin-top:3px;}
+  .epic-card{background:linear-gradient(135deg,#fff3e6,#fdf7ef);border:1.5px solid #e8833a;box-shadow:var(--shadow);border-radius:14px;padding:16px 20px;margin:16px 0;}
+  .epic-eyebrow{font-size:0.78rem;font-weight:700;letter-spacing:0.05em;color:#c25e12;text-transform:uppercase;margin-bottom:6px;}
+  .epic-body{font-size:1.05rem;color:var(--text);line-height:1.45;}
+  .epic-body .sub{display:block;font-size:0.86rem;color:var(--muted);margin-top:4px;}
+  .epic-line{background:#fff3e6;border:1px solid #f0b27f;color:#8a3f06;border-radius:8px;padding:6px 10px;font-size:0.86rem;font-weight:600;margin:0 0 10px;}
+  .hour-cell.epic{box-shadow:inset 0 0 0 2px #e8833a;}
+  .hour-cell .epic-dot{position:absolute;bottom:2px;left:3px;font-size:0.65rem;line-height:1;}
   .gusty-tag{display:inline-block;margin-left:6px;background:#fdeecb;color:#9a6400;font-weight:700;font-size:0.76rem;padding:2px 7px;border-radius:8px;white-space:nowrap;cursor:help;}
   .offshore-tag{display:inline-block;margin-left:6px;background:var(--red-bg);color:var(--red);font-weight:700;font-size:0.76rem;padding:2px 7px;border-radius:8px;white-space:nowrap;cursor:help;}
 
@@ -166,6 +173,11 @@
 <header>
   <h1>🌬️ Wind Guru</h1>
   <p class="sub">Where to go windsurf, wingfoil, kite or parawing — Howe Sound, Metro Vancouver &amp; the Strait of Georgia</p>
+  <div class="epic-card" id="epicCard" style="display:none;">
+    <div class="epic-eyebrow">🔥 Possible epic day</div>
+    <div class="epic-body" id="epicBody"></div>
+  </div>
+
   <div class="windiest-card" id="windiestCard" style="display:none;">
     <div class="windiest-eyebrow">💨 Windiest good bet, <span id="windiestWhen"></span></div>
     <div class="windiest-body" id="windiestBody"></div>
@@ -283,7 +295,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script type="module">
 import { SPOTS } from "./assets/spots.js";
-import { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, referenceStationSpeeds } from "./assets/rules.js";
+import { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, referenceStationSpeeds, dropModels } from "./assets/rules.js";
 
 let forecast = null; // loaded forecast.json shape
 let selectedDayIndex = 0;
@@ -499,6 +511,34 @@ function renderWindiestCard() {
   body.innerHTML = `<b>${w.spot.name}</b> · ${Math.round(w.hour.speed_kt)}kt${gustText} ${w.hour.direction_label ?? ""} at ${w.hour.time.slice(11,16)}${gustyTag}`;
 }
 
+// "Possible epic day": a spot's rider verified epic setup (epicSignature in
+// spots.js, flagged server side by flagEpicHours in rules.js) matches for 2+
+// hours on the selected day. Deliberately rare and deliberately loud.
+function epicWindowsForDay(spotData) {
+  const dateStr = dayBuckets()[selectedDayIndex];
+  return (spotData?.epic_windows || []).filter(w => w.date === dateStr);
+}
+function tideRangeText(w) {
+  if (w.tide_start_m == null || w.tide_end_m == null) return w.tide_known ? "" : " (tide data unavailable, check the tide)";
+  const trend = w.tide_end_m < w.tide_start_m ? "falling" : w.tide_end_m > w.tide_start_m ? "rising" : "steady";
+  return `, ${trend} tide ${w.tide_start_m.toFixed(1)}m to ${w.tide_end_m.toFixed(1)}m`;
+}
+function renderEpicCard() {
+  const card = document.getElementById("epicCard");
+  const body = document.getElementById("epicBody");
+  const items = [];
+  for (const sp of SPOTS) {
+    const spotData = forecast.spots.find(s => s.id === sp.id);
+    for (const w of epicWindowsForDay(spotData)) items.push({ sp, w });
+  }
+  if (!items.length) { card.style.display = "none"; return; }
+  card.style.display = "block";
+  body.innerHTML = items.map(({ sp, w }) =>
+    `<b>${sp.name}</b> · ${hourLabel(Number(w.start.slice(0, 2)))} to ${hourLabel(Number(w.end.slice(0, 2)))}, up to ${w.peak_kt}kt${tideRangeText(w)}` +
+    (w.why ? `<span class="sub">${w.why}</span>` : "")
+  ).join("<br>");
+}
+
 // "Guillermo's take" -- shown only when there's a comment for the day
 // currently selected (see dayBuckets()/selectedDayIndex), never a generic
 // "today" -- matches the windiest-card's own conditional-display pattern.
@@ -701,8 +741,10 @@ function showTip(cellEl, h, spotId) {
   // previously this reasoning was computed every run but never actually
   // shown anywhere in the UI.
   const summaryText = h.summary ? `<div style="margin-top:4px;opacity:0.85;font-weight:400;">${h.summary}</div>` : "";
+  const tideText = h.tide ? `<div style="margin-top:4px;opacity:0.85;font-weight:400;">Tide ${h.tide.level_m.toFixed(1)}m (${h.tide.level_ft}ft)${h.tide.trend ? `, ${h.tide.trend}` : ""}</div>` : "";
+  const epicText = h.epic ? `<div style="margin-top:4px;font-weight:700;color:#ffcf9e;">🔥 Matches this spot's epic day setup</div>` : "";
   const spotName = (SPOTS.find(s => s.id === spotId) || {}).name ?? spotId;
-  globalTip.innerHTML = `<b>${regimeLabel(h.regime)}</b>${speedText}${summaryText}
+  globalTip.innerHTML = `<b>${regimeLabel(h.regime)}</b>${speedText}${summaryText}${tideText}${epicText}
     <button type="button" class="report-trigger" data-spot="${spotId}" data-name="${spotName}" data-date="${h.time.slice(0, 10)}" data-time="${h.time.slice(11, 16)}" data-forecast="${h.speed_kt != null ? h.speed_kt : ""}">📝 Report actual conditions →</button>`;
   const rect = cellEl.getBoundingClientRect();
   globalTip.style.display = "block";
@@ -730,6 +772,9 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape") hideTip();
 function renderSpotCards() {
   spotCardsEl.innerHTML = "";
   const goodIds = new Set(rankedSpotsForDay().filter(r => r.probability >= MIN_LIST_PROBABILITY).map(r => r.spot.id));
+  // A spot with a possible epic window always gets its card, whatever range
+  // is selected.
+  for (const sd of forecast.spots) if (epicWindowsForDay(sd).length) goodIds.add(sd.id);
   if (!goodIds.size) {
     spotCardsEl.innerHTML = `<div class="empty">Nothing hit ${MIN_LIST_PROBABILITY}%+ for this range today — try a wider range or another day. (Every spot is still on the map above.)</div>`;
     return;
@@ -761,6 +806,7 @@ function renderSpotCards() {
         <div><span class="name">${sp.name}</span> <span class="region">· ${sp.region} · ${sp.level}</span></div>
         <div class="sports">${sp.sports.join(" · ")}</div>
       </div>
+      ${epicWindowsForDay(spot).map(w => `<div class="epic-line">🔥 Possible epic day: ${hourLabel(Number(w.start.slice(0, 2)))} to ${hourLabel(Number(w.end.slice(0, 2)))}, up to ${w.peak_kt}kt${tideRangeText(w)}</div>`).join("")}
       ${liveBadge}
       <div class="hour-strip"></div>
     `;
@@ -772,12 +818,13 @@ function renderSpotCards() {
         const { probability } = probabilityInRange(h, minKt);
         const cls = tierClass(probability);
         const cellEl = document.createElement("div");
-        cellEl.className = `hour-cell ${cls}`;
+        cellEl.className = `hour-cell ${cls}${h.epic ? " epic" : ""}`;
         cellEl.tabIndex = 0; // keyboard/touch accessible, not just mouse hover
         cellEl.setAttribute("role", "button");
         cellEl.setAttribute("aria-label", `${h.time.slice(11,16)}: ${probability}% chance, ${h.speed_kt != null ? Math.round(h.speed_kt) : "no"} knots ${h.direction_label ?? ""}${h.favorable_direction === false ? ", offshore direction" : ""}${h.gusty ? ", gusty" : ""}`);
         cellEl.innerHTML = `
           ${h.gusty ? `<div class="gusty-dot" title="Gusty — strong upper-level wind">💨</div>` : ""}
+          ${h.epic ? `<div class="epic-dot" title="Matches this spot's epic day setup">🔥</div>` : ""}
           ${h.favorable_direction === false ? `<div class="offshore-dot" title="Offshore / unfavorable direction">⚠️</div>` : ""}
           <div class="t">${h.time.slice(11,16)}</div>
           <div class="p">${probability}%</div>
@@ -921,6 +968,7 @@ function renderAll() {
   if (!freshnessTimer) freshnessTimer = setInterval(renderFreshnessBadge, 60000); // keep "Xm ago" live while the tab is open
   renderBulletin();
   renderDayTabs();
+  renderEpicCard();
   renderWindiestCard();
   renderDailyTake();
   renderBestBets();
@@ -949,11 +997,12 @@ async function loadLive() {
     const spotsOut = [];
     const refCache = {};
     for (const spot of SPOTS) {
-      const url = buildForecastUrl(spot.lat, spot.lon, 4);
+      const pt = spot.modelPoint || spot;
+      const url = buildForecastUrl(pt.lat, pt.lon, 4);
       const res = await fetch(url);
       if (!res.ok) throw new Error(`Open-Meteo fetch failed for ${spot.name}: HTTP ${res.status}`);
       const json = await res.json();
-      const rows = reshapeOpenMeteo(json);
+      const rows = dropModels(reshapeOpenMeteo(json), spot.excludeModels);
 
       let refMap = null;
       if (spot.referenceStation) {
