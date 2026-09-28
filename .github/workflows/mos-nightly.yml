@@ -7,6 +7,9 @@ on:
     # days every night, and refits it on the 1st of each month (see
     # scripts/mos-train.mjs "auto").
     - cron: "40 10 * * *"
+    # Backup at 6:40am (added Sep 28 2026, GitHub skipped the first nightly
+    # run): only does anything if tonight's scoring hasn't happened yet.
+    - cron: "40 13 * * *"
   workflow_dispatch:
     inputs:
       mode:
@@ -22,14 +25,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Skip if already scored today (scheduled runs only)
+        id: fresh
+        if: github.event_name == 'schedule'
+        run: |
+          age=$(node -e "const f=require('./data/mos-recent.json');console.log(Math.round((Date.now()-Date.parse(f.updated_at))/3600000))" 2>/dev/null || echo 999)
+          echo "Last scoring was ${age} hours ago."
+          if [ "$age" -lt 20 ]; then echo "skip=true" >> "$GITHUB_OUTPUT"; fi
+
       - uses: actions/setup-node@v4
+        if: steps.fresh.outputs.skip != 'true'
         with:
           node-version: "20"
 
       - name: Score (and on the 1st, refit) the learned corrections
+        if: steps.fresh.outputs.skip != 'true'
         run: node scripts/mos-train.mjs ${{ github.event.inputs.mode || 'auto' }}
 
       - name: Commit and push if changed
+        if: steps.fresh.outputs.skip != 'true'
         run: |
           git config user.name "wind-guru-bot"
           git config user.email "actions@users.noreply.github.com"

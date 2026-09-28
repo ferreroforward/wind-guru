@@ -19,6 +19,13 @@ on:
     - cron: "0 12 * * *"
     - cron: "0 20 * * *"
     - cron: "0 0 * * *"
+    # Backups, 90 minutes later (added Sep 28 2026): GitHub sometimes starts
+    # a scheduled run hours late or skips it. A backup only does anything
+    # if the site's snapshot is more than 2 hours old (see the "Skip if
+    # fresh" step), so on a normal day it exits in a few seconds.
+    - cron: "30 13 * * *"
+    - cron: "30 21 * * *"
+    - cron: "30 1 * * *"
   workflow_dispatch: {}   # lets you trigger a run manually from the Actions tab
   issues:
     # Fires the moment Guillermo posts or edits a "Daily take" or wind-report
@@ -42,19 +49,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Skip if fresh (scheduled runs only)
+        id: fresh
+        if: github.event_name == 'schedule'
+        run: |
+          age=$(node -e "const f=require('./data/forecast.json');console.log(Math.round((Date.now()-Date.parse(f.generated_at))/60000))" 2>/dev/null || echo 9999)
+          echo "Snapshot is ${age} minutes old."
+          if [ "$age" -lt 120 ]; then echo "skip=true" >> "$GITHUB_OUTPUT"; echo "Fresh enough, nothing to do."; fi
+
       - uses: actions/setup-node@v4
+        if: steps.fresh.outputs.skip != 'true'
         with:
           node-version: "20"
 
       - name: Apply rider-feedback calibration
+        if: steps.fresh.outputs.skip != 'true'
         run: node scripts/apply-feedback.mjs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate forecast snapshot
+        if: steps.fresh.outputs.skip != 'true'
         run: node scripts/generate.mjs
 
       - name: Commit and push if changed
+        if: steps.fresh.outputs.skip != 'true'
         run: |
           git config user.name "wind-guru-bot"
           git config user.email "actions@users.noreply.github.com"
