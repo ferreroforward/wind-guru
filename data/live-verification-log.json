@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-27T23:44:55.950Z",
+  "updated_at": "2026-09-28T02:17:36.763Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -979,6 +979,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-09-27T19:00",
+      "forecasted": 11.9,
+      "actual": 7,
+      "ratio": 0.5882352941176471,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 53%, so spread between models likely explains some of the gap.",
+      "checked_at": "2026-09-28T02:17:36.763Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-09-27T16:00",
       "forecasted": 13.4,
       "actual": 8,
@@ -1795,6 +1808,19 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-29T20:09:05.755Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
+      "time": "2026-09-27T19:00",
+      "forecasted": 7.1,
+      "actual": 10.3,
+      "ratio": 1.4507042253521127,
+      "source": "live-station",
+      "station": "English Bay buoy",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-09-28T02:17:36.763Z"
     },
     {
       "spot": "jericho-spanish-banks",
