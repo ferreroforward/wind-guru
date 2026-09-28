@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-28T20:16:05.100Z",
+  "updated_at": "2026-09-28T22:26:17.361Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -96,6 +96,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-09-28T15:00",
+      "forecasted": 7.9,
+      "actual": 18.1,
+      "ratio": 2.2911392405063293,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "outflow",
+      "mismatch": true,
+      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
+      "checked_at": "2026-09-28T22:26:17.361Z"
     },
     {
       "spot": "erwin-park",
@@ -1018,6 +1031,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-09-28T15:00",
+      "forecasted": 13.7,
+      "actual": 13,
+      "ratio": 0.9489051094890512,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-09-28T22:26:17.361Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-09-28T13:00",
       "forecasted": 11.3,
       "actual": 14,
@@ -1447,6 +1473,19 @@
     },
     {
       "spot": "tsawwassen-south",
+      "time": "2026-09-28T15:00",
+      "forecasted": 10.1,
+      "actual": 10.3,
+      "ratio": 1.0198019801980198,
+      "source": "live-station",
+      "station": "Tsawwassen Ferry Terminal",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-09-28T22:26:17.361Z"
+    },
+    {
+      "spot": "tsawwassen-south",
       "time": "2026-09-28T13:00",
       "forecasted": 9.1,
       "actual": 10.3,
@@ -1837,6 +1876,19 @@
     },
     {
       "spot": "crescent-beach",
+      "time": "2026-09-28T15:00",
+      "forecasted": 8.5,
+      "actual": 1.3,
+      "ratio": 0.15294117647058825,
+      "source": "live-station",
+      "station": "White Rock East Beach",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
+      "checked_at": "2026-09-28T22:26:17.361Z"
+    },
+    {
+      "spot": "crescent-beach",
       "time": "2026-09-28T13:00",
       "forecasted": 8,
       "actual": 4.2,
@@ -1951,6 +2003,19 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-29T20:09:05.755Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
+      "time": "2026-09-28T15:00",
+      "forecasted": 9.9,
+      "actual": 14,
+      "ratio": 1.4141414141414141,
+      "source": "live-station",
+      "station": "English Bay buoy",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-09-28T22:26:17.361Z"
     },
     {
       "spot": "jericho-spanish-banks",
