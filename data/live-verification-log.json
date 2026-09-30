@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-30T22:36:34.603Z",
+  "updated_at": "2026-09-30T23:23:51.391Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -963,6 +963,19 @@
       "mismatch": true,
       "reasoning": "Forecast called a thermal that came in weaker than shown — possible early suppression (heat, high cloud) or the gradient not fully developing. This hour already had the Squamish field calibration applied. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-09-08T20:16:01.699Z"
+    },
+    {
+      "spot": "white-rock-east",
+      "time": "2026-09-30T16:00",
+      "forecasted": 5.9,
+      "actual": 8.9,
+      "ratio": 1.5084745762711864,
+      "source": "live-station",
+      "station": "White Rock East Beach",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-30T23:23:51.391Z"
     },
     {
       "spot": "white-rock-east",
@@ -2120,6 +2133,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 0%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-29T12:07:32.837Z"
+    },
+    {
+      "spot": "crescent-beach",
+      "time": "2026-09-30T16:00",
+      "forecasted": 6.4,
+      "actual": 8.9,
+      "ratio": 1.390625,
+      "source": "live-station",
+      "station": "White Rock East Beach",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-30T23:23:51.391Z"
     },
     {
       "spot": "crescent-beach",
