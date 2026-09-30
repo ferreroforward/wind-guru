@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-30T18:31:19.259Z",
+  "updated_at": "2026-09-30T22:36:34.603Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -443,6 +443,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "porteau-cove",
+      "time": "2026-09-30T15:00",
+      "forecasted": 5.9,
+      "actual": 8,
+      "ratio": 1.3559322033898304,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "thermal",
+      "mismatch": true,
+      "reasoning": "Forecast called a thermal but under-shot its strength — even after the local calibration, coarse models can still lag on an unusually strong thermal day.",
+      "checked_at": "2026-09-30T22:36:34.603Z"
     },
     {
       "spot": "porteau-cove",
@@ -952,17 +965,17 @@
       "checked_at": "2026-09-08T20:16:01.699Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-09-07T17:00",
-      "forecasted": 8.7,
-      "actual": 8,
-      "ratio": 0.9195402298850576,
+      "spot": "white-rock-east",
+      "time": "2026-09-30T15:00",
+      "forecasted": 5.4,
+      "actual": 9.2,
+      "ratio": 1.7037037037037035,
       "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "thermal",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-09-08T00:23:58.880Z"
+      "station": "White Rock East Beach",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-30T22:36:34.603Z"
     },
     {
       "spot": "white-rock-east",
@@ -2107,6 +2120,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 0%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-29T12:07:32.837Z"
+    },
+    {
+      "spot": "crescent-beach",
+      "time": "2026-09-30T15:00",
+      "forecasted": 5.8,
+      "actual": 9.2,
+      "ratio": 1.586206896551724,
+      "source": "live-station",
+      "station": "White Rock East Beach",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-30T22:36:34.603Z"
     },
     {
       "spot": "crescent-beach",
