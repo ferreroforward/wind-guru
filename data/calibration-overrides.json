@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T02:44:06.899Z",
+  "generated_at": "2026-09-30T06:55:37.581Z",
   "min_samples": 2,
   "spots": {
     "tsawwassen-south": {
@@ -102,12 +102,12 @@
     },
     "garry-point": {
       "general": {
-        "sample_size": 10,
+        "sample_size": 11,
         "rider_reports": 0,
-        "live_checks": 10,
-        "avg_ratio": 0.99,
-        "multiplier": 0.99,
-        "note": "Based on 10 total data points (0 rider reports, 10 live-station checks): actual wind averaged 99% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 11,
+        "avg_ratio": 1.01,
+        "multiplier": 1.01,
+        "note": "Based on 11 total data points (0 rider reports, 11 live-station checks): actual wind averaged 101% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 9,
