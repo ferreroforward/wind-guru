@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-30T06:55:37.651Z",
+  "updated_at": "2026-09-30T15:53:21.691Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -443,6 +443,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "porteau-cove",
+      "time": "2026-09-30T08:00",
+      "forecasted": 0,
+      "actual": 12.1,
+      "ratio": 2.42,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-09-30T15:53:21.691Z"
     },
     {
       "spot": "porteau-cove",
@@ -950,19 +963,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-09-08T00:23:58.880Z"
-    },
-    {
-      "spot": "porteau-cove",
-      "time": "2026-09-07T13:00",
-      "forecasted": 11.3,
-      "actual": 4.1,
-      "ratio": 0.3628318584070796,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "thermal",
-      "mismatch": true,
-      "reasoning": "Forecast called a thermal that came in weaker than shown — possible early suppression (heat, high cloud) or the gradient not fully developing. MSLP had already flagged this hour as uncertain. This hour already had the Squamish field calibration applied. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-07T20:16:19.849Z"
     },
     {
       "spot": "white-rock-east",
@@ -2289,6 +2289,19 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-29T20:09:05.755Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
+      "time": "2026-09-30T08:00",
+      "forecasted": 4,
+      "actual": 10.3,
+      "ratio": 2.06,
+      "source": "live-station",
+      "station": "English Bay buoy",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-09-30T15:53:21.691Z"
     },
     {
       "spot": "jericho-spanish-banks",

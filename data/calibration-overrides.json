@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T06:55:37.581Z",
+  "generated_at": "2026-09-30T15:53:21.579Z",
   "min_samples": 2,
   "spots": {
     "tsawwassen-south": {
@@ -146,12 +146,12 @@
     },
     "jericho-spanish-banks": {
       "general": {
-        "sample_size": 5,
+        "sample_size": 6,
         "rider_reports": 0,
-        "live_checks": 5,
-        "avg_ratio": 0.79,
-        "multiplier": 0.82,
-        "note": "Based on 5 total data points (0 rider reports, 5 live-station checks): actual wind averaged 79% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 5 data points so far -- the raw ratio would be 79%, softened to a 82% multiplier until more reports come in."
+        "live_checks": 6,
+        "avg_ratio": 0.92,
+        "multiplier": 0.92,
+        "note": "Based on 6 total data points (0 rider reports, 6 live-station checks): actual wind averaged 92% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "mixed": {
         "sample_size": 4,
