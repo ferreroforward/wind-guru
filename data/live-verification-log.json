@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-29T23:14:30.085Z",
+  "updated_at": "2026-09-30T02:44:07.018Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1132,6 +1132,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-09-29T19:00",
+      "forecasted": 8,
+      "actual": 9.9,
+      "ratio": 1.2375,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-09-30T02:44:07.018Z"
     },
     {
       "spot": "garry-point",
