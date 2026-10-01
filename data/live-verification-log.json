@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-30T23:23:51.391Z",
+  "updated_at": "2026-10-01T02:49:20.360Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1161,6 +1161,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-09-30T19:00",
+      "forecasted": 8.2,
+      "actual": 7,
+      "ratio": 0.853658536585366,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "mixed",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-01T02:49:20.360Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-09-29T19:00",
       "forecasted": 8,
       "actual": 9.9,
@@ -1665,19 +1678,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-08-30T20:08:29.330Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-08-29T05:00",
-      "forecasted": 15.8,
-      "actual": 20,
-      "ratio": 1.2658227848101264,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 0%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-08-29T12:07:32.837Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2341,6 +2341,19 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-29T20:09:05.755Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
+      "time": "2026-09-30T19:00",
+      "forecasted": 5.9,
+      "actual": 9.2,
+      "ratio": 1.559322033898305,
+      "source": "live-station",
+      "station": "English Bay buoy",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-10-01T02:49:20.360Z"
     },
     {
       "spot": "jericho-spanish-banks",
