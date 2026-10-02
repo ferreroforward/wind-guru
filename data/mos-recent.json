@@ -1,34 +1,34 @@
 {
-  "updated_at": "2026-10-01T17:08:51.484Z",
+  "updated_at": "2026-10-02T16:21:24.471Z",
   "note": "Applied on top of mos-coefficients.json by applyMos (rules.js); see recentAdjustment in scripts/mos-train.mjs.",
   "points": {
     "garry": {
-      "bias_kt": 1.33,
-      "offset_kt": -0.81,
+      "bias_kt": 1.51,
+      "offset_kt": -0.9,
       "sigma_scale": 1,
-      "hours_bias": 154,
-      "hours_spread": 579
+      "hours_bias": 148,
+      "hours_spread": 569
     },
     "erwin": {
-      "bias_kt": -3.15,
-      "offset_kt": 1.41,
+      "bias_kt": -3.32,
+      "offset_kt": 1.47,
       "sigma_scale": 1,
-      "hours_bias": 81,
-      "hours_spread": 378
+      "hours_bias": 79,
+      "hours_spread": 369
     },
     "tsaw": {
-      "bias_kt": 1.97,
-      "offset_kt": -1.07,
-      "sigma_scale": 1.05,
-      "hours_bias": 118,
-      "hours_spread": 389
+      "bias_kt": 2.17,
+      "offset_kt": -1.13,
+      "sigma_scale": 1.06,
+      "hours_bias": 109,
+      "hours_spread": 373
     },
     "pamrocks": {
-      "bias_kt": -3,
-      "offset_kt": 1.74,
-      "sigma_scale": 1.17,
-      "hours_bias": 137,
-      "hours_spread": 613
+      "bias_kt": -3.09,
+      "offset_kt": 1.78,
+      "sigma_scale": 1.15,
+      "hours_bias": 136,
+      "hours_spread": 619
     }
   }
 }
