@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-02T17:43:05.903Z",
+  "updated_at": "2026-10-02T23:20:41.389Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -2341,6 +2341,19 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-29T20:09:05.755Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
+      "time": "2026-10-02T16:00",
+      "forecasted": 2.6,
+      "actual": 8.1,
+      "ratio": 1.6199999999999999,
+      "source": "live-station",
+      "station": "English Bay buoy",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-10-02T23:20:41.389Z"
     },
     {
       "spot": "jericho-spanish-banks",

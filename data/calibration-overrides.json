@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T17:43:05.746Z",
+  "generated_at": "2026-10-02T23:20:41.276Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
@@ -154,12 +154,20 @@
     },
     "jericho-spanish-banks": {
       "general": {
-        "sample_size": 10,
+        "sample_size": 11,
         "rider_reports": 0,
-        "live_checks": 10,
-        "avg_ratio": 1.22,
-        "multiplier": 1.22,
-        "note": "Based on 10 total data points (0 rider reports, 10 live-station checks): actual wind averaged 122% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 11,
+        "avg_ratio": 1.27,
+        "multiplier": 1.27,
+        "note": "Based on 11 total data points (0 rider reports, 11 live-station checks): actual wind averaged 127% of what was forecasted (rider reports weighted 3x a station check)."
+      },
+      "mixed": {
+        "sample_size": 7,
+        "rider_reports": 0,
+        "live_checks": 7,
+        "avg_ratio": 1.06,
+        "multiplier": 1.06,
+        "note": "Based on 7 mixed data points (0 rider reports, 7 live-station checks): actual wind averaged 106% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "calm": {
         "sample_size": 3,
@@ -168,14 +176,6 @@
         "avg_ratio": 1.96,
         "multiplier": 1.3,
         "note": "Based on 3 calm data points (0 rider reports, 3 live-station checks): actual wind averaged 196% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 3 data points so far -- the raw ratio would be 196%, softened to a 130% multiplier until more reports come in."
-      },
-      "mixed": {
-        "sample_size": 6,
-        "rider_reports": 0,
-        "live_checks": 6,
-        "avg_ratio": 0.95,
-        "multiplier": 0.95,
-        "note": "Based on 6 mixed data points (0 rider reports, 6 live-station checks): actual wind averaged 95% of what was forecasted (rider reports weighted 3x a station check)."
       }
     }
   },
