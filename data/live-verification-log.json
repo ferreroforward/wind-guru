@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-03T06:41:32.659Z",
+  "updated_at": "2026-10-03T15:56:26.803Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1681,6 +1681,19 @@
     },
     {
       "spot": "tsawwassen-south",
+      "time": "2026-10-03T08:00",
+      "forecasted": 5.6,
+      "actual": 8.1,
+      "ratio": 1.4464285714285714,
+      "source": "live-station",
+      "station": "Tsawwassen Ferry Terminal",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 80%, so spread between models likely explains some of the gap.",
+      "checked_at": "2026-10-03T15:56:26.803Z"
+    },
+    {
+      "spot": "tsawwassen-south",
       "time": "2026-09-29T10:00",
       "forecasted": 10.9,
       "actual": 10.3,
@@ -2341,6 +2354,19 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-29T20:09:05.755Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
+      "time": "2026-10-03T08:00",
+      "forecasted": 7.3,
+      "actual": 10.3,
+      "ratio": 1.4109589041095891,
+      "source": "live-station",
+      "station": "English Bay buoy",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-10-03T15:56:26.803Z"
     },
     {
       "spot": "jericho-spanish-banks",
