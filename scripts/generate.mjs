@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 
 import { SPOTS, PRESSURE_REFERENCE, degToLabel, DEG_LABELS } from "../assets/spots.js";
-import { MODELS, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch, parseMarineWindText, marineAnchorForHour, parseEcIssued, dropModels, tideForHour, flagEpicHours, buildMosUrl, reshapeMos, applyMos, swellForHours } from "../assets/rules.js";
+import { MODELS, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, rowsToPressureMap, rowsToSpeedMap, currentPacificHourString, explainMismatch, parseMarineWindText, marineAnchorForHour, parseEcIssued, dropModels, tideForHour, flagEpicHours, buildMosUrl, reshapeMos, applyMos, swellForHours, thermalInputs, applyThermalModel } from "../assets/rules.js";
 
 // Minutes between "now" and a Pacific-local "HH:MM" observation time, on the
 // (safe) assumption the observation is from earlier today — used to catch a
@@ -38,6 +38,7 @@ const OVERRIDES_PATH = path.join(__dirname, "..", "data", "calibration-overrides
 const LIVE_LOG_PATH = path.join(__dirname, "..", "data", "live-verification-log.json");
 const MOS_PATH = path.join(__dirname, "..", "data", "mos-coefficients.json");
 const MOS_RECENT_PATH = path.join(__dirname, "..", "data", "mos-recent.json");
+const THERMAL_PATH = path.join(__dirname, "..", "data", "squamish-thermal.json");
 const FORECAST_DAYS = 4; // "today" + 3 days ahead
 const LIVE_ERROR_THRESHOLD = 0.20; // 20% — flag as a "mismatch" in the UI/console at this gap or bigger
 const LIVE_LOG_MAX_PER_SPOT = 40; // cap so the log file doesn't grow forever
@@ -216,7 +217,12 @@ async function fetchSquamishWindsportsObservation(station) {
   const dirDeg = json.wd ? parseFloat(json.wd[i]) : NaN;
   const dtMs = json.dt ? parseFloat(json.dt[i]) * 1000 : null;
   return {
-    time: dtMs ? new Date(dtMs).toLocaleTimeString("en-US", { timeZone: "America/Los_Angeles", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }) : null,
+    // The meter's `dt` is not a true epoch: it is local wall-clock time
+    // written as if it were UTC ("UTC plus local shift" in the site's own
+    // chart script, which plots it with no conversion). Formatting it in
+    // Pacific time read every reading 7 or 8 hours early, so the staleness
+    // check threw them all away and Squamish never got a live check.
+    time: dtMs ? new Date(dtMs).toLocaleTimeString("en-US", { timeZone: "UTC", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }) : null,
     speedKt,
     gustKt: isFinite(gustKt) ? gustKt : null,
     directionAbbr: null,
@@ -494,6 +500,15 @@ function labelHilo(arr) {
 // Learned correction inputs (see applyMos in rules.js): the pure models at
 // the exact point each spot's blend was trained on. One request per point.
 let mosCoefficients = null;
+// Learned Squamish thermal (see applyThermalModel in rules.js). Optional:
+// without the file the old 2.85x scaling is used.
+let thermalModel = null;
+try {
+  thermalModel = JSON.parse(await readFile(THERMAL_PATH, "utf8"));
+  console.log(`Loaded learned thermal for ${thermalModel.station} (trained ${thermalModel.trained})`);
+} catch {
+  console.log("No data/squamish-thermal.json, learned thermal off this run.");
+}
 async function loadMosCoefficients() {
   try {
     mosCoefficients = JSON.parse(await readFile(MOS_PATH, "utf8"));
@@ -748,15 +763,19 @@ async function getReferenceSpeeds(station) {
 let gradientStations = null;
 async function getGradientStations() {
   if (gradientStations) return gradientStations;
-  const [interiorRows, coastalRows, mouthRows] = await Promise.all([
+  const [interiorRows, coastalRows, mouthRows, farRows] = await Promise.all([
     getStationRows(PRESSURE_REFERENCE.interior),
     getStationRows(PRESSURE_REFERENCE.coastal),
     getStationRows(PRESSURE_REFERENCE.howeSoundMouth),
+    PRESSURE_REFERENCE.far ? getStationRows(PRESSURE_REFERENCE.far) : null,
   ]);
+  const byTime = (rows) => (rows ? Object.fromEntries(rows.map((r) => [r.time, r])) : {});
   gradientStations = {
     interior: interiorRows ? rowsToPressureMap(interiorRows) : {},
     coastal: coastalRows ? rowsToPressureMap(coastalRows) : {},
     mouth: mouthRows ? rowsToPressureMap(mouthRows) : {},
+    // Whole rows by hour, for the learned thermal (it needs temperatures too).
+    rows: { interior: byTime(interiorRows), coastal: byTime(coastalRows), mouth: byTime(mouthRows), far: byTime(farRows) },
   };
   return gradientStations;
 }
@@ -909,7 +928,7 @@ async function main() {
     }
 
     let gm = null;
-    if (spot.pressureGradientAware) {
+    if (spot.pressureGradientAware || spot.thermal?.learned) {
       try {
         gm = await getGradientStations();
       } catch (err) {
@@ -981,7 +1000,14 @@ async function main() {
         if (mosNow) mosNow.leadHours = nowIdx >= 0 ? Math.max(0, rowIdx - nowIdx) : null;
       }
 
-      return classifyHour(spot, row, hour, month, refSpeedKt, pressureGradients, overrideRecord, pamRocksNow, marineAnchor, liveRefNow, mosNow);
+      // Learned thermal estimate for this hour (Squamish), from the drivers.
+      let thermalNow = null;
+      if (spot.thermal?.learned && thermalModel && gm?.rows) {
+        const refs = { mouth: gm.rows.mouth[row.time], coastal: gm.rows.coastal[row.time], interior: gm.rows.interior[row.time], far: gm.rows.far[row.time] };
+        thermalNow = applyThermalModel(thermalModel, thermalInputs(row, refs, hour));
+      }
+
+      return classifyHour(spot, row, hour, month, refSpeedKt, pressureGradients, overrideRecord, pamRocksNow, marineAnchor, liveRefNow, mosNow, thermalNow);
     });
 
     // Tide state per hour (for spots with a tideStation), then the spot's
