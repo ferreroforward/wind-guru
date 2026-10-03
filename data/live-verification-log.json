@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-03T22:28:55.830Z",
+  "updated_at": "2026-10-03T22:47:56.749Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1689,8 +1689,8 @@
       "station": "Tsawwassen Ferry Terminal",
       "regime": "synoptic",
       "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 80%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-10-03T22:28:55.830Z"
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 77%, so spread between models likely explains some of the gap.",
+      "checked_at": "2026-10-03T22:47:56.749Z"
     },
     {
       "spot": "tsawwassen-south",

@@ -1,33 +1,33 @@
 {
-  "generated_at": "2026-10-03T22:28:55.714Z",
+  "generated_at": "2026-10-03T22:47:56.652Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
       "general": {
-        "sample_size": 17,
-        "rider_reports": 17,
+        "sample_size": 18,
+        "rider_reports": 18,
         "live_checks": 0,
-        "avg_ratio": 0.83,
-        "multiplier": 0.83,
-        "note": "Based on 17 total data points (17 rider reports, 0 live-station checks): actual wind averaged 83% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.87,
+        "multiplier": 0.87,
+        "note": "Based on 18 total data points (18 rider reports, 0 live-station checks): actual wind averaged 87% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "tsawwassen-south": {
       "general": {
-        "sample_size": 7,
+        "sample_size": 8,
         "rider_reports": 1,
-        "live_checks": 6,
-        "avg_ratio": 1,
-        "multiplier": 1,
-        "note": "Based on 7 total data points (1 rider report, 6 live-station checks): actual wind averaged 100% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 7,
+        "avg_ratio": 1.04,
+        "multiplier": 1.04,
+        "note": "Based on 8 total data points (1 rider report, 7 live-station checks): actual wind averaged 104% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
-        "sample_size": 6,
+        "sample_size": 7,
         "rider_reports": 0,
-        "live_checks": 6,
-        "avg_ratio": 1.03,
-        "multiplier": 1.03,
-        "note": "Based on 6 synoptic data points (0 rider reports, 6 live-station checks): actual wind averaged 103% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 7,
+        "avg_ratio": 1.09,
+        "multiplier": 1.09,
+        "note": "Based on 7 synoptic data points (0 rider reports, 7 live-station checks): actual wind averaged 109% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "white-rock-east": {
@@ -181,7 +181,7 @@
   },
   "accuracy": {
     "tolerance_kt": 3,
-    "sample_size": 19,
-    "hit_rate": 0.58
+    "sample_size": 20,
+    "hit_rate": 0.55
   }
 }
