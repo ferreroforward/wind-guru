@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-03T16:59:43.071Z",
+  "generated_at": "2026-10-03T22:28:55.714Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
@@ -14,20 +14,20 @@
     },
     "tsawwassen-south": {
       "general": {
-        "sample_size": 6,
+        "sample_size": 7,
         "rider_reports": 1,
-        "live_checks": 5,
-        "avg_ratio": 0.92,
-        "multiplier": 0.92,
-        "note": "Based on 6 total data points (1 rider report, 5 live-station checks): actual wind averaged 92% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 6,
+        "avg_ratio": 1,
+        "multiplier": 1,
+        "note": "Based on 7 total data points (1 rider report, 6 live-station checks): actual wind averaged 100% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
-        "sample_size": 5,
+        "sample_size": 6,
         "rider_reports": 0,
-        "live_checks": 5,
-        "avg_ratio": 0.91,
-        "multiplier": 0.91,
-        "note": "Based on 5 synoptic data points (0 rider reports, 5 live-station checks): actual wind averaged 91% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 6,
+        "avg_ratio": 1.03,
+        "multiplier": 1.03,
+        "note": "Based on 6 synoptic data points (0 rider reports, 6 live-station checks): actual wind averaged 103% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "white-rock-east": {
