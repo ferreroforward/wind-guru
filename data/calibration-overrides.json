@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-03T02:38:41.422Z",
+  "generated_at": "2026-10-03T06:41:32.578Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
@@ -154,20 +154,20 @@
     },
     "jericho-spanish-banks": {
       "general": {
-        "sample_size": 12,
+        "sample_size": 13,
         "rider_reports": 0,
-        "live_checks": 12,
-        "avg_ratio": 1.3,
-        "multiplier": 1.3,
-        "note": "Based on 12 total data points (0 rider reports, 12 live-station checks): actual wind averaged 130% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 13,
+        "avg_ratio": 1.33,
+        "multiplier": 1.33,
+        "note": "Based on 13 total data points (0 rider reports, 13 live-station checks): actual wind averaged 133% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "calm": {
-        "sample_size": 4,
+        "sample_size": 5,
         "rider_reports": 0,
-        "live_checks": 4,
-        "avg_ratio": 1.87,
-        "multiplier": 1.33,
-        "note": "Based on 4 calm data points (0 rider reports, 4 live-station checks): actual wind averaged 187% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 4 data points so far -- the raw ratio would be 187%, softened to a 133% multiplier until more reports come in."
+        "live_checks": 5,
+        "avg_ratio": 1.84,
+        "multiplier": 1.36,
+        "note": "Based on 5 calm data points (0 rider reports, 5 live-station checks): actual wind averaged 184% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 5 data points so far -- the raw ratio would be 184%, softened to a 136% multiplier until more reports come in."
       },
       "mixed": {
         "sample_size": 7,
