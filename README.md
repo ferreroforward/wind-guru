@@ -211,6 +211,15 @@ overwriting `data/forecast.json` with a partial snapshot — the last good
 snapshot stays live, and the failed Action run itself is a signal (GitHub
 emails the repo owner by default on a failed scheduled workflow).
 
+If only a few spots fail (Oct 3 2026: Jericho dropped out of two snapshots in
+a row and the page showed nothing about it), three things now happen. Network
+errors are retried more times and faster than HTTP errors (each failure was
+one pooled connection the server had already closed). A spot that still fails
+is tried once more after all the others. And if it fails again, its hours are
+carried over from the previous snapshot with a `stale_from` stamp, as long as
+they are under 24 hours old; otherwise it is listed in `missing_spots`. The
+page shows a badge next to "Updated ..." in both cases.
+
 ## App version
 
 The footer shows which commit is actually live and when — e.g. "v3f9a21
@@ -776,6 +785,14 @@ actual 7kt, it said 10kt), the meter only runs mid May to mid September so
 April and October are outside the training range, and the back test used
 short lead model data, not day ahead forecasts. Rider feedback multipliers are
 not applied on top (they were learned against the old scaling).
+
+Guards added Oct 3 2026, after it called 14kt for an October afternoon with
+the models at 1 to 7kt, and 9kt at 7pm and 8pm after sunset: it only runs in
+the months it was trained on (`thermal.learnedMonths`, May to September), only
+while the sun is meaningfully up for that date and hour (clear sky ceiling
+over 50 W/m²), and a weak estimate (under 8kt) is ignored when the models blow
+from outside the inflow sector. Outside those the models and the old scaling
+apply, as before the learned fit.
 
 Refit: `node scripts/thermal-train.mjs fit` (needs network; `selftest` checks
 the maths offline). Also fixed here: the Spit meter's `dt` is local time

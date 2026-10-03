@@ -87,6 +87,9 @@ export const SPOTS = [
       // the number (applyThermalModel in rules.js). The 2.85x scaling above stays
       // as the fallback when the learned inputs are missing.
       learned: true,
+      // Only in the months the fit was trained on (meter data runs mid May to
+      // mid Sep); April and October fall back to the models and the scaling.
+      learnedMonths: [5,6,7,8,9],
       typicalDirDeg: 190,
       months: [4,5,6,7,8,9,10],
       hourWindow: [10, 19],
