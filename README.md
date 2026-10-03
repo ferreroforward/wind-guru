@@ -743,6 +743,45 @@ neutral. At Sand Heads this September the middle odds ran generous (said
 about 50%, happened about 25%) even after the offset, which neither fix
 changes; worth watching in the nightly score.
 
+## Learned Squamish thermal (Oct 2026)
+
+Squamish is about two differences: land vs water temperature, and the pressure
+gradient along the corridor. Until now neither moved the number. The speed was
+2.85 x the mean of GFS and ECMWF; sun only set the "thermal" label and the
+pressure checks only moved confidence. On Oct 3 2026 the coarse models read
+1.5kt, so the page said 3.5kt on a sunny day.
+
+Now the Squamish Spit number for 9am to 8pm comes from `applyThermalModel`
+(rules.js) with coefficients in `data/squamish-thermal.json`: sun and cloud
+at the spot, Squamish minus the mouth of the sound, Pemberton and Lillooet
+minus Vancouver, the two pressure checks (Vancouver minus Pemberton, mouth
+minus Spit), the southerly part of the coarse model wind, HRDPS, and the hour
+of day. It forecasts the inflow speed, so outflow hours stay with the outflow
+logic. The 2.85x scaling remains as the fallback when the file or the inputs
+are missing (including the page's own "live" refresh, which has no reference
+points).
+
+Back test against the Spit meter, May to September 2025 and 2026 (254 days,
+2909 hours, leave one month out), hours 11 to 18:
+
+| | average miss | bias | days with 3+ hours of 15kt caught (of 198) | other days called on (of 56) |
+|---|---|---|---|---|
+| 2.85x scaling | 4.7kt | 2.5kt low | 143 | 7 |
+| hour of day only | 3.9kt | 0 | | |
+| learned, no model wind (variant B) | 2.9kt | 0 | 171 | 15 |
+| learned (variant A) | 2.6kt | 0 | 179 | 17 |
+
+Known limits: it leans toward the seasonal average (on the 25 weakest days,
+actual 7kt, it said 10kt), the meter only runs mid May to mid September so
+April and October are outside the training range, and the back test used
+short lead model data, not day ahead forecasts. Rider feedback multipliers are
+not applied on top (they were learned against the old scaling).
+
+Refit: `node scripts/thermal-train.mjs fit` (needs network; `selftest` checks
+the maths offline). Also fixed here: the Spit meter's `dt` is local time
+written as UTC, so the live check was reading every Spit reading 7 or 8 hours
+old and discarding it.
+
 ## Live stations (Sep 2026)
 
 Per Guillermo: Tsawwassen South reads EC's Ferry Terminal station (`vtf`);
