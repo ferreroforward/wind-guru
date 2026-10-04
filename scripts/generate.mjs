@@ -332,28 +332,43 @@ function swobObservation(station) {
 // snapshot). So: up to 4 tries, waiting 3, 8 and 20 seconds (or what the
 // server's Retry-After asks, up to a minute), on 429, 5xx and network
 // errors. Other errors (400, 404) fail straight away.
+// Two kinds of failure, retried differently (Oct 3 2026):
+//  - an HTTP 429/5xx: the server is busy, so wait (3s, 8s, 20s) and give up
+//    after `tries` attempts, as before.
+//  - a thrown network error ("fetch failed"): in the Action these came one
+//    per pooled connection the server had already closed. Every run showed
+//    the same requests failing first try, and once the gradient stations
+//    went from 3 to 4 parallel fetches Jericho needed a 5th attempt it did
+//    not have, so it dropped out of two snapshots in a row. Each failure
+//    discards one dead connection, so these are retried quickly and more
+//    often (NETWORK_TRIES) and the cause is logged.
+const NETWORK_TRIES = 8;
 async function fetchRetry(url, options = {}, tries = 4) {
   const waits = [3000, 8000, 20000];
+  const networkWaits = [300, 600, 1000, 2000, 4000, 8000, 20000];
   let lastErr = null;
-  for (let i = 0; i < tries; i++) {
+  let httpFails = 0, networkFails = 0;
+  for (;;) {
     try {
       const res = await fetch(url, options);
       if (res.ok || (res.status < 500 && res.status !== 429)) return res;
       lastErr = new Error(`HTTP ${res.status} ${res.statusText}`);
-      if (i === tries - 1) return res;
+      httpFails++;
+      if (httpFails >= tries) return res;
       const ra = Number(res.headers.get("retry-after"));
-      const wait = isFinite(ra) && ra > 0 ? Math.min(60000, ra * 1000) : waits[Math.min(i, waits.length - 1)];
+      const wait = isFinite(ra) && ra > 0 ? Math.min(60000, ra * 1000) : waits[Math.min(httpFails - 1, waits.length - 1)];
       console.log(`  [retry] ${String(url).slice(0, 70)}... ${lastErr.message}, waiting ${Math.round(wait / 1000)}s`);
       await new Promise((r) => setTimeout(r, wait));
     } catch (err) {
       lastErr = err;
-      if (i === tries - 1) throw err;
-      const wait = waits[Math.min(i, waits.length - 1)];
-      console.log(`  [retry] ${String(url).slice(0, 70)}... ${err.message}, waiting ${Math.round(wait / 1000)}s`);
+      networkFails++;
+      if (networkFails >= Math.max(tries, NETWORK_TRIES)) throw err;
+      const wait = networkWaits[Math.min(networkFails - 1, networkWaits.length - 1)];
+      const cause = err?.cause?.code || err?.cause?.message || "";
+      console.log(`  [retry] ${String(url).slice(0, 70)}... ${err.message}${cause ? ` (${cause})` : ""}, waiting ${wait / 1000}s`);
       await new Promise((r) => setTimeout(r, wait));
     }
   }
-  throw lastErr;
 }
 
 const liveObsCache = {};
@@ -906,16 +921,28 @@ async function main() {
   swobBoardForLive = swobBoardStations;
   console.log(`  parsed ${swobBoardStations.length} station(s)`);
 
-  for (const spot of SPOTS) {
+  // A spot whose fetch fails goes to the back of the queue for one more
+  // try after the others, instead of being dropped from the snapshot.
+  const spotQueue = [...SPOTS];
+  const retriedSpots = new Set();
+  const requeue = (spot) => {
+    if (retriedSpots.has(spot.id)) return;
+    retriedSpots.add(spot.id);
+    spotQueue.push(spot);
+    console.log(`  will try ${spot.name} once more at the end`);
+  };
+  while (spotQueue.length) {
+    const spot = spotQueue.shift();
     process.stdout.write(`Fetching ${spot.name}... `);
     let rows;
     try {
       rows = await fetchSpot(spot);
     } catch (err) {
       console.log(`ERROR: ${err.message}`);
+      requeue(spot);
       continue;
     }
-    if (!rows) { console.log("skipped"); continue; }
+    if (!rows) { console.log("skipped"); requeue(spot); continue; }
     console.log(`${rows.length} hours`);
 
     let refMap = null;
@@ -1207,7 +1234,8 @@ async function main() {
   // a confusing partial one, and the Action step failing is itself a signal
   // (GitHub emails the repo owner on a failed scheduled workflow run).
   const MIN_SUCCESS_RATE = 0.7;
-  const successRate = spotsOut.length / SPOTS.length;
+  const freshCount = spotsOut.length;
+  const successRate = freshCount / SPOTS.length;
   if (successRate < MIN_SUCCESS_RATE) {
     console.error(`\nOnly ${spotsOut.length}/${SPOTS.length} spots fetched successfully (${Math.round(successRate * 100)}%) — aborting without writing data/forecast.json to avoid publishing a partial snapshot.`);
     process.exit(1);
@@ -1234,6 +1262,35 @@ async function main() {
   await mkdir(path.dirname(LIVE_LOG_PATH), { recursive: true });
   await writeFile(LIVE_LOG_PATH, JSON.stringify({ updated_at: startedAt.toISOString(), entries: cappedEntries }, null, 2));
 
+  // Spots that still failed after the second try: rather than vanish from
+  // the page with no explanation (Jericho, Oct 3 2026), carry the spot's
+  // hours over from the previous snapshot, stamped with `stale_from` (when
+  // those hours were actually generated) so the page can say so. Only while
+  // the old hours are under MAX_CARRY_HOURS old; past that the spot is listed
+  // in `missing_spots` instead, which the page also shows.
+  const MAX_CARRY_HOURS = 24;
+  const missingSpots = [];
+  const gotIds = new Set(spotsOut.map((s) => s.id));
+  if (gotIds.size < SPOTS.length) {
+    const previous = await readFile(OUT_PATH, "utf8").then(JSON.parse).catch(() => null);
+    for (const spot of SPOTS) {
+      if (gotIds.has(spot.id)) continue;
+      const old = previous?.spots?.find((s) => s.id === spot.id);
+      const staleFrom = old ? (old.stale_from || previous.generated_at) : null;
+      const ageH = staleFrom ? (startedAt.getTime() - new Date(staleFrom).getTime()) / 3600000 : Infinity;
+      if (old && ageH >= 0 && ageH <= MAX_CARRY_HOURS) {
+        spotsOut.push({ ...old, stale_from: staleFrom, live_check: null });
+        console.log(`[${spot.id}] no forecast this run: carried over the ${staleFrom} hours (${ageH.toFixed(1)}h old).`);
+      } else {
+        missingSpots.push({ id: spot.id, name: spot.name });
+        console.log(`[${spot.id}] no forecast this run and nothing recent to carry over: listed as missing.`);
+      }
+    }
+  }
+  // Back to the order of spots.js (retried and carried spots were appended).
+  const spotOrder = new Map(SPOTS.map((s, i) => [s.id, i]));
+  spotsOut.sort((a, b) => spotOrder.get(a.id) - spotOrder.get(b.id));
+
   const forecast = {
     generated_at: startedAt.toISOString(),
     generated_at_label: startedAt.toLocaleString("en-US", {
@@ -1248,6 +1305,7 @@ async function main() {
     live_verification_count: cappedEntries.length,
     mos_score: await readFile(path.join(__dirname, "..", "data", "mos-score.json"), "utf8").then(JSON.parse).catch(() => null),
     surface_observations: surfaceObservations,
+    missing_spots: missingSpots,
     spots: spotsOut,
   };
 

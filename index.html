@@ -1034,7 +1034,21 @@ function renderFreshnessBadge() {
   // Yellow + "partial" is the honest version of the same "just fetched" idea.
   const cls = isLive ? "stale" : ageMs > VERY_STALE_AFTER_MS ? "very-stale" : ageMs > STALE_AFTER_MS ? "stale" : "fresh";
   const statusText = isLive ? "Live (partial) — just fetched" : `Updated ${formatRelative(ageMs)}`;
-  genLabel.innerHTML = `<span class="update-badge ${cls}" title="${forecast.generated_at_label}"><span class="dot"></span>${statusText}</span>`;
+  // Spots the last run could not fetch (see MAX_CARRY_HOURS in generate.mjs):
+  // either shown with the previous run's hours (stale_from) or missing
+  // outright. Said plainly here so a spot never just vanishes or quietly
+  // shows old numbers.
+  const shortName = (n) => String(n).split(/ [-(]/)[0];
+  const notes = [];
+  for (const s of forecast.spots || []) {
+    if (!s.stale_from) continue;
+    const age = Date.now() - new Date(s.stale_from).getTime();
+    notes.push(`<span class="update-badge ${age > STALE_AFTER_MS ? "very-stale" : "stale"}" title="The last update could not fetch this spot, so its hours are from the earlier run."><span class="dot"></span>${shortName(s.name)}: older forecast, from ${formatRelative(age)}</span>`);
+  }
+  for (const m of forecast.missing_spots || []) {
+    notes.push(`<span class="update-badge very-stale" title="The last update could not fetch this spot and had nothing recent to show instead."><span class="dot"></span>${shortName(m.name)}: no forecast this update</span>`);
+  }
+  genLabel.innerHTML = `<span class="update-badge ${cls}" title="${forecast.generated_at_label}"><span class="dot"></span>${statusText}</span>${notes.length ? " " + notes.join(" ") : ""}`;
   genLabel.title = forecast.generated_at_label;
 }
 

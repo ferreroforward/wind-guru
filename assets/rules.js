@@ -895,8 +895,23 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   // above. Reuses the learned forecast plumbing (mos_used, mos.sigma_kt) so
   // the odds use its own measured error and rider feedback multipliers,
   // which were learned against the old scaling, are not applied on top.
+  // Three guards (Oct 3 2026 review), each for a case the fit never saw:
+  //  - season: only thermal.learnedMonths. October stays on: on Oct 3 2026
+  //    the meter read 13 to 15kt S from 2pm to 5pm, the fit said 8.5kt and
+  //    the models 3 to 6kt, so out of season it was low, not high.
+  //  - sun: its daily shape is a summer one, so it kept ~9kt going at 7pm and
+  //    8pm in October, after sunset. Needs the sun meaningfully up for this
+  //    date and hour (clear sky ceiling over LEARNED_MIN_CLEAR_SKY_WM2).
+  //  - a weak estimate while the models blow from outside the inflow sector
+  //    is not an inflow hour: keep the models' own number and direction
+  //    rather than print an inflow speed beside an outflow arrow.
+  const LEARNED_MIN_CLEAR_SKY_WM2 = 50;
+  const learnedMonths = thermalCfg?.learnedMonths || thermalCfg?.months || [];
+  const learnedWeakOffAxis = thermalNow && thermalNow.speed != null && thermalNow.speed < 8 &&
+    direction_deg != null && !inSector(direction_deg, thermalCfg?.dirSector || [0, 360]);
   if (spot.thermal && spot.thermal.learned && thermalNow && thermalNow.speed != null &&
-      regime !== "outflow" && thermalCfg.months.includes(month)) {
+      regime !== "outflow" && learnedMonths.includes(month) &&
+      clearSkyWm2 > LEARNED_MIN_CLEAR_SKY_WM2 && !learnedWeakOffAxis) {
     const est = thermalNow.speed;
     mosUsed = true;
     calibrated = false;
