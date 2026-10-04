@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T17:45:41.848Z",
+  "generated_at": "2026-10-04T22:34:19.202Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
@@ -76,12 +76,20 @@
     },
     "porteau-cove": {
       "general": {
-        "sample_size": 7,
+        "sample_size": 8,
         "rider_reports": 0,
-        "live_checks": 7,
-        "avg_ratio": 1.14,
-        "multiplier": 1.14,
-        "note": "Based on 7 total data points (0 rider reports, 7 live-station checks): actual wind averaged 114% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 8,
+        "avg_ratio": 1.29,
+        "multiplier": 1.29,
+        "note": "Based on 8 total data points (0 rider reports, 8 live-station checks): actual wind averaged 129% of what was forecasted (rider reports weighted 3x a station check)."
+      },
+      "calm": {
+        "sample_size": 2,
+        "rider_reports": 0,
+        "live_checks": 2,
+        "avg_ratio": 2.69,
+        "multiplier": 1.25,
+        "note": "Based on 2 calm data points (0 rider reports, 2 live-station checks): actual wind averaged 269% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 2 data points so far -- the raw ratio would be 269%, softened to a 125% multiplier until more reports come in."
       },
       "thermal": {
         "sample_size": 3,
