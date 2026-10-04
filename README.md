@@ -788,11 +788,13 @@ not applied on top (they were learned against the old scaling).
 
 Guards added Oct 3 2026, after it called 14kt for an October afternoon with
 the models at 1 to 7kt, and 9kt at 7pm and 8pm after sunset: it only runs in
-the months it was trained on (`thermal.learnedMonths`, May to September), only
-while the sun is meaningfully up for that date and hour (clear sky ceiling
-over 50 W/m²), and a weak estimate (under 8kt) is ignored when the models blow
-from outside the inflow sector. Outside those the models and the old scaling
-apply, as before the learned fit.
+`thermal.learnedMonths` (May to October), only while the sun is meaningfully
+up for that date and hour (clear sky ceiling over 50 W/m²), and a weak
+estimate (under 8kt) is ignored when the models blow from outside the inflow
+sector. Outside those the models and the old scaling apply, as before the
+learned fit. October was kept on because of Oct 3 2026: the meter read 13 to
+15kt S from 2pm to 5pm and died by 6:45pm; the fit said 8.5kt for the
+afternoon, the models and the scaling 3 to 6kt.
 
 Refit: `node scripts/thermal-train.mjs fit` (needs network; `selftest` checks
 the maths offline). Also fixed here: the Spit meter's `dt` is local time

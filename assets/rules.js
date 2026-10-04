@@ -896,8 +896,9 @@ export function classifyHour(spot, row, localHour, month, refSpeedKt = null, pre
   // the odds use its own measured error and rider feedback multipliers,
   // which were learned against the old scaling, are not applied on top.
   // Three guards (Oct 3 2026 review), each for a case the fit never saw:
-  //  - season: only the months it was trained on (thermal.learnedMonths, mid
-  //    May to mid Sep). In October it called 14kt against models at 1 to 7kt.
+  //  - season: only thermal.learnedMonths. October stays on: on Oct 3 2026
+  //    the meter read 13 to 15kt S from 2pm to 5pm, the fit said 8.5kt and
+  //    the models 3 to 6kt, so out of season it was low, not high.
   //  - sun: its daily shape is a summer one, so it kept ~9kt going at 7pm and
   //    8pm in October, after sunset. Needs the sun meaningfully up for this
   //    date and hour (clear sky ceiling over LEARNED_MIN_CLEAR_SKY_WM2).
