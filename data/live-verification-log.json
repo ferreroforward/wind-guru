@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-05T07:16:22.632Z",
+  "updated_at": "2026-10-05T15:40:20.756Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1161,6 +1161,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-10-05T08:00",
+      "forecasted": 6.2,
+      "actual": 8,
+      "ratio": 1.2903225806451613,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-10-05T15:40:20.756Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-10-04T08:00",
       "forecasted": 4.6,
       "actual": 8,
@@ -1665,19 +1678,6 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 38%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-09-04T00:21:07.541Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-09-02T17:00",
-      "forecasted": 13.4,
-      "actual": 27,
-      "ratio": 2.014925373134328,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. Models disagreed sharply with each other, a known low-confidence signature. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-03T00:23:22.273Z"
     },
     {
       "spot": "tsawwassen-south",
