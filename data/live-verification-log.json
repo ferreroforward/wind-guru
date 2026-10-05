@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-05T23:02:38.384Z",
+  "updated_at": "2026-10-05T23:04:08.488Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -455,7 +455,7 @@
       "regime": "calm",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-05T23:02:38.384Z"
+      "checked_at": "2026-10-05T23:04:08.488Z"
     },
     {
       "spot": "porteau-cove",
