@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-07T13:46:44.604Z",
+  "generated_at": "2026-10-07T18:43:55.390Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
@@ -76,20 +76,20 @@
     },
     "porteau-cove": {
       "general": {
-        "sample_size": 12,
+        "sample_size": 13,
         "rider_reports": 0,
-        "live_checks": 12,
-        "avg_ratio": 1.47,
+        "live_checks": 13,
+        "avg_ratio": 1.48,
         "multiplier": 1.43,
-        "note": "Based on 12 total data points (0 rider reports, 12 live-station checks): actual wind averaged 147% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 12 data points so far -- the raw ratio would be 147%, softened to a 143% multiplier until more reports come in."
+        "note": "Based on 13 total data points (0 rider reports, 13 live-station checks): actual wind averaged 148% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 13 data points so far -- the raw ratio would be 148%, softened to a 143% multiplier until more reports come in."
       },
       "calm": {
-        "sample_size": 5,
+        "sample_size": 6,
         "rider_reports": 0,
-        "live_checks": 5,
-        "avg_ratio": 2.15,
-        "multiplier": 1.36,
-        "note": "Based on 5 calm data points (0 rider reports, 5 live-station checks): actual wind averaged 215% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 5 data points so far -- the raw ratio would be 215%, softened to a 136% multiplier until more reports come in."
+        "live_checks": 6,
+        "avg_ratio": 2.04,
+        "multiplier": 1.38,
+        "note": "Based on 6 calm data points (0 rider reports, 6 live-station checks): actual wind averaged 204% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 6 data points so far -- the raw ratio would be 204%, softened to a 138% multiplier until more reports come in."
       },
       "mixed": {
         "sample_size": 4,
