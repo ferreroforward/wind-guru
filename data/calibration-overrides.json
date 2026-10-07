@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-07T18:43:55.390Z",
+  "generated_at": "2026-10-07T22:41:37.324Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
@@ -7,9 +7,9 @@
         "sample_size": 20,
         "rider_reports": 20,
         "live_checks": 0,
-        "avg_ratio": 1.05,
-        "multiplier": 1.05,
-        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 105% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 1.09,
+        "multiplier": 1.09,
+        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 109% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "tsawwassen-south": {
@@ -189,7 +189,7 @@
   },
   "accuracy": {
     "tolerance_kt": 3,
-    "sample_size": 24,
-    "hit_rate": 0.54
+    "sample_size": 25,
+    "hit_rate": 0.56
   }
 }
