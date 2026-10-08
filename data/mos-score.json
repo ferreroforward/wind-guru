@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-07T17:31:30.781Z",
+  "updated_at": "2026-10-08T17:34:42.354Z",
   "window_days": 30,
   "threshold_kt": 12,
   "trained": "2026-10-01",
@@ -8,31 +8,31 @@
       "station": "Sand Heads",
       "learned": {
         "n": 727,
-        "mae_kt": 2.54,
-        "bias_kt": 0.97,
-        "windy_hours": 160,
-        "caught": 0.73,
-        "false_alarms": 0.28,
-        "brier": 0.087,
-        "brier_climatology": 0.172,
+        "mae_kt": 2.48,
+        "bias_kt": 1.02,
+        "windy_hours": 156,
+        "caught": 0.74,
+        "false_alarms": 0.26,
+        "brier": 0.08,
+        "brier_climatology": 0.169,
         "reliability": [
           {
             "range": "0-20%",
-            "n": 418,
+            "n": 433,
             "said": 0.06,
             "happened": 0.02
           },
           {
             "range": "20-40%",
-            "n": 115,
+            "n": 108,
             "said": 0.3,
             "happened": 0.18
           },
           {
             "range": "40-60%",
-            "n": 69,
-            "said": 0.51,
-            "happened": 0.43
+            "n": 61,
+            "said": 0.5,
+            "happened": 0.49
           },
           {
             "range": "60-80%",
@@ -49,52 +49,52 @@
         ]
       },
       "plain_average": {
-        "mae_kt": 2.64,
-        "caught": 0.51
+        "mae_kt": 2.56,
+        "caught": 0.52
       },
       "recent": {
-        "bias_kt": 1.24,
-        "offset_kt": -0.67,
+        "bias_kt": 0.87,
+        "offset_kt": -0.44,
         "sigma_scale": 1,
-        "hours_bias": 118,
-        "hours_spread": 539
+        "hours_bias": 104,
+        "hours_spread": 535
       }
     },
     "erwin": {
       "station": "Point Atkinson",
       "learned": {
         "n": 727,
-        "mae_kt": 2.49,
-        "bias_kt": -0.41,
-        "windy_hours": 95,
-        "caught": 0.31,
-        "false_alarms": 0.19,
-        "brier": 0.062,
-        "brier_climatology": 0.114,
+        "mae_kt": 2.47,
+        "bias_kt": -0.37,
+        "windy_hours": 90,
+        "caught": 0.3,
+        "false_alarms": 0.21,
+        "brier": 0.06,
+        "brier_climatology": 0.108,
         "reliability": [
           {
             "range": "0-20%",
-            "n": 613,
+            "n": 617,
             "said": 0.02,
             "happened": 0.03
           },
           {
             "range": "20-40%",
-            "n": 56,
+            "n": 55,
             "said": 0.28,
-            "happened": 0.48
+            "happened": 0.47
           },
           {
             "range": "40-60%",
-            "n": 40,
+            "n": 39,
             "said": 0.49,
-            "happened": 0.83
+            "happened": 0.82
           },
           {
             "range": "60-80%",
-            "n": 12,
-            "said": 0.69,
-            "happened": 0.83
+            "n": 10,
+            "said": 0.71,
+            "happened": 0.8
           },
           {
             "range": "80-100%",
@@ -105,15 +105,15 @@
         ]
       },
       "plain_average": {
-        "mae_kt": 3.37,
+        "mae_kt": 3.27,
         "caught": 0
       },
       "recent": {
         "bias_kt": null,
         "offset_kt": 0,
-        "sigma_scale": 1.16,
-        "hours_bias": 24,
-        "hours_spread": 261
+        "sigma_scale": 1.18,
+        "hours_bias": 20,
+        "hours_spread": 243
       }
     },
     "tsaw": {
@@ -121,24 +121,24 @@
       "learned": {
         "n": 727,
         "mae_kt": 2.77,
-        "bias_kt": 1.56,
-        "windy_hours": 49,
-        "caught": 0.51,
+        "bias_kt": 1.63,
+        "windy_hours": 47,
+        "caught": 0.53,
         "false_alarms": 0.44,
-        "brier": 0.049,
-        "brier_climatology": 0.063,
+        "brier": 0.046,
+        "brier_climatology": 0.06,
         "reliability": [
           {
             "range": "0-20%",
-            "n": 569,
+            "n": 572,
             "said": 0.03,
             "happened": 0.01
           },
           {
             "range": "20-40%",
-            "n": 98,
-            "said": 0.28,
-            "happened": 0.13
+            "n": 95,
+            "said": 0.29,
+            "happened": 0.14
           },
           {
             "range": "40-60%",
@@ -161,34 +161,34 @@
         ]
       },
       "plain_average": {
-        "mae_kt": 2.7,
-        "caught": 0.18
+        "mae_kt": 2.66,
+        "caught": 0.19
       },
       "recent": {
         "bias_kt": null,
         "offset_kt": 0,
         "sigma_scale": 1.05,
-        "hours_bias": 53,
-        "hours_spread": 390
+        "hours_bias": 41,
+        "hours_spread": 369
       }
     },
     "pamrocks": {
       "station": "Pam Rocks",
       "learned": {
         "n": 727,
-        "mae_kt": 2.85,
-        "bias_kt": -0.06,
-        "windy_hours": 89,
+        "mae_kt": 2.84,
+        "bias_kt": -0.08,
+        "windy_hours": 88,
         "caught": 0.42,
         "false_alarms": 0.31,
-        "brier": 0.076,
-        "brier_climatology": 0.107,
+        "brier": 0.075,
+        "brier_climatology": 0.106,
         "reliability": [
           {
             "range": "0-20%",
             "n": 572,
             "said": 0.06,
-            "happened": 0.05
+            "happened": 0.04
           },
           {
             "range": "20-40%",
@@ -217,15 +217,15 @@
         ]
       },
       "plain_average": {
-        "mae_kt": 4.11,
+        "mae_kt": 4.14,
         "caught": 0
       },
       "recent": {
-        "bias_kt": -0.83,
-        "offset_kt": 0.44,
-        "sigma_scale": 1.02,
-        "hours_bias": 114,
-        "hours_spread": 470
+        "bias_kt": -0.77,
+        "offset_kt": 0.4,
+        "sigma_scale": 1,
+        "hours_bias": 107,
+        "hours_spread": 468
       }
     }
   }
