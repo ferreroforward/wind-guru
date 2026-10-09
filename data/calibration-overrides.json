@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T07:34:09.305Z",
+  "generated_at": "2026-10-09T14:05:33.871Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
@@ -14,12 +14,12 @@
     },
     "tsawwassen-south": {
       "general": {
-        "sample_size": 8,
+        "sample_size": 9,
         "rider_reports": 1,
-        "live_checks": 7,
-        "avg_ratio": 1.04,
-        "multiplier": 1.04,
-        "note": "Based on 8 total data points (1 rider report, 7 live-station checks): actual wind averaged 104% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 8,
+        "avg_ratio": 1.08,
+        "multiplier": 1.08,
+        "note": "Based on 9 total data points (1 rider report, 8 live-station checks): actual wind averaged 108% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 7,
@@ -50,12 +50,20 @@
     },
     "erwin-park": {
       "general": {
-        "sample_size": 7,
+        "sample_size": 8,
         "rider_reports": 0,
-        "live_checks": 7,
-        "avg_ratio": 2.21,
-        "multiplier": 1.39,
-        "note": "Based on 7 total data points (0 rider reports, 7 live-station checks): actual wind averaged 221% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 7 data points so far -- the raw ratio would be 221%, softened to a 139% multiplier until more reports come in."
+        "live_checks": 8,
+        "avg_ratio": 2.28,
+        "multiplier": 1.4,
+        "note": "Based on 8 total data points (0 rider reports, 8 live-station checks): actual wind averaged 228% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 8 data points so far -- the raw ratio would be 228%, softened to a 140% multiplier until more reports come in."
+      },
+      "outflow": {
+        "sample_size": 6,
+        "rider_reports": 0,
+        "live_checks": 6,
+        "avg_ratio": 2.19,
+        "multiplier": 1.38,
+        "note": "Based on 6 outflow data points (0 rider reports, 6 live-station checks): actual wind averaged 219% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 6 data points so far -- the raw ratio would be 219%, softened to a 138% multiplier until more reports come in."
       },
       "calm": {
         "sample_size": 2,
@@ -64,14 +72,6 @@
         "avg_ratio": 2.58,
         "multiplier": 1.25,
         "note": "Based on 2 calm data points (0 rider reports, 2 live-station checks): actual wind averaged 258% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 2 data points so far -- the raw ratio would be 258%, softened to a 125% multiplier until more reports come in."
-      },
-      "outflow": {
-        "sample_size": 5,
-        "rider_reports": 0,
-        "live_checks": 5,
-        "avg_ratio": 2.08,
-        "multiplier": 1.36,
-        "note": "Based on 5 outflow data points (0 rider reports, 5 live-station checks): actual wind averaged 208% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 5 data points so far -- the raw ratio would be 208%, softened to a 136% multiplier until more reports come in."
       }
     },
     "porteau-cove": {
@@ -110,20 +110,20 @@
     },
     "garry-point": {
       "general": {
-        "sample_size": 15,
+        "sample_size": 16,
         "rider_reports": 0,
-        "live_checks": 15,
-        "avg_ratio": 1.02,
-        "multiplier": 1.02,
-        "note": "Based on 15 total data points (0 rider reports, 15 live-station checks): actual wind averaged 102% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 16,
+        "avg_ratio": 1.03,
+        "multiplier": 1.03,
+        "note": "Based on 16 total data points (0 rider reports, 16 live-station checks): actual wind averaged 103% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "mixed": {
-        "sample_size": 4,
+        "sample_size": 5,
         "rider_reports": 0,
-        "live_checks": 4,
-        "avg_ratio": 0.99,
-        "multiplier": 0.99,
-        "note": "Based on 4 mixed data points (0 rider reports, 4 live-station checks): actual wind averaged 99% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 5,
+        "avg_ratio": 1.02,
+        "multiplier": 1.02,
+        "note": "Based on 5 mixed data points (0 rider reports, 5 live-station checks): actual wind averaged 102% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 9,
@@ -165,17 +165,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 1.43,
-        "multiplier": 1.43,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 143% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 1.42,
+        "multiplier": 1.42,
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 142% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "mixed": {
-        "sample_size": 13,
+        "sample_size": 14,
         "rider_reports": 0,
-        "live_checks": 13,
-        "avg_ratio": 1.29,
-        "multiplier": 1.29,
-        "note": "Based on 13 mixed data points (0 rider reports, 13 live-station checks): actual wind averaged 129% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 14,
+        "avg_ratio": 1.25,
+        "multiplier": 1.25,
+        "note": "Based on 14 mixed data points (0 rider reports, 14 live-station checks): actual wind averaged 125% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "calm": {
         "sample_size": 6,
