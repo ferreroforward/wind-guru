@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-09T15:01:33.675Z",
+  "updated_at": "2026-10-09T15:04:39.174Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -108,7 +108,7 @@
       "regime": "synoptic",
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 57%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-10-09T15:01:33.675Z"
+      "checked_at": "2026-10-09T15:04:39.174Z"
     },
     {
       "spot": "erwin-park",
@@ -494,7 +494,7 @@
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-09T15:01:33.675Z"
+      "checked_at": "2026-10-09T15:04:39.174Z"
     },
     {
       "spot": "porteau-cove",
@@ -1209,7 +1209,7 @@
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-09T15:01:33.675Z"
+      "checked_at": "2026-10-09T15:04:39.174Z"
     },
     {
       "spot": "garry-point",
@@ -1729,7 +1729,7 @@
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-09T15:01:33.675Z"
+      "checked_at": "2026-10-09T15:04:39.174Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2457,7 +2457,7 @@
       "regime": "mixed",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-09T15:01:33.675Z"
+      "checked_at": "2026-10-09T15:04:39.174Z"
     },
     {
       "spot": "jericho-spanish-banks",
