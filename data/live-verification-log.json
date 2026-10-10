@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-10T03:04:02.439Z",
+  "updated_at": "2026-10-10T07:21:09.193Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1252,6 +1252,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-10-10T00:00",
+      "forecasted": 18,
+      "actual": 22.9,
+      "ratio": 1.2722222222222221,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-10T07:21:09.193Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-10-09T20:00",
       "forecasted": 17.3,
       "actual": 12.1,
@@ -1758,17 +1771,17 @@
       "checked_at": "2026-09-11T16:04:38.239Z"
     },
     {
-      "spot": "garry-point",
-      "time": "2026-09-10T20:00",
-      "forecasted": 8.4,
-      "actual": 9.9,
-      "ratio": 1.1785714285714286,
+      "spot": "tsawwassen-south",
+      "time": "2026-10-10T00:00",
+      "forecasted": 11.5,
+      "actual": 17.3,
+      "ratio": 1.5043478260869565,
       "source": "live-station",
-      "station": "Sand Heads",
+      "station": "Tsawwassen Ferry Terminal",
       "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-09-11T03:53:55.557Z"
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 43%, so spread between models likely explains some of the gap. Models disagreed sharply with each other, a known low-confidence signature.",
+      "checked_at": "2026-10-10T07:21:09.193Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2276,19 +2289,6 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 75%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-09-07T12:17:13.968Z"
-    },
-    {
-      "spot": "tsawwassen-south",
-      "time": "2026-09-06T13:00",
-      "forecasted": 10.1,
-      "actual": 4.1,
-      "ratio": 0.4059405940594059,
-      "source": "live-station",
-      "station": "White Rock, BC",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 28%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-06T20:15:53.016Z"
     },
     {
       "spot": "crescent-beach",
