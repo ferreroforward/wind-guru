@@ -314,8 +314,16 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script type="module">
-import { SPOTS } from "./assets/spots.js";
-import { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, referenceStationSpeeds, dropModels, buildMosUrl, reshapeMos, applyMos, currentPacificHourString, swellForHours } from "./assets/rules.js";
+// Load the spot list and rules tagged with the deployed version, so a
+// browser holding an older copy (GitHub Pages lets browsers keep files for
+// 10 minutes) picks up a new spot or rule change as soon as it is live,
+// instead of drawing the old spot list next to a newer forecast. Oct 2026,
+// after Cates Park was missing from the map on staging until a hard refresh.
+const ASSET_VERSION = await fetch("data/version.json", { cache: "no-store" })
+  .then(r => (r.ok ? r.json() : null)).then(v => v?.version).catch(() => null)
+  ?? String(Math.floor(Date.now() / 600000));
+const { SPOTS } = await import(`./assets/spots.js?v=${ASSET_VERSION}`);
+const { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, referenceStationSpeeds, dropModels, buildMosUrl, reshapeMos, applyMos, currentPacificHourString, swellForHours } = await import(`./assets/rules.js?v=${ASSET_VERSION}`);
 
 let forecast = null; // loaded forecast.json shape
 let selectedDayIndex = 0;
