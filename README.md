@@ -861,6 +861,16 @@ flagged before), and `sides.sectors` in spots.js drives a card line and a
 popup line that say which side works each hour and whether the north side
 has its tide.
 
+## Webcams
+
+Under "Live surface conditions around the region", a Webcams block lists
+cameras from `WEBCAMS` in assets/spots.js (Oct 2026: Sea to Sky Gondola for
+Squamish, Jericho Sailing Centre streamcam for Jericho). Each card opens the
+owner's camera page in a new tab; the images aren't copied or embedded,
+since that is the owner's call (the gondola cam also blocks being shown
+inside other sites). Add a camera with its name, area, page url and
+optionally the spot id it looks at.
+
 ## Safety warnings
 
 A spot's `caution_note` shows as a red box at the top of its card on every

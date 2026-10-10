@@ -795,6 +795,17 @@ export const SPOTS = [
   }
 ];
 
+// Webcams shown under "Live surface conditions around the region"
+// (index.html renderWebcams), per Guillermo (Oct 2026). Each opens the
+// owner's own camera page in a new tab; the images aren't copied or
+// embedded here, since that's the owner's call (the Sea to Sky Gondola cam
+// also blocks being shown inside other sites). To add one: name, area, the
+// camera page url, and optionally the spot id it looks at.
+export const WEBCAMS = [
+  { name: "Sea to Sky Gondola", area: "Squamish and Howe Sound", url: "https://www.seatoskygondola.com/weather-and-cams/", spotId: "squamish-spit" },
+  { name: "Jericho Sailing Centre streamcam", area: "Jericho and English Bay", url: "https://jsca.bc.ca/services/steamcam-ptz/", spotId: "jericho-spanish-banks" },
+];
+
 export const DEG_LABELS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
 
 export function degToLabel(deg) {

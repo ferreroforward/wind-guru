@@ -148,6 +148,9 @@
   .obs-card .obs-reading{font-size:1.15rem;font-weight:700;}
   .obs-card .obs-reading .unit{font-size:0.75rem;font-weight:400;color:var(--muted);}
   .obs-card .obs-meta{font-size:0.78rem;color:var(--muted);margin-top:3px;}
+  .cam-head{font-size:0.95rem;margin:18px 0 4px;color:var(--text);}
+  a.cam-card{display:block;text-decoration:none;color:inherit;}
+  a.cam-card:hover{border-color:var(--accent);}
   .obs-note{font-size:0.85rem;color:var(--muted);margin:8px 0 14px;}
   .links-list{font-size:0.95rem;color:var(--muted);line-height:1.9;}
   .links-list a{color:var(--accent);font-weight:600;text-decoration:none;}
@@ -282,6 +285,11 @@
     <h2 class="section">Live surface conditions around the region</h2>
     <div class="obs-note">Real-time station readings, not a forecast — includes our own spot stations plus the wider regional picture from <a href="https://wtfbc.ca/swob.php" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;">wtfbc.ca</a>.</div>
     <div class="obs-grid" id="obsGrid"></div>
+    <div id="camBlock" style="display:none;">
+      <h3 class="cam-head">📷 Webcams</h3>
+      <div class="obs-note" style="margin-top:0;">Each opens the camera owner's page in a new tab.</div>
+      <div class="obs-grid" id="camGrid"></div>
+    </div>
   </div>
 
   <div class="about" style="margin-top:16px;">
@@ -327,7 +335,7 @@
 const ASSET_VERSION = await fetch("data/version.json", { cache: "no-store" })
   .then(r => (r.ok ? r.json() : null)).then(v => v?.version).catch(() => null)
   ?? String(Math.floor(Date.now() / 600000));
-const { SPOTS, inSector } = await import(`./assets/spots.js?v=${ASSET_VERSION}`);
+const { SPOTS, inSector, WEBCAMS } = await import(`./assets/spots.js?v=${ASSET_VERSION}`);
 const { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, referenceStationSpeeds, dropModels, buildMosUrl, reshapeMos, applyMos, currentPacificHourString, swellForHours } = await import(`./assets/rules.js?v=${ASSET_VERSION}`);
 
 let forecast = null; // loaded forecast.json shape
@@ -1044,11 +1052,30 @@ function renderMap() {
 // only, same as the marine bulletin/MSLP data — wtfbc.ca doesn't offer CORS
 // for a browser fetch, so this section is simply absent on the "Refresh
 // live" client-side fallback path.
+// Webcam link cards (WEBCAMS in spots.js, Oct 2026). Shown even when the
+// station readings are missing. Returns how many were drawn.
+function renderWebcams() {
+  const block = document.getElementById("camBlock");
+  const grid = document.getElementById("camGrid");
+  const cams = WEBCAMS || [];
+  block.style.display = cams.length ? "block" : "none";
+  grid.innerHTML = cams.map(c => {
+    const spot = c.spotId ? SPOTS.find(s => s.id === c.spotId) : null;
+    return `<a class="obs-card cam-card" href="${c.url}" target="_blank" rel="noopener">
+        <div class="obs-name">${c.name}</div>
+        <div class="obs-meta">${c.area}${spot ? ` · looks at ${spot.name}` : ""}</div>
+        <div class="obs-meta" style="color:var(--accent);font-weight:600;margin-top:6px;">Open camera ↗</div>
+      </a>`;
+  }).join("");
+  return cams.length;
+}
+
 function renderSurfaceObservations() {
   const section = document.getElementById("obsSection");
   const grid = document.getElementById("obsGrid");
   const stations = forecast.surface_observations?.stations || [];
-  if (!stations.length) { section.style.display = "none"; return; }
+  const cams = renderWebcams();
+  if (!stations.length && !cams) { section.style.display = "none"; return; }
   section.style.display = "block";
   grid.innerHTML = stations.map(s => {
     const isCalm = s.direction_label === "calm" || (s.speed_kt === 0 && !s.direction_label);
