@@ -846,6 +846,17 @@ waves, good swell) so the fetch and current numbers can be tuned; the
 Cloudflare Worker needs redeploying (`wrangler deploy` in worker/) for it to
 reach the issue.
 
+## Squamish outflow
+
+Per Guillermo (Oct 2026), riders don't use the Spit on an outflow. Any wind
+with north in it (from 271 to 89 degrees), or any hour the engine calls
+outflow, is marked `outflow_not_ridden` (rules.js classifyHour): it is never
+a best bet, the map dot goes grey, and the card still shows those hours in
+grey with an OUTFLOW tag and a line saying it is an outflow, not the inflow,
+and only worth it by boat. When the learned thermal says the hour is really
+an inflow, the mark is cleared. Porteau Cove is unchanged: it works on a
+strong outflow (Pam Rocks rule).
+
 ## Wind strength words
 
 The best bets list and the hour popup describe the wind with the Environment

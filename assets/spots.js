@@ -68,8 +68,13 @@ export const SPOTS = [
     marineZone: "howe_sound",
     sports: ["wingfoil", "kite", "windsurf"],
     level: "advanced",
-    favorable_deg: [[150, 260]], // S–SW thermal inflow, or N outflow (handled separately as outflow regime)
-    outflow_favorable_deg: [[300, 40]],
+    favorable_deg: [[150, 260]], // S–SW thermal inflow
+    // Per Guillermo (Oct 2026): riders don't use the Spit on an outflow, so
+    // any wind with north in it is never recommended here. The hours still
+    // show (some go out by boat), marked as outflow, not inflow, and the spot
+    // is left out of the best bets for them (rules.js classifyHour,
+    // index.html).
+    outflowNotRidden: { dirSector: [271, 89] },
     pressureGradientAware: true, // factor in MSLP gradient — see rules.js
     pamRocksAware: true, // use the live Pam Rocks nowcast on the current hour — see rules.js
     // Live wind meter at the Spit itself, published by Squamish Windsports
