@@ -1,5 +1,5 @@
 {
-  "version": "677bdef",
-  "message": "Fix invalid workflow expression syntax breaking every run since it landed",
-  "deployed_at": "2026-09-20T20:39:59Z"
+  "version": "0b0cb29",
+  "message": "Merge pull request #46 from ferreroforward/fix/missing-spots-and-thermal",
+  "deployed_at": "2026-10-04T05:09:51Z"
 }
