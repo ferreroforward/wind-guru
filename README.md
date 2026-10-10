@@ -846,6 +846,16 @@ waves, good swell) so the fetch and current numbers can be tuned; the
 Cloudflare Worker needs redeploying (`wrangler deploy` in worker/) for it to
 reach the issue.
 
+## Wind strength words
+
+The best bets list and the hour popup describe the wind with the Environment
+Canada Beaufort scale term for the forecast speed (Calm, Light air, Light
+breeze, Gentle breeze 7 to 10kt, Moderate breeze 11 to 16kt, Fresh breeze 17
+to 21kt, Strong breeze 22 to 27kt, Near gale 28 to 33kt, Gale 34 to 40kt and
+up). This replaced the afternoon breeze / outflow / general / mixed labels
+in Oct 2026 at Guillermo's request. The popup text still says where the
+wind comes from.
+
 ## Marine forecast and tides on the page
 
 The EC marine forecast for Howe Sound and the Strait of Georgia (south of

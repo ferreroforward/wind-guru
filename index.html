@@ -439,18 +439,26 @@ function tierClass(pct) {
   return "lvl-red";
 }
 
-// Plain-language stand-in for the internal wind-regime classification —
-// riders care whether it's an afternoon breeze or a general blow, not the
-// meteorological label used inside the rule engine.
-function regimeLabel(regime) {
-  switch (regime) {
-    case "thermal": return "Afternoon breeze";
-    case "outflow": return "Outflow wind";
-    case "synoptic": return "General wind";
-    case "calm": return "Light / calm";
-    case "mixed": return "Mixed wind";
-    default: return "Wind";
-  }
+// Wind strength in words, from the Environment Canada Beaufort wind scale
+// (canada.ca, "Beaufort wind scale table"), by the forecast speed in knots.
+// Per Guillermo (Oct 2026): this replaces the outflow / general / mixed wind
+// labels in the best bets list and the hour popup, which riders found
+// unclear. The popup text below the heading still explains where the wind
+// comes from.
+const BEAUFORT = [
+  [1, 0, "Calm"], [4, 1, "Light air"], [7, 2, "Light breeze"], [11, 3, "Gentle breeze"],
+  [17, 4, "Moderate breeze"], [22, 5, "Fresh breeze"], [28, 6, "Strong breeze"],
+  [34, 7, "Near gale"], [41, 8, "Gale"], [48, 9, "Strong gale"], [56, 10, "Storm"],
+  [64, 11, "Violent storm"], [Infinity, 12, "Hurricane"],
+];
+function beaufort(kt) {
+  if (kt == null || isNaN(kt)) return null;
+  const k = Math.round(kt);
+  const [, force, term] = BEAUFORT.find(([below]) => k < below);
+  return { force, term };
+}
+function windTerm(kt) {
+  return beaufort(kt)?.term ?? "No data";
 }
 
 // Picks the best-scoring hour for a spot, preferring hours where the wind
@@ -621,7 +629,7 @@ function renderBestBets() {
       <div class="bet-badge ${cls}">${r.probability}%</div>
       <div class="bet-info">
         <div class="name">${r.spot.name} <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">· ${r.spot.region}</span></div>
-        <div class="detail">${r.hour.time.slice(11,16)} · ${r.hour.speed_kt != null ? Math.round(r.hour.speed_kt) : "–"}${gustText}kt ${r.hour.direction_label ?? ""} · ${regimeLabel(r.hour.regime)}${gustyTag}${offshoreTag}</div>
+        <div class="detail">${r.hour.time.slice(11,16)} · ${r.hour.speed_kt != null ? Math.round(r.hour.speed_kt) : "–"}${gustText}kt ${r.hour.direction_label ?? ""} · <span title="Beaufort force ${beaufort(r.hour.speed_kt)?.force ?? ""} (Environment Canada wind scale)">${windTerm(r.hour.speed_kt)}</span>${gustyTag}${offshoreTag}</div>
       </div>
     `;
     bestBetsEl.appendChild(div);
@@ -783,7 +791,7 @@ function showTip(cellEl, h, spotId) {
   const swellText = sw && sw.label !== "flat" ? `<div style="margin-top:4px;opacity:0.9;font-weight:400;">🌊 ${swellLabel(sw.label)}: about ${sw.hs_ft}ft (${sw.hs_m.toFixed(1)}m)${sw.period_s ? `, ${sw.period_s}s` : ""} after ${sw.duration_h}h of wind${sw.vs_wind ? `, ${sw.vs_wind === "against" ? `wind against the ${sw.current}` : sw.vs_wind === "with" ? `${sw.current} running with the wind` : `${sw.current} across the wind`}` : ""}${sw.building ? " (4h+ against the tide: building)" : ""}</div>` : "";
   const epicText = h.epic ? `<div style="margin-top:4px;font-weight:700;color:#ffcf9e;">🔥 Matches this spot's epic day setup</div>` : "";
   const spotName = (SPOTS.find(s => s.id === spotId) || {}).name ?? spotId;
-  globalTip.innerHTML = `<b>${regimeLabel(h.regime)}</b>${speedText}${summaryText}${tideText}${swellText}${ecText}${mosText}${agreeText}${epicText}
+  globalTip.innerHTML = `<b>${windTerm(h.speed_kt)}${h.speed_kt != null ? ` <span style="font-weight:400;opacity:0.8;">(Beaufort ${beaufort(h.speed_kt).force})</span>` : ""}</b>${speedText}${summaryText}${tideText}${swellText}${ecText}${mosText}${agreeText}${epicText}
     <button type="button" class="report-trigger" data-spot="${spotId}" data-name="${spotName}" data-date="${h.time.slice(0, 10)}" data-time="${h.time.slice(11, 16)}" data-forecast="${h.speed_kt != null ? h.speed_kt : ""}">📝 Report actual conditions →</button>`;
   const rect = cellEl.getBoundingClientRect();
   globalTip.style.display = "block";
