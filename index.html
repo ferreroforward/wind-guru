@@ -93,6 +93,7 @@
   .spot-card .head .region{color:var(--muted);font-size:0.88rem;}
   .spot-card .sports{font-size:0.85rem;color:var(--muted);}
   .outflow-line{color:var(--red);}
+  .caution-line{background:#fde8e8;border:1px solid #f5b5b5;color:#9b1c1c;border-radius:8px;padding:6px 10px;font-size:0.86rem;font-weight:600;margin:0 0 10px;}
   .outflow-tag{font-size:0.65rem;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:0.02em;}
   .live-check{font-size:0.85rem;padding:5px 10px;border-radius:8px;margin-bottom:10px;display:inline-block;}
   .live-check.match{background:var(--green-bg);color:var(--green);}
@@ -635,7 +636,7 @@ function renderBestBets() {
       <div class="bet-badge ${cls}">${r.probability}%</div>
       <div class="bet-info">
         <div class="name">${r.spot.name} <span style="color:var(--muted);font-weight:400;font-size:0.8rem;">· ${r.spot.region}</span></div>
-        <div class="detail">${r.hour.time.slice(11,16)} · ${r.hour.speed_kt != null ? Math.round(r.hour.speed_kt) : "–"}${gustText}kt ${r.hour.direction_label ?? ""} · <span title="Beaufort force ${beaufort(r.hour.speed_kt)?.force ?? ""} (Environment Canada wind scale)">${windTerm(r.hour.speed_kt)}</span>${gustyTag}${offshoreTag}</div>
+        <div class="detail">${r.hour.time.slice(11,16)} · ${r.hour.speed_kt != null ? Math.round(r.hour.speed_kt) : "–"}${gustText}kt ${r.hour.direction_label ?? ""} · <span title="Beaufort force ${beaufort(r.hour.speed_kt)?.force ?? ""} (Environment Canada wind scale)">${windTerm(r.hour.speed_kt)}</span>${gustyTag}${offshoreTag}${r.spot.caution_note ? `<span class="offshore-tag" title="${r.spot.caution_note}">⚠️ ${r.spot.level === "expert" ? "EXPERTS ONLY" : "ADVANCED ONLY"}</span>` : ""}</div>
       </div>
     `;
     bestBetsEl.appendChild(div);
@@ -835,54 +836,59 @@ function tideLineForDay(spot) {
 }
 
 // Spots ridden on both sides of a causeway (Tsawwassen, per Guillermo Oct
-// 2026): which side is onshore this hour, and whether the north side has
-// the tide it needs. Returns null for spots without `sides`.
+// 2026): which side works this hour, from the spot's `sides.sectors` (first
+// match wins), and whether the north side has the tide it needs. Returns
+// null for spots without `sides`.
 function sideVerdict(sp, h) {
   const sd = sp?.sides;
   if (!sd || h.direction_deg == null) return null;
-  const d = h.direction_deg;
-  if (inSector(d, sd.south.onshore)) return { key: "south", text: "South side onshore" };
-  if (!inSector(d, sd.south.offshore)) return { key: "along", text: "Wind along the causeway, neither side onshore" };
-  const north = inSector(d, sd.north.onshore);
-  const ft = h.tide?.level_ft;
-  const tideOk = north && ft != null && ft >= sd.north.minTideFt;
-  const northText = !north ? "" : ft == null
-    ? `; north side onshore, needs ${sd.north.minTideFt}ft+ of tide`
-    : tideOk ? `; north side onshore (tide ${ft}ft)` : `; north side onshore but dry (tide ${ft}ft, needs ${sd.north.minTideFt}ft+)`;
-  return { key: north ? (tideOk ? "off-northok" : "off-northdry") : "off", text: `South side offshore, advanced only${northText}`, tideOk };
+  const sec = sd.sectors.find(x => inSector(h.direction_deg, x.dir));
+  if (!sec) return { key: "other", text: sd.otherText };
+  if (!sec.northOnshore) return { key: sec.key, text: sec.text };
+  const min = sd.northMinTideFt, ft = h.tide?.level_ft;
+  const tideOk = ft != null && ft >= min;
+  const northText = ft == null ? `; north side onshore, needs ${min}ft+ of tide`
+    : tideOk ? `; north side onshore (tide ${ft}ft)` : `; north side onshore but dry (tide ${ft}ft, needs ${min}ft+)`;
+  return { key: sec.key, text: sec.text + northText, tideOk };
 }
 
-// One line per run of windy hours (10kt+) on the selected day, e.g.
-// "South side onshore 1pm to 4pm (W). South side offshore, advanced only,
-// 5pm to 8pm (NW); north side onshore, tide 10ft+ from 6pm to 8pm."
+// One sentence per run of windy hours (10kt+) on the selected day, e.g.
+// "South side onshore 1pm to 3pm (SW). West: side shore on both sides 4pm
+// (W). South side offshore, advanced only, 5pm to 8pm (NW); north side
+// onshore, tide 10ft+ from 6pm to 8pm."
 function sideLineForDay(sp, hours) {
   if (!sp?.sides) return "";
   const windy = hours.filter(h => h.speed_kt != null && h.speed_kt >= 10 && h.direction_deg != null);
   const hr = (h) => hourLabel(Number(h.time.slice(11, 13)));
+  const span = (list) => list.length > 1 ? `${hr(list[0])} to ${hr(list[list.length - 1])}` : hr(list[0]);
   const runs = [];
   for (const h of windy) {
     const v = sideVerdict(sp, h);
-    const group = v.key.startsWith("off") ? "off" : v.key;
     const last = runs[runs.length - 1];
     const prevHour = last ? Number(last.hours[last.hours.length - 1].time.slice(11, 13)) : null;
-    if (last && last.group === group && Number(h.time.slice(11, 13)) === prevHour + 1) last.hours.push(h);
-    else runs.push({ group, hours: [h] });
+    if (last && last.v.key === v.key && Number(h.time.slice(11, 13)) === prevHour + 1) last.hours.push(h);
+    else runs.push({ v, hours: [h] });
   }
+  if (!runs.length) return "";
+  const min = sp.sides.northMinTideFt;
   const parts = runs.map(r => {
-    const span = r.hours.length > 1 ? `${hr(r.hours[0])} to ${hr(r.hours[r.hours.length - 1])}` : hr(r.hours[0]);
     const dirs = [...new Set(r.hours.map(h => h.direction_label))].slice(0, 3).join(", ");
-    if (r.group === "south") return `South side onshore ${span} (${dirs}).`;
-    if (r.group === "along") return `Wind along the causeway ${span} (${dirs}).`;
-    const northHours = r.hours.filter(h => inSector(h.direction_deg, sp.sides.north.onshore));
-    const ok = northHours.filter(h => h.tide?.level_ft != null && h.tide.level_ft >= sp.sides.north.minTideFt);
-    const northText = !northHours.length ? ""
-      : ok.length ? `; north side onshore, tide ${sp.sides.north.minTideFt}ft+ ${ok.length > 1 ? `from ${hr(ok[0])} to ${hr(ok[ok.length - 1])}` : `at ${hr(ok[0])}`}`
-      : `; north side onshore but the tide stays under ${sp.sides.north.minTideFt}ft (dry)`;
-    return `South side offshore, advanced only, ${span} (${dirs})${northText}.`;
+    const sec = sp.sides.sectors.find(x => x.key === r.v.key);
+    const base = sec ? sec.text : sp.sides.otherText;
+    if (!sec?.northOnshore) return `${base} ${span(r.hours)} (${dirs}).`;
+    const ok = r.hours.filter(h => h.tide?.level_ft != null && h.tide.level_ft >= min);
+    const northText = ok.length ? `; north side onshore, tide ${min}ft+ ${ok.length > 1 ? `from ${span(ok)}` : `at ${span(ok)}`}`
+      : `; north side onshore but the tide stays under ${min}ft (dry)`;
+    return `${base}, ${span(r.hours)} (${dirs})${northText}.`;
   });
-  const caution = sp.caution_note ? ` <b>${sp.caution_note}</b>` : "";
-  if (!parts.length) return sp.caution_note ? `<div class="tide-line">⚠️ ${sp.caution_note}</div>` : "";
-  return `<div class="tide-line">↔️ ${parts.join(" ")}${caution}</div>`;
+  return `<div class="tide-line">↔️ ${parts.join(" ")}</div>`;
+}
+
+// Spot safety warning (caution_note in spots.js), shown on every card for
+// that spot whatever the forecast: Steveston and Tsawwassen, per Guillermo
+// (Oct 2026).
+function cautionLine(sp) {
+  return sp?.caution_note ? `<div class="caution-line">⚠️ ${sp.caution_note}</div>` : "";
 }
 
 function swellLabel(l) { return l === "good swell" ? "Good swell" : l === "waves" ? "Waves" : l === "chop" ? "Chop" : "Flat"; }
@@ -967,6 +973,7 @@ function renderSpotCards() {
         <div class="sports">${sp.sports.join(" · ")}</div>
       </div>
       ${epicWindowsForDay(spot).map(w => `<div class="epic-line">🔥 Possible epic day: ${hourLabel(Number(w.start.slice(0, 2)))} to ${hourLabel(Number(w.end.slice(0, 2)))}, up to ${w.peak_kt}kt${tideRangeText(w)}</div>`).join("")}
+      ${cautionLine(sp)}
       ${tideLineForDay(spot)}
       ${swellLineForDay(hours)}
       ${ecLineForDay(hours)}

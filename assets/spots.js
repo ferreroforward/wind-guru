@@ -283,7 +283,10 @@ export const SPOTS = [
     marineZone: "strait_of_georgia_south",
     marineAnchorFactor: 0.9,
     sports: ["kite", "windsurf", "wingfoil"],
-    level: "intermediate",
+    // Per Guillermo (Oct 2026): super advanced, never for beginners. Shown
+    // on the card as a warning (caution_note, index.html cautionLine).
+    level: "expert",
+    caution_note: "Expert riders only, never for beginners. You must be very familiar with self rescue and maritime rules. Heavy commercial boat traffic: always give way to the boats. Don't ride alone, or at least carry a way to call emergency services.",
     // Widened to take in NNW: Guillermo's best ever session here (Sep 25
     // 2026) was in NNW 21 gusting 26 at Sand Heads. W, NW and SW remain the
     // core directions (see current_note).
@@ -515,17 +518,24 @@ export const SPOTS = [
     // consequences for a beginner are high if things go wrong, kiting most.
     level: "advanced",
     // The causeway runs east to west and is ridden on both sides (Guillermo,
-    // Oct 2026). South side (the usual one): S, SW and W are onshore and can
-    // be great; N, NW and sometimes W are offshore, advanced only. North
-    // side: the mirror image (NNW is onshore), but it needs 10ft+ of tide
-    // (dries below that) and there's little room to launch a kite, so it's
-    // rarely used. Something works from S round through W to N, so all of
-    // that is favorable; `sides` below says which side, hour by hour
-    // (index.html sideLineForDay and the hour popup).
-    favorable_deg: [[160, 20]],
+    // Oct 2026). South side (the usual one): S and SW are onshore and can be
+    // great; SE works but is gusty; W is side shore on both sides; NW and N
+    // are offshore on the south side, advanced only. North side: the mirror
+    // image (NNW is onshore), but it needs 10ft+ of tide (dries below that)
+    // and there's little room to launch a kite, so it's rarely used.
+    // Something works from SE round through W to N, so all of that is
+    // favorable; `sides` below says which side, hour by hour (index.html
+    // sideVerdict, sideLineForDay and the hour popup). First match wins.
+    favorable_deg: [[120, 30]],
     sides: {
-      south: { onshore: [160, 275], offshore: [276, 30] },
-      north: { onshore: [290, 30], minTideFt: 10 },
+      sectors: [
+        { dir: [120, 150], key: "se", text: "SE: works on the south side, but gusty" },
+        { dir: [151, 260], key: "south", text: "South side onshore" },
+        { dir: [261, 284], key: "west", text: "West: side shore on both sides" },
+        { dir: [285, 30], key: "off", text: "South side offshore, advanced only", northOnshore: true },
+      ],
+      northMinTideFt: 10,
+      otherText: "Wind along the causeway, not a usual direction here",
     },
     caution_note: "Advanced riders only: high consequences if things go wrong, especially kiting.",
     // EC's Tsawwassen Ferry Terminal station, right at the causeway, per
@@ -538,7 +548,7 @@ export const SPOTS = [
     mos: { point: "tsaw", offsetKt: 0 },
     thermal: { enabled: false },
     outflow: { enabled: false },
-    direction_note: "The causeway runs east to west and can be ridden on both sides. South side (most common): S, SW and W are onshore and can be great; N, NW and sometimes W are offshore there, advanced riders only. North side: the opposite, so NNW is onshore; rarely used.",
+    direction_note: "The causeway runs east to west and can be ridden on both sides. South side (most common): S and SW are onshore and can be great; SE works but is gusty; W is side shore on both sides; N and NW are offshore there, advanced riders only. North side: the opposite, so NNW is onshore; rarely used.",
     tide_note: "South side isn't foilable below about 8ft of tide. North side needs at least 10ft (it dries below that) and has little room to launch a kite."
   },
   {

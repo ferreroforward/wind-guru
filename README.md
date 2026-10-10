@@ -849,15 +849,27 @@ reach the issue.
 ## Tsawwassen Ferry Terminal: two sides
 
 Per Guillermo (Oct 2026). The causeway runs east to west and is ridden on
-both sides. South side (the usual one): S, SW and W are onshore and can be
-great; N, NW and sometimes W are offshore there, advanced riders only. North
+both sides. South side (the usual one): S and SW are onshore and can be
+great; SE works but is gusty; W is side shore on both sides; NW and N are
+offshore there, advanced riders only. North
 side: the opposite (NNW is onshore), but it needs at least 10ft of tide (it
 dries below that) and there's little room to launch a kite, so it's rarely
 used. The spot is rated advanced either way: high consequences for a
 beginner if things go wrong, kiting most. The forecast itself is unchanged.
-The favorable arc now runs from S round through W to N (W was flagged
-before), and `sides` in spots.js drives a card line and a popup line that
-say which side is onshore each hour and whether the north side has its tide.
+The favorable arc now runs from SE round through W to N (W and SE were
+flagged before), and `sides.sectors` in spots.js drives a card line and a
+popup line that say which side works each hour and whether the north side
+has its tide.
+
+## Safety warnings
+
+A spot's `caution_note` shows as a red box at the top of its card on every
+day, and its best bets entry gets an ADVANCED ONLY or EXPERTS ONLY tag.
+Per Guillermo (Oct 2026): Steveston (Garry Point) is expert only, never for
+beginners; riders must know self rescue and maritime rules, give way to the
+heavy commercial boat traffic, and not ride alone, or at least carry a way
+to call emergency services. Tsawwassen is advanced only: high consequences
+if things go wrong, especially kiting.
 
 ## Squamish outflow
 
