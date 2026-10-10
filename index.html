@@ -326,7 +326,7 @@
 const ASSET_VERSION = await fetch("data/version.json", { cache: "no-store" })
   .then(r => (r.ok ? r.json() : null)).then(v => v?.version).catch(() => null)
   ?? String(Math.floor(Date.now() / 600000));
-const { SPOTS } = await import(`./assets/spots.js?v=${ASSET_VERSION}`);
+const { SPOTS, inSector } = await import(`./assets/spots.js?v=${ASSET_VERSION}`);
 const { probabilityInRange, buildForecastUrl, reshapeOpenMeteo, classifyHour, localHourAndMonth, referenceStationSpeeds, dropModels, buildMosUrl, reshapeMos, applyMos, currentPacificHourString, swellForHours } = await import(`./assets/rules.js?v=${ASSET_VERSION}`);
 
 let forecast = null; // loaded forecast.json shape
@@ -795,9 +795,11 @@ function showTip(cellEl, h, spotId) {
   const ecText = ec ? `<div style="margin-top:4px;opacity:0.9;font-weight:400;">📻 Environment Canada: ${ec.direction_label} ${ec.lo_kt}${ec.hi_kt !== ec.lo_kt ? ` to ${ec.hi_kt}` : ""}kt, stronger than the models here</div>` : "";
   const sw = h.swell;
   const swellText = sw && sw.label !== "flat" ? `<div style="margin-top:4px;opacity:0.9;font-weight:400;">🌊 ${swellLabel(sw.label)}: about ${sw.hs_ft}ft (${sw.hs_m.toFixed(1)}m)${sw.period_s ? `, ${sw.period_s}s` : ""} after ${sw.duration_h}h of wind${sw.vs_wind ? `, ${sw.vs_wind === "against" ? `wind against the ${sw.current}` : sw.vs_wind === "with" ? `${sw.current} running with the wind` : `${sw.current} across the wind`}` : ""}${sw.building ? " (4h+ against the tide: building)" : ""}</div>` : "";
+  const sv = sideVerdict(SPOTS.find(s => s.id === spotId), h);
+  const sideText = sv ? `<div style="margin-top:4px;opacity:0.9;font-weight:400;">↔️ ${sv.text}</div>` : "";
   const epicText = h.epic ? `<div style="margin-top:4px;font-weight:700;color:#ffcf9e;">🔥 Matches this spot's epic day setup</div>` : "";
   const spotName = (SPOTS.find(s => s.id === spotId) || {}).name ?? spotId;
-  globalTip.innerHTML = `<b>${windTerm(h.speed_kt)}${h.speed_kt != null ? ` <span style="font-weight:400;opacity:0.8;">(Beaufort ${beaufort(h.speed_kt).force})</span>` : ""}</b>${speedText}${summaryText}${tideText}${swellText}${ecText}${mosText}${agreeText}${epicText}
+  globalTip.innerHTML = `<b>${windTerm(h.speed_kt)}${h.speed_kt != null ? ` <span style="font-weight:400;opacity:0.8;">(Beaufort ${beaufort(h.speed_kt).force})</span>` : ""}</b>${speedText}${summaryText}${sideText}${tideText}${swellText}${ecText}${mosText}${agreeText}${epicText}
     <button type="button" class="report-trigger" data-spot="${spotId}" data-name="${spotName}" data-date="${h.time.slice(0, 10)}" data-time="${h.time.slice(11, 16)}" data-forecast="${h.speed_kt != null ? h.speed_kt : ""}">📝 Report actual conditions →</button>`;
   const rect = cellEl.getBoundingClientRect();
   globalTip.style.display = "block";
@@ -830,6 +832,57 @@ function tideLineForDay(spot) {
   if (!list.length) return "";
   const fmt = (hm) => { const [H, M] = hm.split(":").map(Number); return `${((H + 11) % 12) + 1}:${String(M).padStart(2, "0")}${H < 12 ? "am" : "pm"}`; };
   return `<div class="tide-line">🌊 Tides${spot.tide_station ? ` (${spot.tide_station})` : ""}: ${list.map(t => `<b>${t.type === "high" ? "High" : "Low"}</b> ${fmt(t.time)} ${t.height_ft}ft`).join(" · ")}</div>`;
+}
+
+// Spots ridden on both sides of a causeway (Tsawwassen, per Guillermo Oct
+// 2026): which side is onshore this hour, and whether the north side has
+// the tide it needs. Returns null for spots without `sides`.
+function sideVerdict(sp, h) {
+  const sd = sp?.sides;
+  if (!sd || h.direction_deg == null) return null;
+  const d = h.direction_deg;
+  if (inSector(d, sd.south.onshore)) return { key: "south", text: "South side onshore" };
+  if (!inSector(d, sd.south.offshore)) return { key: "along", text: "Wind along the causeway, neither side onshore" };
+  const north = inSector(d, sd.north.onshore);
+  const ft = h.tide?.level_ft;
+  const tideOk = north && ft != null && ft >= sd.north.minTideFt;
+  const northText = !north ? "" : ft == null
+    ? `; north side onshore, needs ${sd.north.minTideFt}ft+ of tide`
+    : tideOk ? `; north side onshore (tide ${ft}ft)` : `; north side onshore but dry (tide ${ft}ft, needs ${sd.north.minTideFt}ft+)`;
+  return { key: north ? (tideOk ? "off-northok" : "off-northdry") : "off", text: `South side offshore, advanced only${northText}`, tideOk };
+}
+
+// One line per run of windy hours (10kt+) on the selected day, e.g.
+// "South side onshore 1pm to 4pm (W). South side offshore, advanced only,
+// 5pm to 8pm (NW); north side onshore, tide 10ft+ from 6pm to 8pm."
+function sideLineForDay(sp, hours) {
+  if (!sp?.sides) return "";
+  const windy = hours.filter(h => h.speed_kt != null && h.speed_kt >= 10 && h.direction_deg != null);
+  const hr = (h) => hourLabel(Number(h.time.slice(11, 13)));
+  const runs = [];
+  for (const h of windy) {
+    const v = sideVerdict(sp, h);
+    const group = v.key.startsWith("off") ? "off" : v.key;
+    const last = runs[runs.length - 1];
+    const prevHour = last ? Number(last.hours[last.hours.length - 1].time.slice(11, 13)) : null;
+    if (last && last.group === group && Number(h.time.slice(11, 13)) === prevHour + 1) last.hours.push(h);
+    else runs.push({ group, hours: [h] });
+  }
+  const parts = runs.map(r => {
+    const span = r.hours.length > 1 ? `${hr(r.hours[0])} to ${hr(r.hours[r.hours.length - 1])}` : hr(r.hours[0]);
+    const dirs = [...new Set(r.hours.map(h => h.direction_label))].slice(0, 3).join(", ");
+    if (r.group === "south") return `South side onshore ${span} (${dirs}).`;
+    if (r.group === "along") return `Wind along the causeway ${span} (${dirs}).`;
+    const northHours = r.hours.filter(h => inSector(h.direction_deg, sp.sides.north.onshore));
+    const ok = northHours.filter(h => h.tide?.level_ft != null && h.tide.level_ft >= sp.sides.north.minTideFt);
+    const northText = !northHours.length ? ""
+      : ok.length ? `; north side onshore, tide ${sp.sides.north.minTideFt}ft+ ${ok.length > 1 ? `from ${hr(ok[0])} to ${hr(ok[ok.length - 1])}` : `at ${hr(ok[0])}`}`
+      : `; north side onshore but the tide stays under ${sp.sides.north.minTideFt}ft (dry)`;
+    return `South side offshore, advanced only, ${span} (${dirs})${northText}.`;
+  });
+  const caution = sp.caution_note ? ` <b>${sp.caution_note}</b>` : "";
+  if (!parts.length) return sp.caution_note ? `<div class="tide-line">⚠️ ${sp.caution_note}</div>` : "";
+  return `<div class="tide-line">↔️ ${parts.join(" ")}${caution}</div>`;
 }
 
 function swellLabel(l) { return l === "good swell" ? "Good swell" : l === "waves" ? "Waves" : l === "chop" ? "Chop" : "Flat"; }
@@ -918,6 +971,7 @@ function renderSpotCards() {
       ${swellLineForDay(hours)}
       ${ecLineForDay(hours)}
       ${outflowLineForDay(hours)}
+      ${sideLineForDay(sp, hours)}
       ${liveBadge}
       <div class="hour-strip"></div>
     `;

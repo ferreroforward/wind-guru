@@ -500,7 +500,7 @@ export const SPOTS = [
     // Tide: Tsawwassen (nearest DFO station, 1.4km). Rule: always the nearest DFO station,
     // except Steveston (Tsawwassen, see garry-point).
     tideStation: { code: "07590", id: "5cebf1de3d0f4a073c4bb935", name: "Tsawwassen" },
-    name: "Tsawwassen Ferry Terminal (South Causeway)",
+    name: "Tsawwassen Ferry Terminal Causeway",
     // Water forecast point (Sep 28 2026): the beach cell is part land for
     // several models (ECMWF read 0.42x, HRRR 0.57x, NBM 0.62x; the learned forecast already uses its own point, this is for the rest vs a point further out, last 14 days, 8kt+ hours),
     // which reads the wind light. Same fix as Steveston.
@@ -511,9 +511,23 @@ export const SPOTS = [
     marineZone: "strait_of_georgia_south",
     marineAnchorFactor: 0.9,
     sports: ["kite", "wingfoil", "windsurf"],
-    level: "intermediate",
-    // Flat water on NW/N; SW and S also work (bring more waves).
-    favorable_deg: [[160, 230], [300, 20]],
+    // Advanced, per Guillermo (Oct 2026): even when it's onshore, the
+    // consequences for a beginner are high if things go wrong, kiting most.
+    level: "advanced",
+    // The causeway runs east to west and is ridden on both sides (Guillermo,
+    // Oct 2026). South side (the usual one): S, SW and W are onshore and can
+    // be great; N, NW and sometimes W are offshore, advanced only. North
+    // side: the mirror image (NNW is onshore), but it needs 10ft+ of tide
+    // (dries below that) and there's little room to launch a kite, so it's
+    // rarely used. Something works from S round through W to N, so all of
+    // that is favorable; `sides` below says which side, hour by hour
+    // (index.html sideLineForDay and the hour popup).
+    favorable_deg: [[160, 20]],
+    sides: {
+      south: { onshore: [160, 275], offshore: [276, 30] },
+      north: { onshore: [290, 30], minTideFt: 10 },
+    },
+    caution_note: "Advanced riders only: high consequences if things go wrong, especially kiting.",
     // EC's Tsawwassen Ferry Terminal station, right at the causeway, per
     // Guillermo (Sep 2026). Replaces the White Rock METAR, 19km away.
     liveStation: { code: "vtf", name: "Tsawwassen Ferry Terminal" },
@@ -524,8 +538,8 @@ export const SPOTS = [
     mos: { point: "tsaw", offsetKt: 0 },
     thermal: { enabled: false },
     outflow: { enabled: false },
-    direction_note: "South side of the causeway: NW or N gives flat-water conditions; SW brings more waves, S also works. (The north side of the causeway is the mirror image of this — flat when the south side is wavy and vice versa — but isn't separately modeled here.)",
-    tide_note: "South side isn't foilable below about 8ft of tide."
+    direction_note: "The causeway runs east to west and can be ridden on both sides. South side (most common): S, SW and W are onshore and can be great; N, NW and sometimes W are offshore there, advanced riders only. North side: the opposite, so NNW is onshore; rarely used.",
+    tide_note: "South side isn't foilable below about 8ft of tide. North side needs at least 10ft (it dries below that) and has little room to launch a kite."
   },
   {
     // Corrected location (was a placeholder guess at Point Roberts, ~45km
