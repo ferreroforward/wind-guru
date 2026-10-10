@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-10T17:29:18.282Z",
-  "generated_at_label": "Sat, Oct 10, 10:29 AM PDT",
+  "generated_at": "2026-10-10T17:36:29.888Z",
+  "generated_at_label": "Sat, Oct 10, 10:36 AM PDT",
   "models_used": [
     "HRRR 3km (NOAA), then GFS",
     "ECMWF 25km",
@@ -435,9 +435,9 @@
   "daily_takes": {
     "2026-10-10": {
       "date": "2026-10-10",
-      "text": "I hope everyone is tired from yesterday, but if you didn’t get enough... here is what’s on the menu for today. It’s a lighter one. The NW comes back this afternoon and Steveston is my pick from 3pm to 7pm, with 14 to 16 kt gusting 18 and swell building to 3 ft from 6pm once the tide turns against the wind. Jericho should see about 15 kt W from 2pm to 4pm, with an easier launch after 3pm when the tide is back over 10 ft. Environment Canada is calling NW 15 to 20 from noon, which is more and earlier than the models show, so keep an eye on Sand Heads around lunch. Squamish has a gusty northerly outflow of 12 to 15 kt gusting 23, and it only gets strong after dark. Bring the big wing!",
+      "text": "I hope everyone is tired from yesterday, but if you didn’t get enough... here is what’s on the menu for today. It’s a lighter one. The NW comes back this afternoon and Jericho is my pick from 2pm to 6pm, about 14 to 16 kt W to WNW, with an easier launch after 3pm when the tide is back over 10 ft. Environment Canada is calling NW 15 to 20 from noon, which is more and earlier than the models show, so keep an eye on the live readings around lunch. Squamish has a gusty northerly outflow of 12 to 15 kt gusting 23, and it only gets strong after dark. Bring the big wing!",
       "posted_at": "2026-10-10T15:28:37Z",
-      "updated_at": "2026-10-10T15:28:37Z",
+      "updated_at": "2026-10-10T17:36:18Z",
       "issue_number": 68
     },
     "2026-10-09": {
@@ -745,14 +745,14 @@
     }
   },
   "surface_observations": {
-    "updated_at": "2026-10-10T17:29:18.282Z",
+    "updated_at": "2026-10-10T17:36:29.888Z",
     "board_source_url": "https://wtfbc.ca/swob.php",
     "stations": [
       {
         "name": "Pam Rocks (Howe Sound entrance)",
         "source_url": null,
         "observed_local_time": "10:00",
-        "observed_age_min": 29,
+        "observed_age_min": 37,
         "temp_c": null,
         "direction_label": "NNE",
         "speed_kt": 7,
@@ -763,7 +763,7 @@
         "name": "English Bay buoy",
         "source_url": null,
         "observed_local_time": "10:00",
-        "observed_age_min": 29,
+        "observed_age_min": 36,
         "temp_c": null,
         "direction_label": "N",
         "speed_kt": 5.4,
@@ -774,7 +774,7 @@
         "name": "Sand Heads",
         "source_url": null,
         "observed_local_time": "10:00",
-        "observed_age_min": 29,
+        "observed_age_min": 37,
         "temp_c": null,
         "direction_label": "NNE",
         "speed_kt": 4.1,
@@ -785,7 +785,7 @@
         "name": "Tsawwassen Ferry Terminal",
         "source_url": null,
         "observed_local_time": "10:00",
-        "observed_age_min": 29,
+        "observed_age_min": 36,
         "temp_c": null,
         "direction_label": "ENE",
         "speed_kt": 4.3,
@@ -796,7 +796,7 @@
         "name": "Point Atkinson",
         "source_url": null,
         "observed_local_time": "10:00",
-        "observed_age_min": 30,
+        "observed_age_min": 37,
         "temp_c": null,
         "direction_label": "S",
         "speed_kt": 1,
@@ -807,7 +807,7 @@
         "name": "Halibut Bank Buoy",
         "source_url": "https://weather.gc.ca/past_conditions/index_e.html?station=46146",
         "observed_local_time": "10:00",
-        "observed_age_min": 29,
+        "observed_age_min": 36,
         "temp_c": null,
         "direction_label": "NW",
         "speed_kt": 5.4,
@@ -827,21 +827,21 @@
       {
         "name": "Jericho Sailing Centre",
         "source_url": "http://jsca.bc.ca/aboutus/weather/",
-        "observed_local_time": "10:00 am",
-        "temp_c": 10,
-        "direction_label": "ENE",
-        "speed_kt": 0,
-        "gust_kt": 2,
+        "observed_local_time": "10:30 am",
+        "temp_c": 11,
+        "direction_label": "W",
+        "speed_kt": 2,
+        "gust_kt": 6,
         "source": "wtfbc"
       },
       {
         "name": "Squamish Airport",
         "source_url": "https://dd.weather.gc.ca/today/observations/swob-ml/latest/CWSK-AUTO-minute-swob.xml",
-        "observed_local_time": "10:27 am",
-        "temp_c": 10,
-        "direction_label": "N",
-        "speed_kt": 2,
-        "gust_kt": 4,
+        "observed_local_time": "10:35 am",
+        "temp_c": 11,
+        "direction_label": "W",
+        "speed_kt": 1,
+        "gust_kt": 2,
         "source": "wtfbc"
       },
       {
@@ -31743,6 +31743,13 @@
           "type": "low",
           "height_m": 1.08,
           "height_ft": 3.5
+        },
+        {
+          "date": "2026-10-15",
+          "time": "10:32",
+          "type": "high",
+          "height_m": 4.35,
+          "height_ft": 14.3
         }
       ],
       "epic_windows": []
