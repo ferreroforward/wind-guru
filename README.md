@@ -833,7 +833,7 @@ gives the biggest swell). `swellForHours()` in rules.js, per hour:
 
 Current directions from Guillermo (the direction the water flows toward):
 Squamish and Porteau flood north, ebb south; Jericho, Steveston, Erwin Park,
-Dundarave and Ambleside flood east, ebb west; Boundary Bay, White Rock East,
+Dundarave, Ambleside and Cates Park flood east, ebb west; Boundary Bay, White Rock East,
 Crescent Beach and Tsawwassen South flood north, ebb south.
 
 Labels: flat (under 0.25m), chop, waves (0.5m+), good swell (0.9m+). Hours
@@ -845,6 +845,65 @@ NW against the ebb, 4h of wind at 10am), easing once the tide turned.
 waves, good swell) so the fetch and current numbers can be tuned; the
 Cloudflare Worker needs redeploying (`wrangler deploy` in worker/) for it to
 reach the issue.
+
+## Tsawwassen Ferry Terminal: two sides
+
+Per Guillermo (Oct 2026). The causeway runs east to west and is ridden on
+both sides. South side (the usual one): S and SW are onshore and can be
+great; SE works but is gusty; W is side shore on both sides; NW and N are
+offshore there, advanced riders only. North
+side: the opposite (NNW is onshore), but it needs at least 10ft of tide (it
+dries below that) and there's little room to launch a kite, so it's rarely
+used. The spot is rated advanced either way: high consequences for a
+beginner if things go wrong, kiting most. The forecast itself is unchanged.
+The favorable arc now runs from SE round through W to N (W and SE were
+flagged before), and `sides.sectors` in spots.js drives a card line and a
+popup line that say which side works each hour and whether the north side
+has its tide.
+
+## Webcams
+
+Under "Live surface conditions around the region", a Webcams block lists
+cameras from `WEBCAMS` in assets/spots.js (Oct 2026: Sea to Sky Gondola for
+Squamish, Jericho Sailing Centre streamcam for Jericho). Where the owner
+publishes a snapshot image (Jericho, via its streaming host), the card shows
+the latest picture, loaded straight from the owner's server (nothing is
+copied into this repo) and refreshed every 2 minutes while the page is open.
+The gondola embeds its picture inside its own page and blocks other sites,
+so it gets a link card only. Every card opens the owner's live page. Add a
+camera with its name, area, page url, optional snapshot `image` and
+`credit`, and optionally the spot id it looks at.
+
+## Safety warnings
+
+A spot's `caution_note` shows as a red box at the top of its card on every
+day, and its best bets entry gets an ADVANCED ONLY or EXPERTS ONLY tag.
+Per Guillermo (Oct 2026): Steveston (Garry Point) is expert only, never for
+beginners; riders must know self rescue and maritime rules, give way to the
+heavy commercial boat traffic, and not ride alone, or at least carry a way
+to call emergency services. Tsawwassen is advanced only: high consequences
+if things go wrong, especially kiting.
+
+## Squamish outflow
+
+Per Guillermo (Oct 2026), riders don't use the Spit on an outflow. Any wind
+with north in it (from 271 to 89 degrees), or any hour the engine calls
+outflow, is marked `outflow_not_ridden` (rules.js classifyHour): it is never
+a best bet, the map dot goes grey, and the card still shows those hours in
+grey with an OUTFLOW tag and a line saying it is an outflow, not the inflow,
+and only worth it by boat. When the learned thermal says the hour is really
+an inflow, the mark is cleared. Porteau Cove is unchanged: it works on a
+strong outflow (Pam Rocks rule).
+
+## Wind strength words
+
+The best bets list and the hour popup describe the wind with the Environment
+Canada Beaufort scale term for the forecast speed (Calm, Light air, Light
+breeze, Gentle breeze 7 to 10kt, Moderate breeze 11 to 16kt, Fresh breeze 17
+to 21kt, Strong breeze 22 to 27kt, Near gale 28 to 33kt, Gale 34 to 40kt and
+up). This replaced the afternoon breeze / outflow / general / mixed labels
+in Oct 2026 at Guillermo's request. The popup text still says where the
+wind comes from.
 
 ## Marine forecast and tides on the page
 
@@ -867,8 +926,22 @@ Tsawwassen (Guillermo: better for Steveston and south; the Steveston gauge
 sits in the river mouth and reads ~0.6m lower and ~20min later than the
 coast). Squamish and Porteau: Darrell Bay. Jericho: Point Atkinson. Erwin
 Park: Sandy Cove. Ambleside and Dundarave: Ambleside. White Rock, Crescent
-Beach: their own stations. Boundary Bay, Tsawwassen: Tsawwassen. The North
+Beach: their own stations. Boundary Bay, Tsawwassen: Tsawwassen. Cates
+Park: Deep Cove (Second Narrows has no predictions). The North
 Shore stations read within ~0.05m of Point Atkinson.
+
+## Cates Park Boat Launch
+
+Added Oct 2026 at Ivan Dianov's request, for wing foil and windsurf. The
+launch is the Cates Park boat ramp on the north shore of Burrard Inlet.
+Directions per Guillermo: best on W and SW, E and SE can work, anything with
+north in it is offshore (favorable arc E through W). Floods east, ebbs west.
+Fetch is short (about 6km down the inlet on a west wind), so expect chop
+rather than swell. No live station yet: VA7IS in North Vancouver read near
+zero on a 10 to 13kt westerly. No water forecast point is needed (the ramp
+and mid channel share a model cell), and no EC marine note, since the Strait
+of Georgia forecast doesn't describe the wind this far up the inlet. Tide
+limits for the launch are still to confirm with Ivan.
 
 ## Known limitations / good next steps
 
