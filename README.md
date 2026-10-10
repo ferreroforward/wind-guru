@@ -865,11 +865,14 @@ has its tide.
 
 Under "Live surface conditions around the region", a Webcams block lists
 cameras from `WEBCAMS` in assets/spots.js (Oct 2026: Sea to Sky Gondola for
-Squamish, Jericho Sailing Centre streamcam for Jericho). Each card opens the
-owner's camera page in a new tab; the images aren't copied or embedded,
-since that is the owner's call (the gondola cam also blocks being shown
-inside other sites). Add a camera with its name, area, page url and
-optionally the spot id it looks at.
+Squamish, Jericho Sailing Centre streamcam for Jericho). Where the owner
+publishes a snapshot image (Jericho, via its streaming host), the card shows
+the latest picture, loaded straight from the owner's server (nothing is
+copied into this repo) and refreshed every 2 minutes while the page is open.
+The gondola embeds its picture inside its own page and blocks other sites,
+so it gets a link card only. Every card opens the owner's live page. Add a
+camera with its name, area, page url, optional snapshot `image` and
+`credit`, and optionally the spot id it looks at.
 
 ## Safety warnings
 

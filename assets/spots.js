@@ -796,14 +796,16 @@ export const SPOTS = [
 ];
 
 // Webcams shown under "Live surface conditions around the region"
-// (index.html renderWebcams), per Guillermo (Oct 2026). Each opens the
-// owner's own camera page in a new tab; the images aren't copied or
-// embedded here, since that's the owner's call (the Sea to Sky Gondola cam
-// also blocks being shown inside other sites). To add one: name, area, the
-// camera page url, and optionally the spot id it looks at.
+// (index.html renderWebcams), per Guillermo (Oct 2026). `image` is the
+// camera's own latest snapshot, loaded straight from the owner's server
+// (nothing is copied into this repo) and refreshed while the page is open;
+// the card links to the owner's page. Cameras without a public snapshot
+// (the Sea to Sky Gondola embeds its picture inside its own page and blocks
+// other sites) get a link card only. To add one: name, area, camera page
+// url, optional snapshot image url, optional spot id it looks at.
 export const WEBCAMS = [
+  { name: "Jericho Sailing Centre streamcam", area: "Jericho and English Bay", url: "https://jsca.bc.ca/services/steamcam-ptz/", image: "https://streamer5.brownrice.com/cam-images/jscaptz.jpg", credit: "Jericho Sailing Centre", spotId: "jericho-spanish-banks" },
   { name: "Sea to Sky Gondola", area: "Squamish and Howe Sound", url: "https://www.seatoskygondola.com/weather-and-cams/", spotId: "squamish-spit" },
-  { name: "Jericho Sailing Centre streamcam", area: "Jericho and English Bay", url: "https://jsca.bc.ca/services/steamcam-ptz/", spotId: "jericho-spanish-banks" },
 ];
 
 export const DEG_LABELS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];

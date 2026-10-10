@@ -151,6 +151,8 @@
   .cam-head{font-size:0.95rem;margin:18px 0 4px;color:var(--text);}
   a.cam-card{display:block;text-decoration:none;color:inherit;}
   a.cam-card:hover{border-color:var(--accent);}
+  .cam-thumb{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:var(--panel2);margin-bottom:8px;}
+  .cam-nothumb{display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:16/9;border-radius:8px;background:var(--panel2);color:var(--muted);font-size:0.8rem;margin-bottom:8px;text-align:center;padding:0 8px;box-sizing:border-box;}
   .obs-note{font-size:0.85rem;color:var(--muted);margin:8px 0 14px;}
   .links-list{font-size:0.95rem;color:var(--muted);line-height:1.9;}
   .links-list a{color:var(--accent);font-weight:600;text-decoration:none;}
@@ -287,7 +289,7 @@
     <div class="obs-grid" id="obsGrid"></div>
     <div id="camBlock" style="display:none;">
       <h3 class="cam-head">📷 Webcams</h3>
-      <div class="obs-note" style="margin-top:0;">Each opens the camera owner's page in a new tab.</div>
+      <div class="obs-note" style="margin-top:0;">Latest picture from each camera where the owner publishes one, refreshed every 2 minutes. Tap a camera for the owner's live page.</div>
       <div class="obs-grid" id="camGrid"></div>
     </div>
   </div>
@@ -1061,14 +1063,24 @@ function renderWebcams() {
   block.style.display = cams.length ? "block" : "none";
   grid.innerHTML = cams.map(c => {
     const spot = c.spotId ? SPOTS.find(s => s.id === c.spotId) : null;
+    const pic = c.image
+      ? `<img class="cam-thumb" data-src="${c.image}" src="${camSrc(c.image)}" alt="Latest picture from ${c.name}" loading="lazy" onerror="this.outerHTML='<div class=&quot;cam-nothumb&quot;>Picture not available right now</div>'">`
+      : `<div class="cam-nothumb">Live picture on the owner's page</div>`;
     return `<a class="obs-card cam-card" href="${c.url}" target="_blank" rel="noopener">
+        ${pic}
         <div class="obs-name">${c.name}</div>
-        <div class="obs-meta">${c.area}${spot ? ` · looks at ${spot.name}` : ""}</div>
-        <div class="obs-meta" style="color:var(--accent);font-weight:600;margin-top:6px;">Open camera ↗</div>
+        <div class="obs-meta">${c.area}${spot ? ` · looks at ${spot.name}` : ""}${c.credit ? ` · picture: ${c.credit}` : ""}</div>
+        <div class="obs-meta" style="color:var(--accent);font-weight:600;margin-top:6px;">Open live camera ↗</div>
       </a>`;
   }).join("");
   return cams.length;
 }
+// Cache buster so each refresh pulls the camera's newest snapshot.
+function camSrc(url) { return `${url}${url.includes("?") ? "&" : "?"}t=${Math.floor(Date.now() / 60000)}`; }
+setInterval(() => {
+  if (document.hidden) return;
+  document.querySelectorAll("img.cam-thumb[data-src]").forEach(img => { img.src = camSrc(img.dataset.src); });
+}, 120000);
 
 function renderSurfaceObservations() {
   const section = document.getElementById("obsSection");
