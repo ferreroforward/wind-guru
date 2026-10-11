@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-11T15:28:07.393Z",
+  "updated_at": "2026-10-11T17:34:44.199Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -563,6 +563,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-10-11T10:00",
+      "forecasted": 6.5,
+      "actual": 22,
+      "ratio": 3.3846153846153846,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "outflow",
+      "mismatch": true,
+      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
+      "checked_at": "2026-10-11T17:34:44.199Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-10-11T08:00",
       "forecasted": 12.8,
       "actual": 25.1,
@@ -1069,19 +1082,6 @@
       "checked_at": "2026-09-22T19:16:02.978Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-09-21T16:00",
-      "forecasted": 11.6,
-      "actual": 8.9,
-      "ratio": 0.7672413793103449,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "thermal",
-      "mismatch": true,
-      "reasoning": "Forecast called a thermal that came in weaker than shown — possible early suppression (heat, high cloud) or the gradient not fully developing. This hour already had the Squamish field calibration applied. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-21T23:36:05.376Z"
-    },
-    {
       "spot": "white-rock-east",
       "time": "2026-09-30T16:00",
       "forecasted": 5.9,
@@ -1275,6 +1275,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-10-11T10:00",
+      "forecasted": 12.1,
+      "actual": 12.1,
+      "ratio": 1,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-11T17:34:44.199Z"
     },
     {
       "spot": "garry-point",
@@ -1784,17 +1797,17 @@
       "checked_at": "2026-09-23T14:03:41.502Z"
     },
     {
-      "spot": "garry-point",
-      "time": "2026-09-17T09:00",
-      "forecasted": 11.8,
-      "actual": 19,
-      "ratio": 1.6101694915254237,
+      "spot": "tsawwassen-south",
+      "time": "2026-10-11T10:00",
+      "forecasted": 6.1,
+      "actual": 8.6,
+      "ratio": 1.4098360655737705,
       "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
+      "station": "Tsawwassen Ferry Terminal",
+      "regime": "mixed",
       "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 6%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-17T16:29:43.853Z"
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-10-11T17:34:44.199Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2302,19 +2315,6 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 41%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-09-11T03:53:55.557Z"
-    },
-    {
-      "spot": "tsawwassen-south",
-      "time": "2026-09-08T17:00",
-      "forecasted": 11.8,
-      "actual": 2.9,
-      "ratio": 0.24576271186440676,
-      "source": "live-station",
-      "station": "White Rock, BC",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 54%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-09T00:24:07.187Z"
     },
     {
       "spot": "crescent-beach",
