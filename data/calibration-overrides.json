@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T20:18:24.795Z",
+  "generated_at": "2026-10-12T22:55:45.435Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
@@ -7,9 +7,9 @@
         "sample_size": 20,
         "rider_reports": 20,
         "live_checks": 0,
-        "avg_ratio": 0.89,
-        "multiplier": 0.89,
-        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 89% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.9,
+        "multiplier": 0.9,
+        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 90% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "jericho-spanish-banks": {
@@ -229,7 +229,7 @@
   },
   "accuracy": {
     "tolerance_kt": 3,
-    "sample_size": 38,
-    "hit_rate": 0.55
+    "sample_size": 39,
+    "hit_rate": 0.54
   }
 }
