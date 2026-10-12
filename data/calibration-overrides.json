@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T15:30:56.908Z",
+  "generated_at": "2026-10-12T18:59:43.699Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
@@ -7,9 +7,9 @@
         "sample_size": 20,
         "rider_reports": 20,
         "live_checks": 0,
-        "avg_ratio": 1.07,
-        "multiplier": 1.07,
-        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 107% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.95,
+        "multiplier": 0.95,
+        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 95% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "jericho-spanish-banks": {
@@ -17,17 +17,17 @@
         "sample_size": 20,
         "rider_reports": 1,
         "live_checks": 19,
-        "avg_ratio": 1.12,
-        "multiplier": 1.12,
-        "note": "Based on 20 total data points (1 rider report, 19 live-station checks): actual wind averaged 112% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 1.11,
+        "multiplier": 1.11,
+        "note": "Based on 20 total data points (1 rider report, 19 live-station checks): actual wind averaged 111% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "mixed": {
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 1.26,
-        "multiplier": 1.26,
-        "note": "Based on 20 mixed data points (0 rider reports, 20 live-station checks): actual wind averaged 126% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 1.24,
+        "multiplier": 1.24,
+        "note": "Based on 20 mixed data points (0 rider reports, 20 live-station checks): actual wind averaged 124% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "calm": {
         "sample_size": 6,
@@ -229,7 +229,7 @@
   },
   "accuracy": {
     "tolerance_kt": 3,
-    "sample_size": 36,
-    "hit_rate": 0.58
+    "sample_size": 37,
+    "hit_rate": 0.57
   }
 }
