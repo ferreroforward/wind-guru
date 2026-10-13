@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-13T19:58:16.824Z",
+  "updated_at": "2026-10-13T23:28:18.382Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1317,6 +1317,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-10-13T16:00",
+      "forecasted": 8.2,
+      "actual": 8,
+      "ratio": 0.9756097560975611,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "mixed",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-13T23:28:18.382Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-10-13T12:00",
       "forecasted": 9.5,
       "actual": 8.9,
@@ -1821,19 +1834,6 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 66%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-09-25T22:52:08.592Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-09-24T19:00",
-      "forecasted": 12.1,
-      "actual": 15.9,
-      "ratio": 1.3140495867768596,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 9%, so spread between models likely explains some of the gap. Models disagreed sharply with each other, a known low-confidence signature. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-25T02:13:02.040Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2565,6 +2565,19 @@
     },
     {
       "spot": "jericho-spanish-banks",
+      "time": "2026-10-13T16:00",
+      "forecasted": 6,
+      "actual": 9.7,
+      "ratio": 1.6166666666666665,
+      "source": "live-station",
+      "station": "English Bay buoy",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-10-13T23:28:18.382Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
       "time": "2026-10-13T12:00",
       "forecasted": 7.5,
       "actual": 4.3,
@@ -3069,19 +3082,6 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
       "checked_at": "2026-09-28T22:26:17.361Z"
-    },
-    {
-      "spot": "jericho-spanish-banks",
-      "time": "2026-09-28T13:00",
-      "forecasted": 10.3,
-      "actual": 13,
-      "ratio": 1.262135922330097,
-      "source": "live-station",
-      "station": "English Bay buoy",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-09-28T20:16:05.100Z"
     }
   ]
 }
