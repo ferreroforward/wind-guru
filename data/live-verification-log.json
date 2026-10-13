@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-13T19:57:12.534Z",
+  "updated_at": "2026-10-13T19:58:16.824Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1326,7 +1326,7 @@
       "regime": "mixed",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-13T19:57:12.534Z"
+      "checked_at": "2026-10-13T19:58:16.824Z"
     },
     {
       "spot": "garry-point",
@@ -2574,7 +2574,7 @@
       "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-13T19:57:12.534Z"
+      "checked_at": "2026-10-13T19:58:16.824Z"
     },
     {
       "spot": "jericho-spanish-banks",
