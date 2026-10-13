@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-13T02:39:22.545Z",
+  "updated_at": "2026-10-13T07:53:32.789Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1291,6 +1291,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-10-13T00:00",
+      "forecasted": 9.1,
+      "actual": 8.9,
+      "ratio": 0.9780219780219781,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "mixed",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-13T07:53:32.789Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-10-12T00:00",
       "forecasted": 9.9,
       "actual": 5.1,
@@ -1795,19 +1808,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-09-24T17:30:41.587Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-09-24T09:00",
-      "forecasted": 14,
-      "actual": 13,
-      "ratio": 0.9285714285714286,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-09-24T16:53:58.367Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2539,6 +2539,19 @@
     },
     {
       "spot": "jericho-spanish-banks",
+      "time": "2026-10-13T00:00",
+      "forecasted": 7.6,
+      "actual": 7.6,
+      "ratio": 1,
+      "source": "live-station",
+      "station": "English Bay buoy",
+      "regime": "mixed",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-13T07:53:32.789Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
       "time": "2026-10-12T08:00",
       "forecasted": 6.3,
       "actual": 8.6,
@@ -3043,19 +3056,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-09-28T15:10:57.121Z"
-    },
-    {
-      "spot": "jericho-spanish-banks",
-      "time": "2026-09-27T19:00",
-      "forecasted": 7.1,
-      "actual": 10.3,
-      "ratio": 1.4507042253521127,
-      "source": "live-station",
-      "station": "English Bay buoy",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-09-28T02:17:36.763Z"
     }
   ]
 }
