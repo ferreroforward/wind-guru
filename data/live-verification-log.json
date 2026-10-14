@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-14T02:26:57.448Z",
+  "updated_at": "2026-10-14T06:19:41.887Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -96,6 +96,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-10-13T23:00",
+      "forecasted": 6,
+      "actual": 15.9,
+      "ratio": 2.65,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-10-14T06:19:41.887Z"
     },
     {
       "spot": "erwin-park",
@@ -601,17 +614,6 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T13:40:49.138Z"
-    },
-    {
-      "spot": "erwin-park",
-      "time": "2026-08-14T20:00",
-      "forecasted": 3.8,
-      "actual": 1,
-      "ratio": 0.2631578947368421,
-      "source": "live-station",
-      "station": "White Rock, BC",
-      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
-      "checked_at": "2026-08-15T03:05:00.396Z"
     },
     {
       "spot": "porteau-cove",
@@ -1330,6 +1332,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-10-13T23:00",
+      "forecasted": 11.6,
+      "actual": 15.9,
+      "ratio": 1.370689655172414,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 63%, so spread between models likely explains some of the gap.",
+      "checked_at": "2026-10-14T06:19:41.887Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-10-13T19:00",
       "forecasted": 9.3,
       "actual": 13,
@@ -1836,17 +1851,17 @@
       "checked_at": "2026-09-28T02:17:36.763Z"
     },
     {
-      "spot": "garry-point",
-      "time": "2026-09-27T16:00",
-      "forecasted": 13.4,
-      "actual": 8,
-      "ratio": 0.5970149253731343,
+      "spot": "tsawwassen-south",
+      "time": "2026-10-13T23:00",
+      "forecasted": 7.6,
+      "actual": 8.6,
+      "ratio": 1.131578947368421,
       "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 67%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-09-27T23:44:55.950Z"
+      "station": "Tsawwassen Ferry Terminal",
+      "regime": "mixed",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-14T06:19:41.887Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2356,19 +2371,6 @@
       "checked_at": "2026-09-12T15:12:19.219Z"
     },
     {
-      "spot": "tsawwassen-south",
-      "time": "2026-09-11T20:00",
-      "forecasted": 8.4,
-      "actual": 1,
-      "ratio": 0.11904761904761904,
-      "source": "live-station",
-      "station": "White Rock, BC",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 78%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-12T03:56:03.624Z"
-    },
-    {
       "spot": "crescent-beach",
       "time": "2026-09-30T16:00",
       "forecasted": 6.4,
@@ -2575,6 +2577,19 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-29T20:09:05.755Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
+      "time": "2026-10-13T23:00",
+      "forecasted": 9.9,
+      "actual": 14,
+      "ratio": 1.4141414141414141,
+      "source": "live-station",
+      "station": "English Bay buoy",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-10-14T06:19:41.887Z"
     },
     {
       "spot": "jericho-spanish-banks",
@@ -3082,19 +3097,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-09-29T07:05:27.807Z"
-    },
-    {
-      "spot": "jericho-spanish-banks",
-      "time": "2026-09-28T18:00",
-      "forecasted": 12.5,
-      "actual": 11.9,
-      "ratio": 0.9520000000000001,
-      "source": "live-station",
-      "station": "English Bay buoy",
-      "regime": "mixed",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-09-29T01:07:05.831Z"
     }
   ]
 }
