@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-15T17:51:02.935Z",
+  "updated_at": "2026-10-15T19:03:22.779Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -617,6 +617,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-10-15T12:00",
+      "forecasted": 0,
+      "actual": 20,
+      "ratio": 4,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-10-15T19:03:22.779Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-10-15T10:00",
       "forecasted": 12,
       "actual": 22,
@@ -1121,19 +1134,6 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
       "checked_at": "2026-09-28T15:10:57.121Z"
-    },
-    {
-      "spot": "porteau-cove",
-      "time": "2026-09-27T14:00",
-      "forecasted": 11.7,
-      "actual": 2.9,
-      "ratio": 0.24786324786324787,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 81%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-27T21:16:28.976Z"
     },
     {
       "spot": "white-rock-east",
