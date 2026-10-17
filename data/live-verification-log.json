@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-17T14:24:06.002Z",
+  "updated_at": "2026-10-17T14:43:01.181Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1342,8 +1342,8 @@
       "station": "Sand Heads",
       "regime": "synoptic",
       "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 60%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-10-17T14:24:06.002Z"
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 47%, so spread between models likely explains some of the gap.",
+      "checked_at": "2026-10-17T14:43:01.181Z"
     },
     {
       "spot": "garry-point",
@@ -1863,7 +1863,7 @@
       "regime": "synoptic",
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 27%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-10-17T14:24:06.002Z"
+      "checked_at": "2026-10-17T14:43:01.181Z"
     },
     {
       "spot": "tsawwassen-south",
