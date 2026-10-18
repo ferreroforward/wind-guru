@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-18T15:40:39.383Z",
+  "updated_at": "2026-10-18T15:58:06.732Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -628,7 +628,7 @@
       "regime": "calm",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-18T15:40:39.383Z"
+      "checked_at": "2026-10-18T15:58:06.732Z"
     },
     {
       "spot": "porteau-cove",
@@ -2591,7 +2591,7 @@
       "regime": "calm",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-18T15:40:39.383Z"
+      "checked_at": "2026-10-18T15:58:06.732Z"
     },
     {
       "spot": "jericho-spanish-banks",
