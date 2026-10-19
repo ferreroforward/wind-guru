@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-19T18:35:41.543Z",
+  "updated_at": "2026-10-19T23:10:04.534Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -96,6 +96,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-10-19T16:00",
+      "forecasted": 0.9,
+      "actual": 9.9,
+      "ratio": 1.98,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-10-19T23:10:04.534Z"
     },
     {
       "spot": "erwin-park",
@@ -603,19 +616,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-09-02T12:17:00.414Z"
-    },
-    {
-      "spot": "erwin-park",
-      "time": "2026-09-01T05:00",
-      "forecasted": 15.5,
-      "actual": 1.9,
-      "ratio": 0.12258064516129032,
-      "source": "live-station",
-      "station": "Point Atkinson",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 85%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-01T12:16:52.594Z"
     },
     {
       "spot": "porteau-cove",
@@ -1854,6 +1854,19 @@
     },
     {
       "spot": "tsawwassen-south",
+      "time": "2026-10-19T16:00",
+      "forecasted": 6.5,
+      "actual": 8.1,
+      "ratio": 1.2461538461538462,
+      "source": "live-station",
+      "station": "Tsawwassen Ferry Terminal",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-10-19T23:10:04.534Z"
+    },
+    {
+      "spot": "tsawwassen-south",
       "time": "2026-10-18T16:00",
       "forecasted": 7.8,
       "actual": 8.6,
@@ -2358,19 +2371,6 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 84%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-09-24T13:26:37.978Z"
-    },
-    {
-      "spot": "tsawwassen-south",
-      "time": "2026-09-23T18:00",
-      "forecasted": 8.7,
-      "actual": 2.9,
-      "ratio": 0.33333333333333337,
-      "source": "live-station",
-      "station": "White Rock, BC",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 66%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-24T01:56:15.035Z"
     },
     {
       "spot": "crescent-beach",
