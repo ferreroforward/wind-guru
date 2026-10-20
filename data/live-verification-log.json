@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-20T15:31:09.857Z",
+  "updated_at": "2026-10-20T15:40:51.500Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -621,14 +621,14 @@
       "spot": "porteau-cove",
       "time": "2026-10-20T08:00",
       "forecasted": 12.1,
-      "actual": 17.1,
-      "ratio": 1.413223140495868,
+      "actual": 15,
+      "ratio": 1.2396694214876034,
       "source": "live-station",
       "station": "Pam Rocks (Howe Sound entrance)",
       "regime": "outflow",
       "mismatch": true,
       "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
-      "checked_at": "2026-10-20T15:31:09.857Z"
+      "checked_at": "2026-10-20T15:40:51.500Z"
     },
     {
       "spot": "porteau-cove",
@@ -1343,7 +1343,7 @@
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-20T15:31:09.857Z"
+      "checked_at": "2026-10-20T15:40:51.500Z"
     },
     {
       "spot": "garry-point",
@@ -1863,7 +1863,7 @@
       "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-20T15:31:09.857Z"
+      "checked_at": "2026-10-20T15:40:51.500Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2591,7 +2591,7 @@
       "regime": "mixed",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-20T15:31:09.857Z"
+      "checked_at": "2026-10-20T15:40:51.500Z"
     },
     {
       "spot": "jericho-spanish-banks",
