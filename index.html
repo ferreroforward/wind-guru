@@ -307,6 +307,29 @@
       <label class="report-field">Gust (kt) <span class="optional">optional</span>
         <input type="number" id="reportActualGust" min="0" max="90" step="1" inputmode="numeric" placeholder="e.g. 25">
       </label>
+      <!-- Wind direction (Oct 2026, Guillermo): matters most at direction
+           sensitive spots (Tsawwassen, Crescent Beach, Jericho, Squamish). -->
+      <label class="report-field">Wind direction <span class="optional">optional, where it blew from</span>
+        <select id="reportWindDir">
+          <option value="">Not sure</option>
+          <option value="N">N</option>
+          <option value="NNE">NNE</option>
+          <option value="NE">NE</option>
+          <option value="ENE">ENE</option>
+          <option value="E">E</option>
+          <option value="ESE">ESE</option>
+          <option value="SE">SE</option>
+          <option value="SSE">SSE</option>
+          <option value="S">S</option>
+          <option value="SSW">SSW</option>
+          <option value="SW">SW</option>
+          <option value="WSW">WSW</option>
+          <option value="W">W</option>
+          <option value="WNW">WNW</option>
+          <option value="NW">NW</option>
+          <option value="NNW">NNW</option>
+        </select>
+      </label>
       <label class="report-field">Waves <span class="optional">optional, helps tune the swell forecast</span>
         <select id="reportWaveSize">
           <option value="">Not sure</option>
@@ -751,19 +774,21 @@ const reportModalContext = document.getElementById("reportModalContext");
 const reportActualMin = document.getElementById("reportActualMin");
 const reportActualGust = document.getElementById("reportActualGust");
 const reportWaveSize = document.getElementById("reportWaveSize");
+const reportWindDir = document.getElementById("reportWindDir");
 const reportModalMsg = document.getElementById("reportModalMsg");
 const reportModalSubmit = document.getElementById("reportModalSubmit");
 const reportModalCancel = document.getElementById("reportModalCancel");
 let reportModalCtx = null;
 
 function openReportModal(ds) {
-  reportModalCtx = { spot: ds.spot, date: ds.date, time: ds.time, forecast_speed: ds.forecast };
+  reportModalCtx = { spot: ds.spot, date: ds.date, time: ds.time, forecast_speed: ds.forecast, forecast_dir: ds.dir || null };
   const whenText = ds.time ? `${ds.date} · ${ds.time}` : ds.date;
-  const forecastText = ds.forecast ? ` · forecast said ${ds.forecast}kt` : "";
+  const forecastText = ds.forecast ? ` · forecast said ${ds.forecast}kt${ds.dir ? ` ${ds.dir}` : ""}` : "";
   reportModalContext.textContent = `${ds.name} · ${whenText}${forecastText}`;
   reportActualMin.value = "";
   reportActualGust.value = "";
   reportWaveSize.value = "";
+  reportWindDir.value = "";
   reportModalMsg.textContent = "";
   reportModalMsg.className = "report-modal-msg";
   reportModalSubmit.disabled = false;
@@ -806,7 +831,7 @@ async function submitReport() {
     const res = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...reportModalCtx, actual_speed: actual, actual_gust: gust, wave_size: reportWaveSize.value || null }),
+      body: JSON.stringify({ ...reportModalCtx, actual_speed: actual, actual_gust: gust, wave_size: reportWaveSize.value || null, wind_dir: reportWindDir.value || null }),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     reportModalMsg.textContent = "Thanks — that's logged and feeds straight into the forecast.";
@@ -865,7 +890,7 @@ function showTip(cellEl, h, spotId) {
   const epicText = h.epic ? `<div style="margin-top:4px;font-weight:700;color:#ffcf9e;">🔥 Matches this spot's epic day setup</div>` : "";
   const spotName = (SPOTS.find(s => s.id === spotId) || {}).name ?? spotId;
   globalTip.innerHTML = `<b>${windTerm(h.speed_kt)}${h.speed_kt != null ? ` <span style="font-weight:400;opacity:0.8;">(Beaufort ${beaufort(h.speed_kt).force})</span>` : ""}</b>${speedText}${summaryText}${sideText}${tideText}${swellText}${ecText}${mosText}${agreeText}${epicText}
-    <button type="button" class="report-trigger" data-spot="${spotId}" data-name="${spotName}" data-date="${h.time.slice(0, 10)}" data-time="${h.time.slice(11, 16)}" data-forecast="${h.speed_kt != null ? h.speed_kt : ""}">📝 Report actual conditions →</button>`;
+    <button type="button" class="report-trigger" data-spot="${spotId}" data-name="${spotName}" data-date="${h.time.slice(0, 10)}" data-time="${h.time.slice(11, 16)}" data-forecast="${h.speed_kt != null ? h.speed_kt : ""}" data-dir="${h.direction_label ?? ""}">📝 Report actual conditions →</button>`;
   const rect = cellEl.getBoundingClientRect();
   globalTip.style.display = "block";
   // Measure after display:block so offsetWidth is accurate, then clamp to viewport.
