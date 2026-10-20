@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-19T23:10:04.437Z",
+  "generated_at": "2026-10-20T02:24:15.121Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
@@ -77,17 +77,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.87,
-        "multiplier": 0.87,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 87% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.89,
+        "multiplier": 0.89,
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 89% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "mixed": {
-        "sample_size": 12,
+        "sample_size": 13,
         "rider_reports": 0,
-        "live_checks": 12,
-        "avg_ratio": 0.93,
-        "multiplier": 0.93,
-        "note": "Based on 12 mixed data points (0 rider reports, 12 live-station checks): actual wind averaged 93% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 13,
+        "avg_ratio": 0.95,
+        "multiplier": 0.95,
+        "note": "Based on 13 mixed data points (0 rider reports, 13 live-station checks): actual wind averaged 95% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 18,
@@ -126,12 +126,12 @@
         "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 194% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 194%, softened to a 145% multiplier until more reports come in."
       },
       "calm": {
-        "sample_size": 9,
+        "sample_size": 10,
         "rider_reports": 0,
-        "live_checks": 9,
-        "avg_ratio": 2.26,
-        "multiplier": 1.41,
-        "note": "Based on 9 calm data points (0 rider reports, 9 live-station checks): actual wind averaged 226% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 9 data points so far -- the raw ratio would be 226%, softened to a 141% multiplier until more reports come in."
+        "live_checks": 10,
+        "avg_ratio": 2.23,
+        "multiplier": 1.42,
+        "note": "Based on 10 calm data points (0 rider reports, 10 live-station checks): actual wind averaged 223% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 10 data points so far -- the raw ratio would be 223%, softened to a 142% multiplier until more reports come in."
       },
       "mixed": {
         "sample_size": 4,
