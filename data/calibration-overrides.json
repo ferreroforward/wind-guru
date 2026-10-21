@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T02:17:50.789Z",
+  "generated_at": "2026-10-21T06:10:24.897Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
@@ -35,9 +35,9 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 1.02,
-        "multiplier": 1.02,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 102% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 1.01,
+        "multiplier": 1.01,
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 101% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 20,
@@ -48,12 +48,12 @@
         "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 89% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "mixed": {
-        "sample_size": 14,
+        "sample_size": 13,
         "rider_reports": 0,
-        "live_checks": 14,
-        "avg_ratio": 0.86,
-        "multiplier": 0.86,
-        "note": "Based on 14 mixed data points (0 rider reports, 14 live-station checks): actual wind averaged 86% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 13,
+        "avg_ratio": 0.84,
+        "multiplier": 0.84,
+        "note": "Based on 13 mixed data points (0 rider reports, 13 live-station checks): actual wind averaged 84% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "tsawwassen-south": {
