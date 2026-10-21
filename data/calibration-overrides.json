@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T23:06:48.751Z",
+  "generated_at": "2026-10-21T23:08:39.640Z",
   "min_samples": 2,
   "spots": {
     "squamish-spit": {
@@ -7,19 +7,19 @@
         "sample_size": 20,
         "rider_reports": 20,
         "live_checks": 0,
-        "avg_ratio": 0.8,
-        "multiplier": 0.8,
-        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 80% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.72,
+        "multiplier": 0.77,
+        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 72% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 72%, softened to a 77% multiplier until more reports come in."
       }
     },
     "jericho-spanish-banks": {
       "general": {
-        "sample_size": 2,
+        "sample_size": 3,
         "rider_reports": 2,
-        "live_checks": 0,
-        "avg_ratio": 0.67,
-        "multiplier": 0.88,
-        "note": "Based on 2 total data points (2 rider reports, 0 live-station checks): actual wind averaged 67% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 2 data points so far -- the raw ratio would be 67%, softened to a 88% multiplier until more reports come in."
+        "live_checks": 1,
+        "avg_ratio": 0.79,
+        "multiplier": 0.85,
+        "note": "Based on 3 total data points (2 rider reports, 1 live-station check): actual wind averaged 79% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 3 data points so far -- the raw ratio would be 79%, softened to a 85% multiplier until more reports come in."
       }
     },
     "garry-point": {
@@ -205,15 +205,15 @@
   },
   "accuracy": {
     "tolerance_kt": 3,
-    "sample_size": 50,
+    "sample_size": 52,
     "hit_rate": 0.52
   },
   "direction": {
     "match_deg": 45,
     "spots": {
       "squamish-spit": {
-        "reports": 1,
-        "matched": 1,
+        "reports": 3,
+        "matched": 3,
         "hit_rate": 1
       }
     }
