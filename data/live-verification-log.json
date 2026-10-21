@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-21T06:10:25.013Z",
+  "updated_at": "2026-10-21T15:01:48.925Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -619,6 +619,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-10-21T08:00",
+      "forecasted": 0,
+      "actual": 20,
+      "ratio": 4,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-10-21T15:01:48.925Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-10-20T23:00",
       "forecasted": 4.2,
       "actual": 15.9,
@@ -1123,19 +1136,6 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
       "checked_at": "2026-10-05T23:04:08.488Z"
-    },
-    {
-      "spot": "porteau-cove",
-      "time": "2026-10-05T14:00",
-      "forecasted": 5.5,
-      "actual": 12.1,
-      "ratio": 2.1999999999999997,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-05T21:12:12.117Z"
     },
     {
       "spot": "white-rock-east",
@@ -2582,6 +2582,19 @@
     },
     {
       "spot": "jericho-spanish-banks",
+      "time": "2026-10-21T08:00",
+      "forecasted": 1.5,
+      "actual": 10.3,
+      "ratio": 2.06,
+      "source": "live-station",
+      "station": "English Bay buoy",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. Models disagreed sharply with each other, a known low-confidence signature. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-10-21T15:01:48.925Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
       "time": "2026-10-20T15:00",
       "forecasted": 9.8,
       "actual": 13,
@@ -3086,19 +3099,6 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-10-07T23:07:09.518Z"
-    },
-    {
-      "spot": "jericho-spanish-banks",
-      "time": "2026-10-06T15:00",
-      "forecasted": 5.8,
-      "actual": 9.2,
-      "ratio": 1.586206896551724,
-      "source": "live-station",
-      "station": "English Bay buoy",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-06T22:03:49.666Z"
     }
   ]
 }
