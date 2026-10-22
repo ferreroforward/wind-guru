@@ -235,6 +235,8 @@
   .support-sub a{color:var(--accent);}
   @media (max-width:600px){
     .support{flex-direction:column;align-items:flex-start;padding:16px;}
+    /* In a column the 320px flex basis became a 320px tall text box (empty gap on phones, Oct 22). */
+    .support-text{flex:0 0 auto;}
     .support-btn{width:100%;text-align:center;box-sizing:border-box;}
     .support-actions{width:100%;}
   }
