@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-23T22:04:56.749Z",
+  "updated_at": "2026-10-23T22:23:00.603Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1335,15 +1335,15 @@
     {
       "spot": "garry-point",
       "time": "2026-10-23T15:00",
-      "forecasted": 9.6,
+      "forecasted": 9.8,
       "actual": 12.1,
-      "ratio": 1.2604166666666667,
+      "ratio": 1.2346938775510203,
       "source": "live-station",
       "station": "Sand Heads",
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-23T22:04:56.749Z"
+      "checked_at": "2026-10-23T22:23:00.603Z"
     },
     {
       "spot": "garry-point",
@@ -2591,7 +2591,7 @@
       "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-23T22:04:56.749Z"
+      "checked_at": "2026-10-23T22:23:00.603Z"
     },
     {
       "spot": "jericho-spanish-banks",
@@ -3104,14 +3104,14 @@
       "spot": "squamish-spit",
       "time": "2026-10-23T15:00",
       "forecasted": 7.7,
-      "actual": 15.7,
-      "ratio": 2.038961038961039,
+      "actual": 16.5,
+      "ratio": 2.142857142857143,
       "source": "live-station",
       "station": "Squamish terminal sensor (Kiteloop)",
       "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-23T22:04:56.749Z"
+      "checked_at": "2026-10-23T22:23:00.603Z"
     },
     {
       "spot": "squamish-spit",
