@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T22:23:00.504Z",
+  "generated_at": "2026-10-23T23:27:19.921Z",
   "min_samples": 2,
   "min_rider_reports": 5,
   "min_rider_days": 2,
@@ -10,9 +10,9 @@
         "sample_size": 20,
         "rider_reports": 20,
         "live_checks": 0,
-        "avg_ratio": 0.85,
-        "multiplier": 0.85,
-        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 85% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.93,
+        "multiplier": 0.93,
+        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 93% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "erwin-park": {
@@ -192,15 +192,15 @@
   },
   "accuracy": {
     "tolerance_kt": 3,
-    "sample_size": 60,
-    "hit_rate": 0.47
+    "sample_size": 61,
+    "hit_rate": 0.46
   },
   "direction": {
     "match_deg": 45,
     "spots": {
       "squamish-spit": {
-        "reports": 9,
-        "matched": 9,
+        "reports": 10,
+        "matched": 10,
         "hit_rate": 1
       },
       "white-rock-east": {

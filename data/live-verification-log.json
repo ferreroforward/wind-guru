@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-23T22:23:00.603Z",
+  "updated_at": "2026-10-23T23:27:20.033Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1334,6 +1334,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-10-23T16:00",
+      "forecasted": 7.7,
+      "actual": 9.9,
+      "ratio": 1.2857142857142858,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-10-23T23:27:20.033Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-10-23T15:00",
       "forecasted": 9.8,
       "actual": 12.1,
@@ -1838,19 +1851,6 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 33%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-10-11T15:28:07.393Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-10-11T00:00",
-      "forecasted": 9.6,
-      "actual": 4.1,
-      "ratio": 0.4270833333333333,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
-      "checked_at": "2026-10-11T07:25:50.259Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2582,6 +2582,19 @@
     },
     {
       "spot": "jericho-spanish-banks",
+      "time": "2026-10-23T16:00",
+      "forecasted": 5.4,
+      "actual": 9.6,
+      "ratio": 1.7777777777777777,
+      "source": "live-station",
+      "station": "Jericho Sailing Centre (beach)",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-10-23T23:27:20.033Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
       "time": "2026-10-23T15:00",
       "forecasted": 6.5,
       "actual": 9.6,
@@ -3088,17 +3101,17 @@
       "checked_at": "2026-10-11T07:25:50.259Z"
     },
     {
-      "spot": "jericho-spanish-banks",
-      "time": "2026-10-10T19:00",
-      "forecasted": 6.7,
-      "actual": 5.4,
-      "ratio": 0.8059701492537313,
+      "spot": "squamish-spit",
+      "time": "2026-10-23T16:00",
+      "forecasted": 10.2,
+      "actual": 14.7,
+      "ratio": 1.4411764705882353,
       "source": "live-station",
-      "station": "English Bay buoy",
-      "regime": "mixed",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "thermal",
       "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. Models disagreed sharply with each other, a known low-confidence signature. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-11T02:35:20.599Z"
+      "reasoning": "Forecast called a thermal but under-shot its strength — even after the local calibration, coarse models can still lag on an unusually strong thermal day. MSLP had already flagged this hour as uncertain.",
+      "checked_at": "2026-10-23T23:27:20.033Z"
     },
     {
       "spot": "squamish-spit",
