@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-23T21:10:15.754Z",
+  "updated_at": "2026-10-23T21:18:35.768Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -108,7 +108,7 @@
       "regime": "calm",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-23T21:10:15.754Z"
+      "checked_at": "2026-10-23T21:18:35.768Z"
     },
     {
       "spot": "erwin-park",
@@ -1343,7 +1343,7 @@
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-23T21:10:15.754Z"
+      "checked_at": "2026-10-23T21:18:35.768Z"
     },
     {
       "spot": "garry-point",
@@ -2584,14 +2584,14 @@
       "spot": "jericho-spanish-banks",
       "time": "2026-10-23T14:00",
       "forecasted": 7.3,
-      "actual": 10,
-      "ratio": 1.36986301369863,
+      "actual": 10.4,
+      "ratio": 1.4246575342465755,
       "source": "live-station",
-      "station": "Jericho Sailing Centre",
+      "station": "Jericho Sailing Centre (beach)",
       "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-23T21:10:15.754Z"
+      "checked_at": "2026-10-23T21:18:35.768Z"
     },
     {
       "spot": "jericho-spanish-banks",
@@ -3104,14 +3104,14 @@
       "spot": "squamish-spit",
       "time": "2026-10-23T14:00",
       "forecasted": 6.7,
-      "actual": 9.4,
-      "ratio": 1.4029850746268657,
+      "actual": 13.7,
+      "ratio": 2.044776119402985,
       "source": "live-station",
       "station": "Squamish terminal sensor (Kiteloop)",
       "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-23T21:10:15.754Z"
+      "checked_at": "2026-10-23T21:18:35.768Z"
     },
     {
       "spot": "squamish-spit",

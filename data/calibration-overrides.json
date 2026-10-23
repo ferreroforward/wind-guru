@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T21:10:15.684Z",
+  "generated_at": "2026-10-23T21:18:35.656Z",
   "min_samples": 2,
   "min_rider_reports": 5,
   "min_rider_days": 2,
@@ -10,9 +10,9 @@
         "sample_size": 20,
         "rider_reports": 20,
         "live_checks": 0,
-        "avg_ratio": 0.7,
+        "avg_ratio": 0.73,
         "multiplier": 0.77,
-        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 70% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 70%, softened to a 77% multiplier until more reports come in."
+        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 73% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 73%, softened to a 77% multiplier until more reports come in."
       }
     },
     "erwin-park": {
@@ -176,9 +176,9 @@
         "sample_size": 7,
         "rider_reports": 0,
         "live_checks": 7,
-        "avg_ratio": 0.86,
-        "multiplier": 0.86,
-        "note": "Based on 7 total data points (0 rider reports, 7 live-station checks): actual wind averaged 86% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.85,
+        "multiplier": 0.85,
+        "note": "Based on 7 total data points (0 rider reports, 7 live-station checks): actual wind averaged 85% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "mixed": {
         "sample_size": 6,
@@ -192,15 +192,15 @@
   },
   "accuracy": {
     "tolerance_kt": 3,
-    "sample_size": 58,
-    "hit_rate": 0.48
+    "sample_size": 59,
+    "hit_rate": 0.47
   },
   "direction": {
     "match_deg": 45,
     "spots": {
       "squamish-spit": {
-        "reports": 7,
-        "matched": 7,
+        "reports": 8,
+        "matched": 8,
         "hit_rate": 1
       },
       "white-rock-east": {
