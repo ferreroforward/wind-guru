@@ -35,6 +35,13 @@ const MIN_SAMPLES = 2; // don't adjust a spot on a single report
 // retires it, as before.
 const MIN_RIDER_REPORTS = 5;
 const MIN_RIDER_DAYS = 2;
+// Automatic live station checks only count when the forecast or the reading
+// was at least this strong, the riding range (Oct 22 2026, Guillermo agreed).
+// A light hour is a huge miss on paper (Jericho Oct 22 8am: forecast 8.1,
+// beach calm, ratio 0) and one of those dragged Jericho's whole day
+// multiplier down, afternoon included. Hours that matter for riding still
+// count both ways, e.g. forecast 3 and the beach reading 10.
+const LIVE_CHECK_MIN_KT = 10;
 const MAX_REPORTS_PER_SPOT = 20; // weight toward recent reports
 // These are the FULL-STRENGTH bounds — how far the multiplier is allowed to
 // move once there's enough data to trust it completely. A spot with only a
@@ -294,6 +301,7 @@ async function main() {
   }
   for (const e of liveEntries) {
     if (!e.spot || !isFinite(e.forecasted) || !isFinite(e.actual) || e.forecasted <= 0) continue;
+    if (Math.max(e.forecasted, e.actual) < LIVE_CHECK_MIN_KT) continue;
     const when = e.checked_at || e.time;
     if (!onOrAfter(when, LIVE_STATION_EPOCH) || !onOrAfter(when, SPOT_SINCE[e.spot])) continue;
     const point = { date: e.checked_at || e.time, forecasted: e.forecasted, actual: e.actual, ratio: e.ratio ?? (e.actual / e.forecasted), source: "live-station" };
@@ -358,6 +366,7 @@ async function main() {
     min_samples: MIN_SAMPLES,
     min_rider_reports: MIN_RIDER_REPORTS,
     min_rider_days: MIN_RIDER_DAYS,
+    live_check_min_kt: LIVE_CHECK_MIN_KT,
     spots: overrides,
     accuracy,
     direction,
