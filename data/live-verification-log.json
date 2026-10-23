@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-23T15:23:52.316Z",
+  "updated_at": "2026-10-23T17:55:55.410Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1334,6 +1334,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-10-23T10:00",
+      "forecasted": 15.4,
+      "actual": 15,
+      "ratio": 0.974025974025974,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-23T17:55:55.410Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-10-23T08:00",
       "forecasted": 16.8,
       "actual": 18.1,
@@ -1840,17 +1853,17 @@
       "checked_at": "2026-10-10T22:59:52.493Z"
     },
     {
-      "spot": "garry-point",
-      "time": "2026-10-10T09:00",
-      "forecasted": 6.6,
-      "actual": 8,
-      "ratio": 1.2121212121212122,
+      "spot": "tsawwassen-south",
+      "time": "2026-10-23T10:00",
+      "forecasted": 8.8,
+      "actual": 10.8,
+      "ratio": 1.2272727272727273,
       "source": "live-station",
-      "station": "Sand Heads",
+      "station": "Tsawwassen Ferry Terminal",
       "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-10T16:52:28.469Z"
+      "checked_at": "2026-10-23T17:55:55.410Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2358,19 +2371,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-09-29T14:58:28.125Z"
-    },
-    {
-      "spot": "tsawwassen-south",
-      "time": "2026-09-29T00:00",
-      "forecasted": 18.1,
-      "actual": 9.7,
-      "ratio": 0.5359116022099447,
-      "source": "live-station",
-      "station": "Tsawwassen Ferry Terminal",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 52%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-09-29T07:05:27.807Z"
     },
     {
       "spot": "crescent-beach",
@@ -3099,6 +3099,19 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. Models disagreed sharply with each other, a known low-confidence signature. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-10-10T03:04:02.439Z"
+    },
+    {
+      "spot": "squamish-spit",
+      "time": "2026-10-23T10:00",
+      "forecasted": 7.9,
+      "actual": 8.3,
+      "ratio": 1.0506329113924051,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-10-23T17:55:55.410Z"
     },
     {
       "spot": "squamish-spit",
