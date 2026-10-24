@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T06:03:58.239Z",
+  "generated_at": "2026-10-24T15:41:53.831Z",
   "min_samples": 2,
   "min_rider_reports": 5,
   "min_rider_days": 2,
@@ -59,20 +59,20 @@
     },
     "porteau-cove": {
       "general": {
-        "sample_size": 14,
+        "sample_size": 15,
         "rider_reports": 0,
-        "live_checks": 14,
-        "avg_ratio": 1.82,
+        "live_checks": 15,
+        "avg_ratio": 1.85,
         "multiplier": 1.44,
-        "note": "Based on 14 total data points (0 rider reports, 14 live-station checks): actual wind averaged 182% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 14 data points so far -- the raw ratio would be 182%, softened to a 144% multiplier until more reports come in."
+        "note": "Based on 15 total data points (0 rider reports, 15 live-station checks): actual wind averaged 185% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 15 data points so far -- the raw ratio would be 185%, softened to a 144% multiplier until more reports come in."
       },
       "calm": {
-        "sample_size": 4,
+        "sample_size": 5,
         "rider_reports": 0,
-        "live_checks": 4,
-        "avg_ratio": 3.03,
-        "multiplier": 1.33,
-        "note": "Based on 4 calm data points (0 rider reports, 4 live-station checks): actual wind averaged 303% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 4 data points so far -- the raw ratio would be 303%, softened to a 133% multiplier until more reports come in."
+        "live_checks": 5,
+        "avg_ratio": 2.84,
+        "multiplier": 1.36,
+        "note": "Based on 5 calm data points (0 rider reports, 5 live-station checks): actual wind averaged 284% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 5 data points so far -- the raw ratio would be 284%, softened to a 136% multiplier until more reports come in."
       },
       "outflow": {
         "sample_size": 4,
