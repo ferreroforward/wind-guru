@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-24T15:41:53.911Z",
+  "updated_at": "2026-10-24T16:27:42.528Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1334,6 +1334,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-10-24T09:00",
+      "forecasted": 10.1,
+      "actual": 9.9,
+      "ratio": 0.9801980198019803,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-24T16:27:42.528Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-10-24T08:00",
       "forecasted": 10.3,
       "actual": 9.9,
@@ -1840,17 +1853,17 @@
       "checked_at": "2026-10-11T23:15:36.229Z"
     },
     {
-      "spot": "garry-point",
-      "time": "2026-10-11T10:00",
-      "forecasted": 12.1,
-      "actual": 12.1,
-      "ratio": 1,
+      "spot": "tsawwassen-south",
+      "time": "2026-10-24T09:00",
+      "forecasted": 7.6,
+      "actual": 8.1,
+      "ratio": 1.0657894736842106,
       "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
+      "station": "Tsawwassen Ferry Terminal",
+      "regime": "mixed",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-11T17:34:44.199Z"
+      "checked_at": "2026-10-24T16:27:42.528Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2358,19 +2371,6 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 80%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-10-03T16:59:43.196Z"
-    },
-    {
-      "spot": "tsawwassen-south",
-      "time": "2026-10-03T08:00",
-      "forecasted": 5.6,
-      "actual": 8.1,
-      "ratio": 1.4464285714285714,
-      "source": "live-station",
-      "station": "Tsawwassen Ferry Terminal",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 80%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-10-03T15:56:26.803Z"
     },
     {
       "spot": "crescent-beach",
