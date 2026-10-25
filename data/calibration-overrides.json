@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-25T22:19:36.136Z",
+  "generated_at": "2026-10-25T22:20:52.401Z",
   "min_samples": 2,
   "min_rider_reports": 5,
   "min_rider_days": 2,
@@ -124,17 +124,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 1.09,
-        "multiplier": 1.09,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 109% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 1.07,
+        "multiplier": 1.07,
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 107% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.96,
-        "multiplier": 0.96,
-        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 96% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.95,
+        "multiplier": 0.95,
+        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 95% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "mixed": {
         "sample_size": 5,
@@ -192,15 +192,15 @@
   },
   "accuracy": {
     "tolerance_kt": 3,
-    "sample_size": 64,
-    "hit_rate": 0.47
+    "sample_size": 65,
+    "hit_rate": 0.48
   },
   "direction": {
     "match_deg": 45,
     "spots": {
       "porteau-cove": {
-        "reports": 1,
-        "matched": 1,
+        "reports": 2,
+        "matched": 2,
         "hit_rate": 1
       },
       "boundary-bay": {

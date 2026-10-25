@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-25T22:19:36.250Z",
+  "updated_at": "2026-10-25T22:20:52.474Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -628,7 +628,7 @@
       "regime": "outflow",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-25T22:19:36.250Z"
+      "checked_at": "2026-10-25T22:20:52.474Z"
     },
     {
       "spot": "porteau-cove",
@@ -1343,7 +1343,7 @@
       "regime": "synoptic",
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 49%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-10-25T22:19:36.250Z"
+      "checked_at": "2026-10-25T22:20:52.474Z"
     },
     {
       "spot": "garry-point",
@@ -1863,7 +1863,7 @@
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-25T22:19:36.250Z"
+      "checked_at": "2026-10-25T22:20:52.474Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -3111,7 +3111,7 @@
       "regime": "outflow",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-25T22:19:36.250Z"
+      "checked_at": "2026-10-25T22:20:52.474Z"
     },
     {
       "spot": "squamish-spit",

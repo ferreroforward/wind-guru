@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-25T22:19:36.250Z",
-  "generated_at_label": "Sun, Oct 25, 3:19 PM PDT",
+  "generated_at": "2026-10-25T22:20:52.474Z",
+  "generated_at_label": "Sun, Oct 25, 3:20 PM PDT",
   "models_used": [
     "HRRR 3km (NOAA), then GFS",
     "ECMWF 25km",
@@ -329,17 +329,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 1.09,
-        "multiplier": 1.09,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 109% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 1.07,
+        "multiplier": 1.07,
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 107% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.96,
-        "multiplier": 0.96,
-        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 96% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.95,
+        "multiplier": 0.95,
+        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 95% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "mixed": {
         "sample_size": 5,
@@ -398,15 +398,15 @@
   "rider_feedback": {
     "accuracy": {
       "tolerance_kt": 3,
-      "sample_size": 64,
-      "hit_rate": 0.47
+      "sample_size": 65,
+      "hit_rate": 0.48
     },
     "direction": {
       "match_deg": 45,
       "spots": {
         "porteau-cove": {
-          "reports": 1,
-          "matched": 1,
+          "reports": 2,
+          "matched": 2,
           "hit_rate": 1
         },
         "boundary-bay": {
@@ -432,78 +432,7 @@
       }
     }
   },
-  "daily_takes": {
-    "2026-10-25": {
-      "date": "2026-10-25",
-      "text": "Proper outflow Sunday. Pam Rocks reads NNE 21 at 5am, still a touch behind the page’s 27 to 28, and Environment Canada calls it stronger again.\n\nMy pick is Porteau from first light around 7:20 until about noon, NNE 22 to 28 with good swell. The tide drops from 14.2ft at 6am to 9.2ft at 11:30, then the flood starts, so go early. If Pam Rocks reads 22+ from the north at 8am, go.\n\nBackup is Boundary Bay, E 14 to 18 until about 9:30am, then about 13 from 1:30pm to last light, once the tide is back over 10ft.",
-      "posted_at": "2026-10-25T13:11:49Z",
-      "updated_at": "2026-10-25T13:11:49Z",
-      "issue_number": 113
-    },
-    "2026-10-24": {
-      "date": "2026-10-24",
-      "text": "Easterly Saturday. Sand Heads already reads E 14 at 5am and Point Atkinson ESE 11, a few knots ahead of the page, and Environment Canada calls 15 to 20 this afternoon.\n\nI think we may run out of light, but Boundary Bay from about 1:30pm is a possibility. The page shows ENE 9 to 11, and the tide peaks at 13.2ft at 4:30pm, so plenty of water.\n\nAt Porteau, Pam Rocks forecast reaches 21, which is usually short of what it needs to fire up Porteau, but worth monitoring. Erwin Park usually works on an easterly, so worth monitoring too, but the forecast on this site disagrees today.\n\nTomorrow looks like a strong Porteau outflow: 28 at 10am, 84%.",
-      "posted_at": "2026-10-24T16:27:29Z",
-      "updated_at": "2026-10-24T16:27:29Z",
-      "issue_number": 109
-    },
-    "2026-10-23": {
-      "date": "2026-10-23",
-      "text": "The northwest is easing faster than I hoped. The Ferry Terminal dropped from 15 at 6am to 11 at 8am, and the tide is now too low on the south side until about 11:30am. I’m calling Tsawwassen off.\n\nThe only maybe is Porteau. Pam Rocks is building from the north, 12 at 8am, and the tide bottoms at 7.5ft around 10am. If Pam Rocks reads 22+ before 10am, go. Otherwise it fades by late morning.\n\nSkipping Squamish: the valley is 6°C colder than Pam Rocks and Pemberton is still 2 hPa above Vancouver.",
-      "posted_at": "2026-10-23T15:23:39Z",
-      "updated_at": "2026-10-23T15:23:39Z",
-      "issue_number": 102
-    },
-    "2026-10-22": {
-      "date": "2026-10-22",
-      "text": "Northwest day, and Environment Canada has a gale coming: NW 15 to 25 this morning, 25 to 35 by early evening. Halibut Bank already reads W 11 gusting 13 at 5am, a little ahead of the page.\n\nJericho is my pick from about noon to 6pm with waves building late.  Ferry Terminal should also be about the same if you would want to sail in flat water. If the buoy reads 12+ from the west by 1pm, go.",
-      "posted_at": "2026-10-22T15:14:12Z",
-      "updated_at": "2026-10-22T15:14:12Z",
-      "issue_number": 98
-    },
-    "2026-10-21": {
-      "date": "2026-10-21",
-      "text": "Quiet Wednesday. The Howe Sound outflow is back and a bit stronger than the page shows: Pam Rocks was NNW 19 gusting 28 at 4am and 17 gusting 24 at 5am. Porteau is the only maybe. If Pam Rocks reads 22+ from the north before 9am, go early while the tide is low (6.4ft at 8:15am). The flood after that can flatten the swell.\n\nI’m skipping Squamish. The valley is 7°C colder than Pam Rocks, Pemberton is 4 hPa above Vancouver, and clouds are coming.\n\nThursday looks like the day: Jericho W 15 to 20 from noon, high tide 14ft at 3:50pm.",
-      "posted_at": "2026-10-21T15:01:34Z",
-      "updated_at": "2026-10-21T15:01:34Z",
-      "issue_number": 94
-    },
-    "2026-10-20": {
-      "date": "2026-10-20",
-      "text": "The northwest is blowing a bit more than the page shows: the English Bay buoy had W 12 gusting 18 at 8am. Jericho could work until about noon, WNW 12 to 15. If the buoy still reads 12+ from the west after 1pm, the afternoon is on too, with a 14ft high tide at 2:52pm.\n\nTsawwassen’s north side works on NNW once the tide passes 10ft, around 11:30am if you are foiling\n\nPorteau is fading (Pam Rocks 17 at 7am, needs 22). Howe Sound outflow is back tonight, so Porteau could be on early Wednesday.",
-      "posted_at": "2026-10-20T15:40:36Z",
-      "updated_at": "2026-10-20T15:40:36Z",
-      "issue_number": 93
-    },
-    "2026-10-19": {
-      "date": "2026-10-19",
-      "text": "Quiet Monday, and Squamish is the only spot with real odds: SW 12 to 13 from 1pm to 4pm, about 50 to 60% for 12kt. I’m not sold yet. Pam Rocks is still blowing an outflow at N 14 at 8am, the valley is 5°C colder than Pam Rocks, and Pemberton’s pressure is 2 hPa above Vancouver’s. That’s the same setup as yesterday, when the page had 9 for the afternoon and the Spit only did 3. Before driving up, I want Pam Rocks under 8kt and turning south by noon, and Squamish at least 2°C warmer than Pam Rocks by 1pm. If that happens, think 1 to 5pm on a rising tide to 14ft at 2:23pm. If Pam Rocks is still N 10+ at noon, skip it. Everywhere else stays light, though Jericho is worth a check on the buoy after 4pm with NW 10 to 15 coming back this evening. The bigger news is tomorrow: EC has a strong wind warning for the Strait with NW 15 to 25 after midnight, and a Howe Sound outflow of 15 to 25 that could make Porteau worth a look if Pam Rocks reaches 25. Stay tuned!",
-      "posted_at": "2026-10-19T15:47:10Z",
-      "updated_at": "2026-10-19T15:47:10Z",
-      "issue_number": 92
-    },
-    "2026-10-18": {
-      "date": "2026-10-18",
-      "text": "Mostly a rest day. Howe Sound has an outflow this morning: Pam Rocks is N 19 gusting 26 at 8am. That’s short of the 25kt Porteau needs, and EC has it going light near noon, so I’m not chasing it. Squamish is a no go for me. The valley is 7°C colder than Pam Rocks, Pemberton’s pressure is still higher than Vancouver’s, and the afternoon looks cloudy, so this is the same setup as Thursday’s bust.\n\nThe one to watch is Jericho late this afternoon. The page shows WNW 8 to 9 from 4 to 7pm, and EC has NW 10 to 15 coming in early this evening. Yesterday’s afternoon westerly beat the forecast at English Bay by 5 to 8kt, so check the buoy after 3pm. If it reads 12+ from the west, go. The tide stays high all afternoon (14ft at 1:24pm), so it’s an easy launch.",
-      "posted_at": "2026-10-18T15:57:54Z",
-      "updated_at": "2026-10-18T15:57:54Z",
-      "issue_number": 90
-    },
-    "2026-10-17": {
-      "date": "2026-10-17",
-      "text": "A front came through overnight and the wind is running ahead of the forecast this morning.\n\nThe south side is the call right now. Cherry Point, across Semiahmoo Bay, went from 10 to 15 kt SW gusting 18 by 6:30am and was still building, and there are whitecaps on the White Rock cam (the sensor is down). I think White Rock and Crescent Beach are 13 to 16 kt right now, a bit more than the page shows for White Rock. Best window is about 8am to 10:30am on a rising tide, high around 1pm. It should fade late morning as the wind swings W. If Cherry Point drops under 12 or turns past 260°, it's over.\n\nTsawwassen is easing (Ferry Terminal 11 and Sand Heads 9 at 7am), so expect less than the page shows there.\n\nSquamish surprised everyone: S to SE 16 to 25 kt gusting over 30 since 3am. That's not a thermal, it's the pressure behind the front pushing air up Howe Sound (Vancouver is about 5 hPa above Pemberton). The models had 8 to 9 kt and Environment Canada's S 10 to 20 was right. It's easing and gusty from the SE (16 gusting 19 at 6:50am). With the sun coming out it could pick up again from noon to 4pm.",
-      "posted_at": "2026-10-17T14:23:54Z",
-      "updated_at": "2026-10-17T14:42:48Z",
-      "issue_number": 89
-    },
-    "2026-10-16": {
-      "date": "2026-10-16",
-      "text": "Outflow day. Squamish thermal unlikely (same setup as yesterday’s bust). Porteau is borderline, watch for Pam Rocks 25kt+ this morning. Everything else is light.",
-      "posted_at": "2026-10-16T14:23:03Z",
-      "updated_at": "2026-10-16T14:23:03Z",
-      "issue_number": 86
-    }
-  },
+  "daily_takes": {},
   "live_verification_count": 252,
   "mos_score": {
     "updated_at": "2026-10-25T14:32:49.608Z",
@@ -738,14 +667,14 @@
     }
   },
   "surface_observations": {
-    "updated_at": "2026-10-25T22:19:36.250Z",
+    "updated_at": "2026-10-25T22:20:52.474Z",
     "board_source_url": "https://wtfbc.ca/swob.php",
     "stations": [
       {
         "name": "Squamish terminal sensor (Kiteloop)",
         "source_url": "https://kiteloop.vercel.app/",
         "observed_local_time": "15:18",
-        "observed_age_min": 2,
+        "observed_age_min": 3,
         "temp_c": null,
         "direction_label": "N",
         "speed_kt": 9.4,
@@ -756,7 +685,7 @@
         "name": "Pam Rocks (Howe Sound entrance)",
         "source_url": null,
         "observed_local_time": "14:00",
-        "observed_age_min": 80,
+        "observed_age_min": 81,
         "temp_c": null,
         "direction_label": "N",
         "speed_kt": 22,
@@ -767,7 +696,7 @@
         "name": "Jericho Sailing Centre (beach)",
         "source_url": "https://jsca.bc.ca/services/weather/",
         "observed_local_time": "15:00",
-        "observed_age_min": 20,
+        "observed_age_min": 21,
         "temp_c": null,
         "direction_label": "S",
         "speed_kt": 1.7,
@@ -778,7 +707,7 @@
         "name": "Sand Heads",
         "source_url": null,
         "observed_local_time": "14:00",
-        "observed_age_min": 80,
+        "observed_age_min": 81,
         "temp_c": null,
         "direction_label": "E",
         "speed_kt": 8,
@@ -789,7 +718,7 @@
         "name": "Tsawwassen Ferry Terminal",
         "source_url": null,
         "observed_local_time": "15:00",
-        "observed_age_min": 20,
+        "observed_age_min": 21,
         "temp_c": null,
         "direction_label": "E",
         "speed_kt": 13,
@@ -800,7 +729,7 @@
         "name": "Point Atkinson",
         "source_url": null,
         "observed_local_time": "14:00",
-        "observed_age_min": 80,
+        "observed_age_min": 81,
         "temp_c": null,
         "direction_label": "NW",
         "speed_kt": 5.1,
@@ -811,7 +740,7 @@
         "name": "Halibut Bank Buoy",
         "source_url": "https://weather.gc.ca/past_conditions/index_e.html?station=46146",
         "observed_local_time": "15:00",
-        "observed_age_min": 20,
+        "observed_age_min": 21,
         "temp_c": null,
         "direction_label": "WSW",
         "speed_kt": 7,
@@ -822,7 +751,7 @@
         "name": "English Bay buoy",
         "source_url": "https://weather.gc.ca/past_conditions/index_e.html?station=46304",
         "observed_local_time": "15:00",
-        "observed_age_min": 20,
+        "observed_age_min": 21,
         "temp_c": null,
         "direction_label": "NNE",
         "speed_kt": 13.5,
@@ -842,11 +771,11 @@
       {
         "name": "Squamish Airport",
         "source_url": "https://dd.weather.gc.ca/today/observations/swob-ml/latest/CWSK-AUTO-minute-swob.xml",
-        "observed_local_time": "3:18 pm",
+        "observed_local_time": "3:20 pm",
         "temp_c": 9,
-        "direction_label": "N",
-        "speed_kt": 3,
-        "gust_kt": 4,
+        "direction_label": "NNE",
+        "speed_kt": 2,
+        "gust_kt": null,
         "source": "wtfbc"
       }
     ]
@@ -10841,7 +10770,7 @@
         "checked_hour": "2026-10-25T15:00",
         "station": "Squamish terminal sensor (Kiteloop)",
         "observed_local_time": "15:18",
-        "observed_age_min": 2,
+        "observed_age_min": 3,
         "forecasted_kt": 8.9,
         "live_kt": 9.4,
         "live_gust_kt": 11.9,
@@ -21989,7 +21918,7 @@
         "checked_hour": "2026-10-25T15:00",
         "station": "Pam Rocks (Howe Sound entrance)",
         "observed_local_time": "14:00",
-        "observed_age_min": 80,
+        "observed_age_min": 81,
         "forecasted_kt": 18.9,
         "live_kt": 22,
         "live_gust_kt": 28,
@@ -42603,7 +42532,7 @@
         "checked_hour": "2026-10-25T15:00",
         "station": "Sand Heads",
         "observed_local_time": "14:00",
-        "observed_age_min": 80,
+        "observed_age_min": 81,
         "forecasted_kt": 15,
         "live_kt": 8,
         "live_gust_kt": null,
@@ -83899,7 +83828,7 @@
         "checked_hour": "2026-10-25T15:00",
         "station": "Tsawwassen Ferry Terminal",
         "observed_local_time": "15:00",
-        "observed_age_min": 20,
+        "observed_age_min": 21,
         "forecasted_kt": 11.9,
         "live_kt": 13,
         "live_gust_kt": 17.8,
