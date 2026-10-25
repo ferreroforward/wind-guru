@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-25T13:12:02.233Z",
+  "updated_at": "2026-10-25T15:52:43.240Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -96,6 +96,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-10-25T08:00",
+      "forecasted": 10.8,
+      "actual": 1,
+      "ratio": 0.09259259259259259,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 34%, so spread between models likely explains some of the gap.",
+      "checked_at": "2026-10-25T15:52:43.240Z"
     },
     {
       "spot": "erwin-park",
@@ -605,17 +618,17 @@
       "checked_at": "2026-09-21T21:55:20.194Z"
     },
     {
-      "spot": "erwin-park",
-      "time": "2026-09-21T11:00",
-      "forecasted": 8.1,
-      "actual": 5.1,
-      "ratio": 0.6296296296296297,
+      "spot": "porteau-cove",
+      "time": "2026-10-25T08:00",
+      "forecasted": 23.8,
+      "actual": 26,
+      "ratio": 1.0924369747899159,
       "source": "live-station",
-      "station": "Point Atkinson",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 96%, so spread between models likely explains some of the gap. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-09-21T18:06:11.601Z"
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "outflow",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-25T15:52:43.240Z"
     },
     {
       "spot": "porteau-cove",
@@ -1125,19 +1138,6 @@
       "checked_at": "2026-10-09T14:05:33.971Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-10-08T15:00",
-      "forecasted": 4,
-      "actual": 8,
-      "ratio": 1.6,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "calm",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-08T22:04:11.807Z"
-    },
-    {
       "spot": "white-rock-east",
       "time": "2026-09-30T16:00",
       "forecasted": 5.9,
@@ -1331,6 +1331,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-10-25T08:00",
+      "forecasted": 19.4,
+      "actual": 15.9,
+      "ratio": 0.8195876288659795,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-25T15:52:43.240Z"
     },
     {
       "spot": "garry-point",
@@ -1840,17 +1853,17 @@
       "checked_at": "2026-10-13T23:28:18.382Z"
     },
     {
-      "spot": "garry-point",
-      "time": "2026-10-13T12:00",
-      "forecasted": 9.5,
-      "actual": 8.9,
-      "ratio": 0.9368421052631579,
+      "spot": "tsawwassen-south",
+      "time": "2026-10-25T08:00",
+      "forecasted": 17.7,
+      "actual": 16.7,
+      "ratio": 0.943502824858757,
       "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "mixed",
+      "station": "Tsawwassen Ferry Terminal",
+      "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-13T19:58:16.824Z"
+      "checked_at": "2026-10-25T15:52:43.240Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2360,19 +2373,6 @@
       "checked_at": "2026-10-09T19:12:54.987Z"
     },
     {
-      "spot": "tsawwassen-south",
-      "time": "2026-10-09T11:00",
-      "forecasted": 22.9,
-      "actual": 18.4,
-      "ratio": 0.8034934497816594,
-      "source": "live-station",
-      "station": "Tsawwassen Ferry Terminal",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-10-09T18:12:56.021Z"
-    },
-    {
       "spot": "crescent-beach",
       "time": "2026-09-30T16:00",
       "forecasted": 6.4,
@@ -2579,6 +2579,19 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-29T20:09:05.755Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
+      "time": "2026-10-25T08:00",
+      "forecasted": 14.5,
+      "actual": 8.7,
+      "ratio": 0.6,
+      "source": "live-station",
+      "station": "Jericho Sailing Centre (beach)",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-10-25T15:52:43.240Z"
     },
     {
       "spot": "jericho-spanish-banks",
@@ -3088,17 +3101,17 @@
       "checked_at": "2026-10-12T15:30:56.984Z"
     },
     {
-      "spot": "jericho-spanish-banks",
-      "time": "2026-10-12T00:00",
-      "forecasted": 3.7,
-      "actual": 10.8,
-      "ratio": 2.16,
+      "spot": "squamish-spit",
+      "time": "2026-10-25T08:00",
+      "forecasted": 10.3,
+      "actual": 10.3,
+      "ratio": 1,
       "source": "live-station",
-      "station": "English Bay buoy",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-12T07:33:45.664Z"
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "outflow",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-25T15:52:43.240Z"
     },
     {
       "spot": "squamish-spit",
