@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-25T22:07:24.746Z",
+  "updated_at": "2026-10-25T22:19:36.250Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -628,7 +628,7 @@
       "regime": "outflow",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-25T22:07:24.746Z"
+      "checked_at": "2026-10-25T22:19:36.250Z"
     },
     {
       "spot": "porteau-cove",
@@ -1343,7 +1343,7 @@
       "regime": "synoptic",
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 49%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-10-25T22:07:24.746Z"
+      "checked_at": "2026-10-25T22:19:36.250Z"
     },
     {
       "spot": "garry-point",
@@ -1856,14 +1856,14 @@
       "spot": "tsawwassen-south",
       "time": "2026-10-25T15:00",
       "forecasted": 11.9,
-      "actual": 16.2,
-      "ratio": 1.3613445378151259,
+      "actual": 13,
+      "ratio": 1.0924369747899159,
       "source": "live-station",
       "station": "Tsawwassen Ferry Terminal",
       "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 59%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-10-25T22:07:24.746Z"
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-25T22:19:36.250Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -3104,14 +3104,14 @@
       "spot": "squamish-spit",
       "time": "2026-10-25T15:00",
       "forecasted": 9.6,
-      "actual": 10.3,
-      "ratio": 1.0729166666666667,
+      "actual": 9.4,
+      "ratio": 0.9791666666666667,
       "source": "live-station",
       "station": "Squamish terminal sensor (Kiteloop)",
       "regime": "outflow",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-25T22:07:24.746Z"
+      "checked_at": "2026-10-25T22:19:36.250Z"
     },
     {
       "spot": "squamish-spit",
