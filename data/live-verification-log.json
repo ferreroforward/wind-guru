@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-26T18:32:41.854Z",
+  "updated_at": "2026-10-26T23:24:46.037Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -3099,6 +3099,19 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-10-12T15:30:56.984Z"
+    },
+    {
+      "spot": "squamish-spit",
+      "time": "2026-10-26T16:00",
+      "forecasted": 8.7,
+      "actual": 14,
+      "ratio": 1.6091954022988506,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "thermal",
+      "mismatch": true,
+      "reasoning": "Forecast called a thermal but under-shot its strength — even after the local calibration, coarse models can still lag on an unusually strong thermal day.",
+      "checked_at": "2026-10-26T23:24:46.037Z"
     },
     {
       "spot": "squamish-spit",
