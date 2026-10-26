@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-25T22:20:52.474Z",
+  "updated_at": "2026-10-26T02:03:57.008Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -619,6 +619,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-10-25T19:00",
+      "forecasted": 25.8,
+      "actual": 29,
+      "ratio": 1.124031007751938,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "outflow",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-26T02:03:57.008Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-10-25T15:00",
       "forecasted": 18.9,
       "actual": 22,
@@ -1125,19 +1138,6 @@
       "checked_at": "2026-10-09T18:12:56.021Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-10-09T08:00",
-      "forecasted": 13,
-      "actual": 15,
-      "ratio": 1.1538461538461537,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-10-09T15:04:39.174Z"
-    },
-    {
       "spot": "white-rock-east",
       "time": "2026-09-30T16:00",
       "forecasted": 5.9,
@@ -1331,6 +1331,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-10-25T19:00",
+      "forecasted": 10,
+      "actual": 6,
+      "ratio": 0.6,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 42%, so spread between models likely explains some of the gap.",
+      "checked_at": "2026-10-26T02:03:57.008Z"
     },
     {
       "spot": "garry-point",
@@ -1840,17 +1853,17 @@
       "checked_at": "2026-10-14T06:19:41.887Z"
     },
     {
-      "spot": "garry-point",
-      "time": "2026-10-13T19:00",
-      "forecasted": 9.3,
-      "actual": 13,
-      "ratio": 1.3978494623655913,
+      "spot": "tsawwassen-south",
+      "time": "2026-10-25T19:00",
+      "forecasted": 8.5,
+      "actual": 10.8,
+      "ratio": 1.2705882352941178,
       "source": "live-station",
-      "station": "Sand Heads",
+      "station": "Tsawwassen Ferry Terminal",
       "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-14T02:26:57.448Z"
+      "checked_at": "2026-10-26T02:03:57.008Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2358,19 +2371,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-10-10T03:04:02.439Z"
-    },
-    {
-      "spot": "tsawwassen-south",
-      "time": "2026-10-09T16:00",
-      "forecasted": 20.2,
-      "actual": 16.2,
-      "ratio": 0.801980198019802,
-      "source": "live-station",
-      "station": "Tsawwassen Ferry Terminal",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-10-09T23:37:34.402Z"
     },
     {
       "spot": "crescent-beach",
@@ -3099,6 +3099,19 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-10-12T15:30:56.984Z"
+    },
+    {
+      "spot": "squamish-spit",
+      "time": "2026-10-25T19:00",
+      "forecasted": 9.5,
+      "actual": 13.1,
+      "ratio": 1.3789473684210527,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "outflow",
+      "mismatch": true,
+      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-10-26T02:03:57.008Z"
     },
     {
       "spot": "squamish-spit",
