@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T18:51:23.120Z",
+  "generated_at": "2026-10-27T20:50:59.250Z",
   "min_samples": 2,
   "min_rider_reports": 5,
   "min_rider_days": 2,
@@ -10,9 +10,9 @@
         "sample_size": 20,
         "rider_reports": 20,
         "live_checks": 0,
-        "avg_ratio": 0.92,
-        "multiplier": 0.92,
-        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 92% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.95,
+        "multiplier": 0.95,
+        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 95% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "erwin-park": {
@@ -106,17 +106,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.99,
-        "multiplier": 0.99,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 99% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 1.02,
+        "multiplier": 1.02,
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 102% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.99,
-        "multiplier": 0.99,
-        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 99% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 1.02,
+        "multiplier": 1.02,
+        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 102% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "tsawwassen-south": {
@@ -192,15 +192,15 @@
   },
   "accuracy": {
     "tolerance_kt": 3,
-    "sample_size": 66,
+    "sample_size": 67,
     "hit_rate": 0.48
   },
   "direction": {
     "match_deg": 45,
     "spots": {
       "squamish-spit": {
-        "reports": 11,
-        "matched": 11,
+        "reports": 12,
+        "matched": 12,
         "hit_rate": 1
       },
       "porteau-cove": {
