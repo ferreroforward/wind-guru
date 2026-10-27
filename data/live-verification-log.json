@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-27T06:29:03.924Z",
+  "updated_at": "2026-10-27T14:55:50.977Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1334,6 +1334,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-10-27T07:00",
+      "forecasted": 12.1,
+      "actual": 15,
+      "ratio": 1.2396694214876034,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-27T14:55:50.977Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-10-26T11:00",
       "forecasted": 9.2,
       "actual": 13,
@@ -1840,17 +1853,17 @@
       "checked_at": "2026-10-17T06:31:36.000Z"
     },
     {
-      "spot": "garry-point",
-      "time": "2026-10-15T22:00",
-      "forecasted": 4.8,
-      "actual": 8,
-      "ratio": 1.6,
+      "spot": "tsawwassen-south",
+      "time": "2026-10-27T07:00",
+      "forecasted": 5.9,
+      "actual": 9.2,
+      "ratio": 1.559322033898305,
       "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "calm",
+      "station": "Tsawwassen Ferry Terminal",
+      "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-16T05:59:38.638Z"
+      "checked_at": "2026-10-27T14:55:50.977Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2358,19 +2371,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-10-10T22:59:52.493Z"
-    },
-    {
-      "spot": "tsawwassen-south",
-      "time": "2026-10-10T00:00",
-      "forecasted": 11.5,
-      "actual": 17.3,
-      "ratio": 1.5043478260869565,
-      "source": "live-station",
-      "station": "Tsawwassen Ferry Terminal",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 43%, so spread between models likely explains some of the gap. Models disagreed sharply with each other, a known low-confidence signature.",
-      "checked_at": "2026-10-10T07:21:09.193Z"
     },
     {
       "spot": "crescent-beach",
