@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-27T21:49:02.224Z",
+  "updated_at": "2026-10-27T21:50:00.738Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -108,7 +108,7 @@
       "regime": "calm",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-27T21:49:02.224Z"
+      "checked_at": "2026-10-27T21:50:00.738Z"
     },
     {
       "spot": "erwin-park",
@@ -628,7 +628,7 @@
       "regime": "mixed",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-27T21:49:02.224Z"
+      "checked_at": "2026-10-27T21:50:00.738Z"
     },
     {
       "spot": "porteau-cove",
@@ -1343,7 +1343,7 @@
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-27T21:49:02.224Z"
+      "checked_at": "2026-10-27T21:50:00.738Z"
     },
     {
       "spot": "garry-point",
@@ -2591,7 +2591,7 @@
       "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-27T21:49:02.224Z"
+      "checked_at": "2026-10-27T21:50:00.738Z"
     },
     {
       "spot": "jericho-spanish-banks",
@@ -3111,7 +3111,7 @@
       "regime": "thermal",
       "mismatch": true,
       "reasoning": "Forecast called a thermal but under-shot its strength — even after the local calibration, coarse models can still lag on an unusually strong thermal day.",
-      "checked_at": "2026-10-27T21:49:02.224Z"
+      "checked_at": "2026-10-27T21:50:00.738Z"
     },
     {
       "spot": "squamish-spit",
