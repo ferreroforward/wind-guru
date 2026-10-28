@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-27T21:50:00.738Z",
+  "updated_at": "2026-10-28T00:37:17.292Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -619,6 +619,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-10-27T17:00",
+      "forecasted": 4.1,
+      "actual": 8.9,
+      "ratio": 1.78,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-10-28T00:37:17.292Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-10-27T14:00",
       "forecasted": 7.1,
       "actual": 8,
@@ -1123,19 +1136,6 @@
       "mismatch": true,
       "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
       "checked_at": "2026-10-11T15:28:07.393Z"
-    },
-    {
-      "spot": "porteau-cove",
-      "time": "2026-10-11T00:00",
-      "forecasted": 11.9,
-      "actual": 18.1,
-      "ratio": 1.5210084033613447,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "outflow",
-      "mismatch": true,
-      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
-      "checked_at": "2026-10-11T07:25:50.259Z"
     },
     {
       "spot": "white-rock-east",
@@ -3099,6 +3099,19 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-10-13T23:28:18.382Z"
+    },
+    {
+      "spot": "squamish-spit",
+      "time": "2026-10-27T17:00",
+      "forecasted": 9.5,
+      "actual": 14.2,
+      "ratio": 1.4947368421052631,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-10-28T00:37:17.292Z"
     },
     {
       "spot": "squamish-spit",
