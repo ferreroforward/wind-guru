@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-28T18:59:23.139Z",
+  "updated_at": "2026-10-28T22:45:25.105Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -96,6 +96,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-10-28T15:00",
+      "forecasted": 2.8,
+      "actual": 8.9,
+      "ratio": 1.78,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-10-28T22:45:25.105Z"
     },
     {
       "spot": "erwin-park",
@@ -603,19 +616,6 @@
       "mismatch": true,
       "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
       "checked_at": "2026-09-28T20:16:05.100Z"
-    },
-    {
-      "spot": "erwin-park",
-      "time": "2026-09-28T12:00",
-      "forecasted": 8,
-      "actual": 15,
-      "ratio": 1.875,
-      "source": "live-station",
-      "station": "Point Atkinson",
-      "regime": "outflow",
-      "mismatch": true,
-      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
-      "checked_at": "2026-09-28T19:04:11.352Z"
     },
     {
       "spot": "porteau-cove",
@@ -1334,6 +1334,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-10-28T15:00",
+      "forecasted": 8,
+      "actual": 6,
+      "ratio": 0.75,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
+      "checked_at": "2026-10-28T22:45:25.105Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-10-28T07:00",
       "forecasted": 12.1,
       "actual": 2.9,
@@ -1838,19 +1851,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-10-20T02:24:15.237Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-10-18T23:00",
-      "forecasted": 11.3,
-      "actual": 12.1,
-      "ratio": 1.070796460176991,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-10-19T06:23:24.849Z"
     },
     {
       "spot": "tsawwassen-south",
