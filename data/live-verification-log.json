@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-29T22:32:03.735Z",
+  "updated_at": "2026-10-29T22:34:17.934Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -628,7 +628,7 @@
       "regime": "synoptic",
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 57%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-10-29T22:32:03.735Z"
+      "checked_at": "2026-10-29T22:34:17.934Z"
     },
     {
       "spot": "porteau-cove",
@@ -1343,7 +1343,7 @@
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-29T22:32:03.735Z"
+      "checked_at": "2026-10-29T22:34:17.934Z"
     },
     {
       "spot": "garry-point",
@@ -2591,7 +2591,7 @@
       "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. Models disagreed sharply with each other, a known low-confidence signature. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-29T22:32:03.735Z"
+      "checked_at": "2026-10-29T22:34:17.934Z"
     },
     {
       "spot": "jericho-spanish-banks",
@@ -3111,7 +3111,7 @@
       "regime": "outflow",
       "mismatch": true,
       "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-29T22:32:03.735Z"
+      "checked_at": "2026-10-29T22:34:17.934Z"
     },
     {
       "spot": "squamish-spit",
