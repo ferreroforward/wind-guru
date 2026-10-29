@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-29T22:34:17.934Z",
+  "updated_at": "2026-10-29T22:36:06.568Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -620,15 +620,15 @@
     {
       "spot": "porteau-cove",
       "time": "2026-10-29T15:00",
-      "forecasted": 12,
+      "forecasted": 18,
       "actual": 22,
-      "ratio": 1.8333333333333333,
+      "ratio": 1.2222222222222223,
       "source": "live-station",
       "station": "Pam Rocks (Howe Sound entrance)",
       "regime": "synoptic",
       "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 57%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-10-29T22:34:17.934Z"
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 43%, so spread between models likely explains some of the gap.",
+      "checked_at": "2026-10-29T22:36:06.568Z"
     },
     {
       "spot": "porteau-cove",
@@ -1343,7 +1343,7 @@
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-29T22:34:17.934Z"
+      "checked_at": "2026-10-29T22:36:06.568Z"
     },
     {
       "spot": "garry-point",
@@ -2590,8 +2590,8 @@
       "station": "Jericho Sailing Centre (beach)",
       "regime": "mixed",
       "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. Models disagreed sharply with each other, a known low-confidence signature. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-29T22:34:17.934Z"
+      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-10-29T22:36:06.568Z"
     },
     {
       "spot": "jericho-spanish-banks",
@@ -3111,7 +3111,7 @@
       "regime": "outflow",
       "mismatch": true,
       "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-29T22:34:17.934Z"
+      "checked_at": "2026-10-29T22:36:06.568Z"
     },
     {
       "spot": "squamish-spit",
