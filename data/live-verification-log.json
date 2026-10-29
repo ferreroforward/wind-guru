@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-29T13:15:58.167Z",
+  "updated_at": "2026-10-29T13:25:31.397Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -101,14 +101,14 @@
       "spot": "erwin-park",
       "time": "2026-10-29T06:00",
       "forecasted": 8.5,
-      "actual": 14,
-      "ratio": 1.6470588235294117,
+      "actual": 19,
+      "ratio": 2.235294117647059,
       "source": "live-station",
       "station": "Point Atkinson",
       "regime": "outflow",
       "mismatch": true,
       "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
-      "checked_at": "2026-10-29T13:15:58.167Z"
+      "checked_at": "2026-10-29T13:25:31.397Z"
     },
     {
       "spot": "erwin-park",
@@ -620,15 +620,15 @@
     {
       "spot": "porteau-cove",
       "time": "2026-10-29T06:00",
-      "forecasted": 14.2,
-      "actual": 22.9,
-      "ratio": 1.6126760563380282,
+      "forecasted": 8.7,
+      "actual": 19,
+      "ratio": 2.1839080459770117,
       "source": "live-station",
       "station": "Pam Rocks (Howe Sound entrance)",
       "regime": "outflow",
       "mismatch": true,
       "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
-      "checked_at": "2026-10-29T13:15:58.167Z"
+      "checked_at": "2026-10-29T13:25:31.397Z"
     },
     {
       "spot": "porteau-cove",
@@ -1336,14 +1336,14 @@
       "spot": "garry-point",
       "time": "2026-10-29T06:00",
       "forecasted": 18,
-      "actual": 18.1,
-      "ratio": 1.0055555555555555,
+      "actual": 17.1,
+      "ratio": 0.9500000000000001,
       "source": "live-station",
       "station": "Sand Heads",
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-10-29T13:15:58.167Z"
+      "checked_at": "2026-10-29T13:25:31.397Z"
     },
     {
       "spot": "garry-point",
@@ -2591,7 +2591,7 @@
       "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-29T13:15:58.167Z"
+      "checked_at": "2026-10-29T13:25:31.397Z"
     },
     {
       "spot": "jericho-spanish-banks",
@@ -3111,7 +3111,7 @@
       "regime": "outflow",
       "mismatch": true,
       "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-29T13:15:58.167Z"
+      "checked_at": "2026-10-29T13:25:31.397Z"
     },
     {
       "spot": "squamish-spit",
