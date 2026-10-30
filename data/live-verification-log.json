@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-30T13:11:26.120Z",
+  "updated_at": "2026-10-30T17:46:27.684Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -619,6 +619,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-10-30T10:00",
+      "forecasted": 20.2,
+      "actual": 22.9,
+      "ratio": 1.1336633663366336,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "outflow",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-30T17:46:27.684Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-10-30T06:00",
       "forecasted": 27.4,
       "actual": 24.1,
@@ -1125,19 +1138,6 @@
       "checked_at": "2026-10-16T05:59:38.638Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-10-15T12:00",
-      "forecasted": 0,
-      "actual": 20,
-      "ratio": 4,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "calm",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-15T19:03:22.779Z"
-    },
-    {
       "spot": "white-rock-east",
       "time": "2026-09-30T16:00",
       "forecasted": 5.9,
@@ -1331,6 +1331,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-10-30T10:00",
+      "forecasted": 12.3,
+      "actual": 12.1,
+      "ratio": 0.9837398373983739,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-30T17:46:27.684Z"
     },
     {
       "spot": "garry-point",
@@ -1838,19 +1851,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-10-23T03:59:13.436Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-10-22T19:00",
-      "forecasted": 22.8,
-      "actual": 22.9,
-      "ratio": 1.0043859649122806,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-10-23T02:18:27.650Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -3099,6 +3099,19 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-10-17T21:47:59.466Z"
+    },
+    {
+      "spot": "squamish-spit",
+      "time": "2026-10-30T10:00",
+      "forecasted": 12.5,
+      "actual": 9.2,
+      "ratio": 0.736,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-10-30T17:46:27.684Z"
     },
     {
       "spot": "squamish-spit",
