@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-30T17:46:27.684Z",
+  "updated_at": "2026-10-30T23:19:40.925Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1334,6 +1334,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-10-30T16:00",
+      "forecasted": 9.7,
+      "actual": 9.9,
+      "ratio": 1.020618556701031,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "mixed",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-30T23:19:40.925Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-10-30T10:00",
       "forecasted": 12.3,
       "actual": 12.1,
@@ -1838,19 +1851,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-10-23T06:08:39.194Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-10-22T20:00",
-      "forecasted": 23.6,
-      "actual": 25.1,
-      "ratio": 1.0635593220338984,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-10-23T03:59:13.436Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -3099,6 +3099,19 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-10-17T21:47:59.466Z"
+    },
+    {
+      "spot": "squamish-spit",
+      "time": "2026-10-30T16:00",
+      "forecasted": 7.3,
+      "actual": 8.1,
+      "ratio": 1.1095890410958904,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "mixed",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-10-30T23:19:40.925Z"
     },
     {
       "spot": "squamish-spit",
