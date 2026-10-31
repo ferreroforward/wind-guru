@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-30T23:19:40.925Z",
+  "updated_at": "2026-10-31T02:59:35.950Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1334,6 +1334,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-10-30T19:00",
+      "forecasted": 9.7,
+      "actual": 6,
+      "ratio": 0.6185567010309279,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. Models disagreed sharply with each other, a known low-confidence signature.",
+      "checked_at": "2026-10-31T02:59:35.950Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-10-30T16:00",
       "forecasted": 9.7,
       "actual": 9.9,
@@ -1838,19 +1851,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-10-23T15:23:52.316Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-10-22T23:00",
-      "forecasted": 23.3,
-      "actual": 22,
-      "ratio": 0.944206008583691,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-10-23T06:08:39.194Z"
     },
     {
       "spot": "tsawwassen-south",
