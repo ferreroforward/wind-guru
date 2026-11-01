@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-01T02:55:04.605Z",
+  "updated_at": "2026-11-01T05:41:06.289Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -619,6 +619,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-10-31T22:00",
+      "forecasted": 23.2,
+      "actual": 24.1,
+      "ratio": 1.038793103448276,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "outflow",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-01T05:41:06.289Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-10-31T19:00",
       "forecasted": 0,
       "actual": 9.9,
@@ -1125,19 +1138,6 @@
       "checked_at": "2026-10-18T15:58:06.732Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-10-17T23:00",
-      "forecasted": 0,
-      "actual": 9.9,
-      "ratio": 1.98,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "calm",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-18T06:08:49.830Z"
-    },
-    {
       "spot": "white-rock-east",
       "time": "2026-09-30T16:00",
       "forecasted": 5.9,
@@ -1331,6 +1331,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-10-31T22:00",
+      "forecasted": 14.6,
+      "actual": 14,
+      "ratio": 0.9589041095890412,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-01T05:41:06.289Z"
     },
     {
       "spot": "garry-point",
@@ -1838,19 +1851,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-10-23T22:23:00.603Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-10-23T14:00",
-      "forecasted": 10.8,
-      "actual": 15,
-      "ratio": 1.3888888888888888,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-10-23T21:18:35.768Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2582,6 +2582,19 @@
     },
     {
       "spot": "jericho-spanish-banks",
+      "time": "2026-10-31T22:00",
+      "forecasted": 10.4,
+      "actual": 0.9,
+      "ratio": 0.08653846153846154,
+      "source": "live-station",
+      "station": "Jericho Sailing Centre (beach)",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-11-01T05:41:06.289Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
       "time": "2026-10-31T15:00",
       "forecasted": 8.1,
       "actual": 8.7,
@@ -3088,17 +3101,17 @@
       "checked_at": "2026-10-18T06:08:49.830Z"
     },
     {
-      "spot": "jericho-spanish-banks",
-      "time": "2026-10-17T18:00",
-      "forecasted": 6.8,
-      "actual": 15.7,
-      "ratio": 2.3088235294117645,
+      "spot": "squamish-spit",
+      "time": "2026-10-31T22:00",
+      "forecasted": 9.5,
+      "actual": 7.9,
+      "ratio": 0.8315789473684211,
       "source": "live-station",
-      "station": "English Bay buoy",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-18T01:51:46.187Z"
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "outflow",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-01T05:41:06.289Z"
     },
     {
       "spot": "squamish-spit",
