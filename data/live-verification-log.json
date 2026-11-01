@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-01T17:40:46.000Z",
+  "updated_at": "2026-11-01T23:10:12.261Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -2608,6 +2608,19 @@
     },
     {
       "spot": "jericho-spanish-banks",
+      "time": "2026-11-01T16:00",
+      "forecasted": 1.5,
+      "actual": 9.6,
+      "ratio": 1.92,
+      "source": "live-station",
+      "station": "Jericho Sailing Centre (beach)",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-11-01T23:10:12.261Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
       "time": "2026-10-31T22:00",
       "forecasted": 10.4,
       "actual": 0.9,
@@ -3112,19 +3125,6 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-10-18T15:58:06.732Z"
-    },
-    {
-      "spot": "jericho-spanish-banks",
-      "time": "2026-10-17T23:00",
-      "forecasted": 5.7,
-      "actual": 10.3,
-      "ratio": 1.8070175438596492,
-      "source": "live-station",
-      "station": "English Bay buoy",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-18T06:08:49.830Z"
     },
     {
       "spot": "squamish-spit",
