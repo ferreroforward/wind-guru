@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-01T13:06:43.896Z",
+  "updated_at": "2026-11-01T17:40:46.000Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -619,6 +619,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-11-01T10:00",
+      "forecasted": 7.7,
+      "actual": 18.1,
+      "ratio": 2.3506493506493507,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "outflow",
+      "mismatch": true,
+      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured. MSLP had already flagged this hour as uncertain.",
+      "checked_at": "2026-11-01T17:40:46.000Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-11-01T06:00",
       "forecasted": 23.2,
       "actual": 24.1,
@@ -1125,17 +1138,17 @@
       "checked_at": "2026-10-19T15:47:29.056Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-10-18T23:00",
-      "forecasted": 0,
-      "actual": 8.9,
-      "ratio": 1.78,
+      "spot": "white-rock-east",
+      "time": "2026-11-01T10:00",
+      "forecasted": 1.5,
+      "actual": 15.6,
+      "ratio": 3.12,
       "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
+      "station": "White Rock East Beach",
       "regime": "calm",
       "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-19T06:23:24.849Z"
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-11-01T17:40:46.000Z"
     },
     {
       "spot": "white-rock-east",
@@ -2374,6 +2387,19 @@
     },
     {
       "spot": "crescent-beach",
+      "time": "2026-11-01T10:00",
+      "forecasted": 2.4,
+      "actual": 15.6,
+      "ratio": 3.12,
+      "source": "live-station",
+      "station": "White Rock East Beach",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-11-01T17:40:46.000Z"
+    },
+    {
+      "spot": "crescent-beach",
       "time": "2026-09-30T16:00",
       "forecasted": 6.4,
       "actual": 8.9,
@@ -3099,6 +3125,19 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-10-18T06:08:49.830Z"
+    },
+    {
+      "spot": "squamish-spit",
+      "time": "2026-11-01T10:00",
+      "forecasted": 6,
+      "actual": 8.6,
+      "ratio": 1.4333333333333333,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-11-01T17:40:46.000Z"
     },
     {
       "spot": "squamish-spit",
