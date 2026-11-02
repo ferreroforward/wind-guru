@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-02T03:02:02.800Z",
+  "updated_at": "2026-11-02T07:50:20.082Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -619,6 +619,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-11-02T00:00",
+      "forecasted": 0,
+      "actual": 8.9,
+      "ratio": 1.78,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-11-02T07:50:20.082Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-11-01T10:00",
       "forecasted": 7.7,
       "actual": 18.1,
@@ -1123,19 +1136,6 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
       "checked_at": "2026-10-20T06:12:08.948Z"
-    },
-    {
-      "spot": "porteau-cove",
-      "time": "2026-10-19T08:00",
-      "forecasted": 0,
-      "actual": 12.1,
-      "ratio": 2.42,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "calm",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-10-19T15:47:29.056Z"
     },
     {
       "spot": "white-rock-east",
