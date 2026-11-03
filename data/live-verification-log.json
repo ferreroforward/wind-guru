@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-03T01:53:27.544Z",
+  "updated_at": "2026-11-03T04:20:56.950Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -3125,6 +3125,19 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-10-18T15:58:06.732Z"
+    },
+    {
+      "spot": "squamish-spit",
+      "time": "2026-11-02T21:00",
+      "forecasted": 5.3,
+      "actual": 8.3,
+      "ratio": 1.5660377358490567,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "outflow",
+      "mismatch": true,
+      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-11-03T04:20:56.950Z"
     },
     {
       "spot": "squamish-spit",
