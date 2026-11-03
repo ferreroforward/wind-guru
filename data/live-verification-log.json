@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-03T19:19:44.576Z",
+  "updated_at": "2026-11-03T19:37:48.154Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -620,15 +620,15 @@
     {
       "spot": "porteau-cove",
       "time": "2026-11-03T12:00",
-      "forecasted": 18,
-      "actual": 22,
-      "ratio": 1.2222222222222223,
+      "forecasted": 0,
+      "actual": 20,
+      "ratio": 4,
       "source": "live-station",
       "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "synoptic",
+      "regime": "calm",
       "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 84%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-11-03T19:19:44.576Z"
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-11-03T19:37:48.154Z"
     },
     {
       "spot": "porteau-cove",
@@ -1349,14 +1349,14 @@
       "spot": "garry-point",
       "time": "2026-11-03T12:00",
       "forecasted": 5.9,
-      "actual": 11.1,
-      "ratio": 1.8813559322033897,
+      "actual": 8.9,
+      "ratio": 1.5084745762711864,
       "source": "live-station",
       "station": "Sand Heads",
       "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-11-03T19:19:44.576Z"
+      "checked_at": "2026-11-03T19:37:48.154Z"
     },
     {
       "spot": "garry-point",
@@ -3130,14 +3130,14 @@
       "spot": "squamish-spit",
       "time": "2026-11-03T12:00",
       "forecasted": 2.4,
-      "actual": 11,
-      "ratio": 2.2,
+      "actual": 8.1,
+      "ratio": 1.6199999999999999,
       "source": "live-station",
       "station": "Squamish terminal sensor (Kiteloop)",
       "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-11-03T19:19:44.576Z"
+      "checked_at": "2026-11-03T19:37:48.154Z"
     },
     {
       "spot": "squamish-spit",
