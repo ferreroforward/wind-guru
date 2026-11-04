@@ -78,6 +78,8 @@ jobs:
       - name: Generate forecast snapshot
         if: steps.fresh.outputs.skip != 'true'
         run: node scripts/generate.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit and push if changed
         if: steps.fresh.outputs.skip != 'true'
