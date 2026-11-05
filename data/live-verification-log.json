@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-04T19:36:37.141Z",
+  "updated_at": "2026-11-05T00:34:25.254Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -3180,6 +3180,19 @@
     },
     {
       "spot": "squamish-spit",
+      "time": "2026-11-04T17:00",
+      "forecasted": 5.6,
+      "actual": 10.4,
+      "ratio": 1.8571428571428574,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-11-05T00:34:25.254Z"
+    },
+    {
+      "spot": "squamish-spit",
       "time": "2026-11-04T00:00",
       "forecasted": 5.1,
       "actual": 8.3,
@@ -3684,19 +3697,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-10-21T23:08:39.734Z"
-    },
-    {
-      "spot": "squamish-spit",
-      "time": "2026-10-21T14:00",
-      "forecasted": 10.4,
-      "actual": 3.4,
-      "ratio": 0.3269230769230769,
-      "source": "live-station",
-      "station": "Squamish terminal sensor (Kiteloop)",
-      "regime": "thermal",
-      "mismatch": true,
-      "reasoning": "Forecast called a thermal that came in weaker than shown — possible early suppression (heat, high cloud) or the gradient not fully developing. MSLP had already flagged this hour as uncertain.",
-      "checked_at": "2026-10-21T21:44:19.973Z"
     }
   ]
 }
