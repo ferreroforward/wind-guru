@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-05T08:00:30.893Z",
+  "updated_at": "2026-11-05T12:52:08.817Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -96,6 +96,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-11-05T05:00",
+      "forecasted": 2.5,
+      "actual": 9.9,
+      "ratio": 1.98,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-11-05T12:52:08.817Z"
     },
     {
       "spot": "erwin-park",
@@ -603,19 +616,6 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 59%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-10-09T14:05:33.971Z"
-    },
-    {
-      "spot": "erwin-park",
-      "time": "2026-10-09T00:00",
-      "forecasted": 6.1,
-      "actual": 17.1,
-      "ratio": 2.8032786885245904,
-      "source": "live-station",
-      "station": "Point Atkinson",
-      "regime": "outflow",
-      "mismatch": true,
-      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
-      "checked_at": "2026-10-09T07:34:09.423Z"
     },
     {
       "spot": "porteau-cove",
@@ -3180,6 +3180,19 @@
     },
     {
       "spot": "squamish-spit",
+      "time": "2026-11-05T05:00",
+      "forecasted": 5.4,
+      "actual": 10.1,
+      "ratio": 1.8703703703703702,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-11-05T12:52:08.817Z"
+    },
+    {
+      "spot": "squamish-spit",
       "time": "2026-11-04T17:00",
       "forecasted": 5.6,
       "actual": 10.4,
@@ -3684,19 +3697,6 @@
       "mismatch": true,
       "reasoning": "Forecast called a thermal that came in weaker than shown — possible early suppression (heat, high cloud) or the gradient not fully developing. MSLP had already flagged this hour as uncertain.",
       "checked_at": "2026-10-22T18:07:03.157Z"
-    },
-    {
-      "spot": "squamish-spit",
-      "time": "2026-10-21T16:00",
-      "forecasted": 10.1,
-      "actual": 8.8,
-      "ratio": 0.8712871287128714,
-      "source": "live-station",
-      "station": "Squamish terminal sensor (Kiteloop)",
-      "regime": "thermal",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-10-21T23:08:39.734Z"
     }
   ]
 }
