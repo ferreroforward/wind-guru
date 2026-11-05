@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-05T19:45:11.410Z",
-  "generated_at_label": "Thu, Nov 5, 12:45 PM",
+  "generated_at": "2026-11-05T19:46:26.222Z",
+  "generated_at_label": "Thu, Nov 5, 12:46 PM",
   "models_used": [
     "HRRR 3km (NOAA), then GFS",
     "ECMWF 25km",
@@ -356,6 +356,16 @@
     }
   },
   "calibration_overrides": {
+    "squamish-spit": {
+      "general": {
+        "sample_size": 20,
+        "rider_reports": 20,
+        "live_checks": 0,
+        "avg_ratio": 0.95,
+        "multiplier": 0.95,
+        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 95% of what was forecasted (rider reports weighted 3x a station check)."
+      }
+    },
     "porteau-cove": {
       "general": {
         "sample_size": 20,
@@ -393,11 +403,11 @@
     "jericho-spanish-banks": {
       "general": {
         "sample_size": 20,
-        "rider_reports": 3,
-        "live_checks": 17,
-        "avg_ratio": 0.58,
+        "rider_reports": 2,
+        "live_checks": 18,
+        "avg_ratio": 0.53,
         "multiplier": 0.77,
-        "note": "Based on 20 total data points (3 rider reports, 17 live-station checks): actual wind averaged 58% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 58%, softened to a 77% multiplier until more reports come in."
+        "note": "Based on 20 total data points (2 rider reports, 18 live-station checks): actual wind averaged 53% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 53%, softened to a 77% multiplier until more reports come in."
       },
       "mixed": {
         "sample_size": 20,
@@ -408,24 +418,22 @@
         "note": "Based on 20 mixed data points (0 rider reports, 20 live-station checks): actual wind averaged 52% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 52%, softened to a 77% multiplier until more reports come in."
       }
     },
-    "squamish-spit": {
-      "general": {
-        "sample_size": 20,
-        "rider_reports": 20,
-        "live_checks": 0,
-        "avg_ratio": 0.95,
-        "multiplier": 0.95,
-        "note": "Based on 20 total data points (20 rider reports, 0 live-station checks): actual wind averaged 95% of what was forecasted (rider reports weighted 3x a station check)."
-      }
-    },
     "erwin-park": {
       "general": {
         "sample_size": 19,
         "rider_reports": 0,
         "live_checks": 19,
-        "avg_ratio": 1.81,
+        "avg_ratio": 1.94,
         "multiplier": 1.45,
-        "note": "Based on 19 total data points (0 rider reports, 19 live-station checks): actual wind averaged 181% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 19 data points so far -- the raw ratio would be 181%, softened to a 145% multiplier until more reports come in."
+        "note": "Based on 19 total data points (0 rider reports, 19 live-station checks): actual wind averaged 194% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 19 data points so far -- the raw ratio would be 194%, softened to a 145% multiplier until more reports come in."
+      },
+      "outflow": {
+        "sample_size": 2,
+        "rider_reports": 0,
+        "live_checks": 2,
+        "avg_ratio": 2.3,
+        "multiplier": 1.25,
+        "note": "Based on 2 outflow data points (0 rider reports, 2 live-station checks): actual wind averaged 230% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 2 data points so far -- the raw ratio would be 230%, softened to a 125% multiplier until more reports come in."
       },
       "calm": {
         "sample_size": 9,
@@ -436,12 +444,12 @@
         "note": "Based on 9 calm data points (0 rider reports, 9 live-station checks): actual wind averaged 276% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 9 data points so far -- the raw ratio would be 276%, softened to a 141% multiplier until more reports come in."
       },
       "synoptic": {
-        "sample_size": 6,
+        "sample_size": 5,
         "rider_reports": 0,
-        "live_checks": 6,
-        "avg_ratio": 0.73,
-        "multiplier": 0.81,
-        "note": "Based on 6 synoptic data points (0 rider reports, 6 live-station checks): actual wind averaged 73% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 6 data points so far -- the raw ratio would be 73%, softened to a 81% multiplier until more reports come in."
+        "live_checks": 5,
+        "avg_ratio": 0.75,
+        "multiplier": 0.82,
+        "note": "Based on 5 synoptic data points (0 rider reports, 5 live-station checks): actual wind averaged 75% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 5 data points so far -- the raw ratio would be 75%, softened to a 82% multiplier until more reports come in."
       },
       "mixed": {
         "sample_size": 3,
@@ -475,17 +483,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 1.01,
-        "multiplier": 1.01,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 101% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 1,
+        "multiplier": 1,
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 100% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.88,
-        "multiplier": 0.88,
-        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 88% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.84,
+        "multiplier": 0.84,
+        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 84% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "mixed": {
         "sample_size": 3,
@@ -560,12 +568,17 @@
   "rider_feedback": {
     "accuracy": {
       "tolerance_kt": 3,
-      "sample_size": 80,
+      "sample_size": 81,
       "hit_rate": 0.43
     },
     "direction": {
       "match_deg": 45,
       "spots": {
+        "squamish-spit": {
+          "reports": 14,
+          "matched": 14,
+          "hit_rate": 1
+        },
         "porteau-cove": {
           "reports": 13,
           "matched": 13,
@@ -579,11 +592,6 @@
         "jericho-spanish-banks": {
           "reports": 2,
           "matched": 2,
-          "hit_rate": 1
-        },
-        "squamish-spit": {
-          "reports": 13,
-          "matched": 13,
           "hit_rate": 1
         },
         "white-rock-east": {
@@ -907,14 +915,14 @@
     }
   },
   "surface_observations": {
-    "updated_at": "2026-11-05T19:45:11.410Z",
+    "updated_at": "2026-11-05T19:46:26.222Z",
     "board_source_url": "https://wtfbc.ca/swob.php",
     "stations": [
       {
         "name": "Squamish terminal sensor (Kiteloop)",
         "source_url": "https://kiteloop.vercel.app/",
         "observed_local_time": "12:43",
-        "observed_age_min": 2,
+        "observed_age_min": 3,
         "temp_c": null,
         "direction_label": "SW",
         "speed_kt": 12.1,
@@ -925,7 +933,7 @@
         "name": "Pam Rocks (Howe Sound entrance)",
         "source_url": null,
         "observed_local_time": "11:00",
-        "observed_age_min": 105,
+        "observed_age_min": 107,
         "temp_c": null,
         "direction_label": "NW",
         "speed_kt": 1.9,
@@ -936,7 +944,7 @@
         "name": "Jericho Sailing Centre (beach)",
         "source_url": "https://jsca.bc.ca/services/weather/",
         "observed_local_time": "12:30",
-        "observed_age_min": 16,
+        "observed_age_min": 17,
         "temp_c": null,
         "direction_label": "ENE",
         "speed_kt": 8.7,
@@ -947,7 +955,7 @@
         "name": "Sand Heads",
         "source_url": null,
         "observed_local_time": "11:00",
-        "observed_age_min": 106,
+        "observed_age_min": 107,
         "temp_c": null,
         "direction_label": "SSE",
         "speed_kt": 8.9,
@@ -958,7 +966,7 @@
         "name": "Point Atkinson",
         "source_url": null,
         "observed_local_time": "11:00",
-        "observed_age_min": 106,
+        "observed_age_min": 107,
         "temp_c": null,
         "direction_label": "E",
         "speed_kt": 14,
@@ -969,7 +977,7 @@
         "name": "Halibut Bank Buoy",
         "source_url": "https://weather.gc.ca/past_conditions/index_e.html?station=46146",
         "observed_local_time": "12:00",
-        "observed_age_min": 45,
+        "observed_age_min": 47,
         "temp_c": null,
         "direction_label": "E",
         "speed_kt": 16.2,
@@ -980,7 +988,7 @@
         "name": "English Bay buoy",
         "source_url": "https://weather.gc.ca/past_conditions/index_e.html?station=46304",
         "observed_local_time": "12:00",
-        "observed_age_min": 45,
+        "observed_age_min": 47,
         "temp_c": null,
         "direction_label": "ENE",
         "speed_kt": 12.4,
@@ -1000,11 +1008,11 @@
       {
         "name": "Squamish Airport",
         "source_url": "https://dd.weather.gc.ca/today/observations/swob-ml/latest/CWSK-AUTO-minute-swob.xml",
-        "observed_local_time": "11:45 am",
+        "observed_local_time": "11:46 am",
         "temp_c": 11,
-        "direction_label": "ESE",
-        "speed_kt": 1,
-        "gust_kt": 2,
+        "direction_label": "E",
+        "speed_kt": 0,
+        "gust_kt": 1,
         "source": "wtfbc"
       },
       {
@@ -1028,7 +1036,7 @@
     }
   },
   "howe_sound_pressure": {
-    "updated_at": "2026-11-05T19:45:11.410Z",
+    "updated_at": "2026-11-05T19:46:26.222Z",
     "source": "EC SWOB hourly sea level pressure (0.1 hPa)",
     "observed": [
       {
@@ -13197,7 +13205,7 @@
         "checked_hour": "2026-11-05T12:00",
         "station": "Squamish terminal sensor (Kiteloop)",
         "observed_local_time": "12:43",
-        "observed_age_min": 2,
+        "observed_age_min": 3,
         "forecasted_kt": 6.7,
         "live_kt": 12.1,
         "live_gust_kt": 14,
@@ -16755,7 +16763,7 @@
           "upper_speed_kt": 23.1,
           "gusty": false,
           "regime": "outflow",
-          "reason": "Mid-Howe Sound outflow/gap-wind site — picks up the same north drainage flow as Squamish, usually a touch lighter and more consistent, less gusty than the Spit. Pam Rocks forecast ~19kt (outflow). Porteau works in an outflow once Pam Rocks reads 22kt+, which this doesn't reach. Caution: MSLP is weaker than the wind signal suggests (large-scale 0.8hPa, local -0.1hPa) — this outflow could fade faster than expected. Environment Canada calls for southerly 15 to 25kt tonight, stronger than the models here (~7kt). Not used as the number (EC's zone forecast has run about 4kt high for single spots); check the live readings. Rain in the forecast — thermal wind is often suppressed on wet days, unlike plain cloud cover.",
+          "reason": "Mid-Howe Sound outflow/gap-wind site — picks up the same north drainage flow as Squamish, usually a touch lighter and more consistent, less gusty than the Spit. Pam Rocks forecast ~19kt (outflow). Porteau works in an outflow once Pam Rocks reads 22kt+, which this doesn't reach. Caution: MSLP is weaker than the wind signal suggests (large-scale 0.8hPa, local -0.0hPa) — this outflow could fade faster than expected. Environment Canada calls for southerly 15 to 25kt tonight, stronger than the models here (~7kt). Not used as the number (EC's zone forecast has run about 4kt high for single spots); check the live readings. Rain in the forecast — thermal wind is often suppressed on wet days, unlike plain cloud cover.",
           "summary": "Wind draining down the valley — can be strong and gusty, any time of day.",
           "favorable_direction": true,
           "outflow_not_ridden": false,
@@ -24900,7 +24908,7 @@
           "upper_speed_kt": 7.5,
           "gusty": false,
           "regime": "outflow",
-          "reason": "Mid-Howe Sound outflow/gap-wind site — picks up the same north drainage flow as Squamish, usually a touch lighter and more consistent, less gusty than the Spit. Pam Rocks forecast ~26kt (outflow). Porteau works in an outflow once Pam Rocks reads 22kt+, which this clears. MSLP confirms it — both large-scale (-3.5hPa) and local (-0.7hPa) spreads favor outflow.",
+          "reason": "Mid-Howe Sound outflow/gap-wind site — picks up the same north drainage flow as Squamish, usually a touch lighter and more consistent, less gusty than the Spit. Pam Rocks forecast ~26kt (outflow). Porteau works in an outflow once Pam Rocks reads 22kt+, which this clears. MSLP confirms it — both large-scale (-3.5hPa) and local (-0.8hPa) spreads favor outflow.",
           "summary": "Wind draining down the valley — can be strong and gusty, any time of day.",
           "favorable_direction": true,
           "outflow_not_ridden": false,
@@ -25555,7 +25563,7 @@
           "upper_speed_kt": 11.6,
           "gusty": false,
           "regime": "outflow",
-          "reason": "Mid-Howe Sound outflow/gap-wind site — picks up the same north drainage flow as Squamish, usually a touch lighter and more consistent, less gusty than the Spit. Pam Rocks forecast ~31kt (outflow). Porteau works in an outflow once Pam Rocks reads 22kt+, which this clears. MSLP confirms it — both large-scale (-3.9hPa) and local (-0.7hPa) spreads favor outflow.",
+          "reason": "Mid-Howe Sound outflow/gap-wind site — picks up the same north drainage flow as Squamish, usually a touch lighter and more consistent, less gusty than the Spit. Pam Rocks forecast ~31kt (outflow). Porteau works in an outflow once Pam Rocks reads 22kt+, which this clears. MSLP confirms it — both large-scale (-3.9hPa) and local (-0.6hPa) spreads favor outflow.",
           "summary": "Wind draining down the valley — can be strong and gusty, any time of day.",
           "favorable_direction": true,
           "outflow_not_ridden": false,
@@ -25948,7 +25956,7 @@
           "upper_speed_kt": 16,
           "gusty": false,
           "regime": "outflow",
-          "reason": "Mid-Howe Sound outflow/gap-wind site — picks up the same north drainage flow as Squamish, usually a touch lighter and more consistent, less gusty than the Spit. Pam Rocks forecast ~23kt (outflow). Porteau works in an outflow once Pam Rocks reads 22kt+, which this clears. MSLP confirms it — both large-scale (-2.8hPa) and local (-0.4hPa) spreads favor outflow.",
+          "reason": "Mid-Howe Sound outflow/gap-wind site — picks up the same north drainage flow as Squamish, usually a touch lighter and more consistent, less gusty than the Spit. Pam Rocks forecast ~23kt (outflow). Porteau works in an outflow once Pam Rocks reads 22kt+, which this clears. MSLP confirms it — both large-scale (-2.8hPa) and local (-0.3hPa) spreads favor outflow.",
           "summary": "Wind draining down the valley — can be strong and gusty, any time of day.",
           "favorable_direction": true,
           "outflow_not_ridden": false,
@@ -39543,7 +39551,7 @@
         "checked_hour": "2026-11-05T12:00",
         "station": "Jericho Sailing Centre (beach)",
         "observed_local_time": "12:30",
-        "observed_age_min": 16,
+        "observed_age_min": 17,
         "forecasted_kt": 7.7,
         "live_kt": 8.7,
         "live_gust_kt": 13,
@@ -52131,7 +52139,7 @@
         "checked_hour": "2026-11-05T12:00",
         "station": "Sand Heads",
         "observed_local_time": "11:00",
-        "observed_age_min": 106,
+        "observed_age_min": 107,
         "forecasted_kt": 14.2,
         "live_kt": 8.9,
         "live_gust_kt": null,
@@ -115446,7 +115454,7 @@
         "checked_hour": "2026-11-05T12:00",
         "station": "Point Atkinson",
         "observed_local_time": "11:00",
-        "observed_age_min": 106,
+        "observed_age_min": 107,
         "forecasted_kt": 5.9,
         "live_kt": 14,
         "live_gust_kt": null,
