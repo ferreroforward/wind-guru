@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-08T17:49:03.937Z",
+  "updated_at": "2026-11-08T23:14:43.843Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -619,6 +619,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-11-08T16:00",
+      "forecasted": 17,
+      "actual": 19,
+      "ratio": 1.1176470588235294,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-08T23:14:43.843Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-11-08T10:00",
       "forecasted": 26,
       "actual": 28,
@@ -1125,19 +1138,6 @@
       "checked_at": "2026-10-29T22:36:06.568Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-10-29T11:00",
-      "forecasted": 17.3,
-      "actual": 24.1,
-      "ratio": 1.393063583815029,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "outflow",
-      "mismatch": true,
-      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
-      "checked_at": "2026-10-29T18:56:58.057Z"
-    },
-    {
       "spot": "white-rock-east",
       "time": "2026-11-04T10:00",
       "forecasted": 3.3,
@@ -1370,6 +1370,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-11-08T16:00",
+      "forecasted": 14.1,
+      "actual": 11.1,
+      "ratio": 0.7872340425531915,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 65%, so spread between models likely explains some of the gap.",
+      "checked_at": "2026-11-08T23:14:43.843Z"
     },
     {
       "spot": "garry-point",
@@ -1877,19 +1890,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-10-30T01:12:23.510Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-10-29T15:00",
-      "forecasted": 14.6,
-      "actual": 17.1,
-      "ratio": 1.1712328767123288,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-10-29T22:36:06.568Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -3180,6 +3180,19 @@
     },
     {
       "spot": "squamish-spit",
+      "time": "2026-11-08T16:00",
+      "forecasted": 12.9,
+      "actual": 20.5,
+      "ratio": 1.5891472868217054,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-11-08T23:14:43.843Z"
+    },
+    {
+      "spot": "squamish-spit",
       "time": "2026-11-08T10:00",
       "forecasted": 21.8,
       "actual": 29.5,
@@ -3684,19 +3697,6 @@
       "mismatch": true,
       "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-10-26T06:32:52.759Z"
-    },
-    {
-      "spot": "squamish-spit",
-      "time": "2026-10-25T19:00",
-      "forecasted": 9.5,
-      "actual": 13.1,
-      "ratio": 1.3789473684210527,
-      "source": "live-station",
-      "station": "Squamish terminal sensor (Kiteloop)",
-      "regime": "outflow",
-      "mismatch": true,
-      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-26T02:03:57.008Z"
     }
   ]
 }
