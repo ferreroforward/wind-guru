@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-09T03:22:41.490Z",
+  "updated_at": "2026-11-09T08:13:16.305Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1373,6 +1373,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-11-09T01:00",
+      "forecasted": 10.3,
+      "actual": 11.1,
+      "ratio": 1.0776699029126213,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-09T08:13:16.305Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-11-08T20:00",
       "forecasted": 8.8,
       "actual": 8.9,
@@ -1877,19 +1890,6 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 26%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-10-30T07:22:03.822Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-10-29T20:00",
-      "forecasted": 12.1,
-      "actual": 11.1,
-      "ratio": 0.9173553719008264,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-10-30T03:15:58.677Z"
     },
     {
       "spot": "tsawwassen-south",
