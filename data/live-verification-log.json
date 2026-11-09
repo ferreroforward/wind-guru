@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-09T08:13:16.305Z",
+  "updated_at": "2026-11-09T14:54:04.215Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -619,6 +619,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-11-09T07:00",
+      "forecasted": 16.2,
+      "actual": 22.9,
+      "ratio": 1.4135802469135803,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "outflow",
+      "mismatch": true,
+      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
+      "checked_at": "2026-11-09T14:54:04.215Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-11-08T16:00",
       "forecasted": 17,
       "actual": 19,
@@ -1123,19 +1136,6 @@
       "mismatch": true,
       "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured. Models disagreed sharply with each other, a known low-confidence signature.",
       "checked_at": "2026-10-30T01:12:23.510Z"
-    },
-    {
-      "spot": "porteau-cove",
-      "time": "2026-10-29T15:00",
-      "forecasted": 18,
-      "actual": 22,
-      "ratio": 1.2222222222222223,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 43%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-10-29T22:36:06.568Z"
     },
     {
       "spot": "white-rock-east",
