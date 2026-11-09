@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-08T23:14:43.843Z",
+  "updated_at": "2026-11-09T03:22:41.490Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1373,6 +1373,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-11-08T20:00",
+      "forecasted": 8.8,
+      "actual": 8.9,
+      "ratio": 1.0113636363636362,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "mixed",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-09T03:22:41.490Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-11-08T16:00",
       "forecasted": 14.1,
       "actual": 11.1,
@@ -1877,19 +1890,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-10-30T03:15:58.677Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-10-29T18:00",
-      "forecasted": 12.8,
-      "actual": 12.1,
-      "ratio": 0.9453124999999999,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-10-30T01:12:23.510Z"
     },
     {
       "spot": "tsawwassen-south",
