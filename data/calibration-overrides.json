@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-11T14:50:11.933Z",
+  "generated_at": "2026-11-11T15:11:22.937Z",
   "min_samples": 2,
   "min_rider_reports": 5,
   "min_rider_days": 2,
@@ -52,17 +52,17 @@
         "sample_size": 20,
         "rider_reports": 2,
         "live_checks": 18,
-        "avg_ratio": 0.54,
+        "avg_ratio": 0.53,
         "multiplier": 0.77,
-        "note": "Based on 20 total data points (2 rider reports, 18 live-station checks): actual wind averaged 54% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 54%, softened to a 77% multiplier until more reports come in."
+        "note": "Based on 20 total data points (2 rider reports, 18 live-station checks): actual wind averaged 53% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 53%, softened to a 77% multiplier until more reports come in."
       },
       "mixed": {
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.45,
+        "avg_ratio": 0.46,
         "multiplier": 0.77,
-        "note": "Based on 20 mixed data points (0 rider reports, 20 live-station checks): actual wind averaged 45% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 45%, softened to a 77% multiplier until more reports come in."
+        "note": "Based on 20 mixed data points (0 rider reports, 20 live-station checks): actual wind averaged 46% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 46%, softened to a 77% multiplier until more reports come in."
       }
     },
     "squamish-spit": {
@@ -80,17 +80,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 1.53,
+        "avg_ratio": 1.5,
         "multiplier": 1.45,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 153% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 153%, softened to a 145% multiplier until more reports come in."
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 150% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 150%, softened to a 145% multiplier until more reports come in."
       },
       "outflow": {
-        "sample_size": 17,
+        "sample_size": 18,
         "rider_reports": 0,
-        "live_checks": 17,
+        "live_checks": 18,
         "avg_ratio": 1.67,
         "multiplier": 1.45,
-        "note": "Based on 17 outflow data points (0 rider reports, 17 live-station checks): actual wind averaged 167% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 17 data points so far -- the raw ratio would be 167%, softened to a 145% multiplier until more reports come in."
+        "note": "Based on 18 outflow data points (0 rider reports, 18 live-station checks): actual wind averaged 167% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 18 data points so far -- the raw ratio would be 167%, softened to a 145% multiplier until more reports come in."
       },
       "synoptic": {
         "sample_size": 4,
@@ -216,12 +216,17 @@
   },
   "accuracy": {
     "tolerance_kt": 3,
-    "sample_size": 87,
-    "hit_rate": 0.45
+    "sample_size": 88,
+    "hit_rate": 0.44
   },
   "direction": {
     "match_deg": 45,
     "spots": {
+      "white-rock-east": {
+        "reports": 2,
+        "matched": 2,
+        "hit_rate": 1
+      },
       "porteau-cove": {
         "reports": 15,
         "matched": 15,
@@ -250,11 +255,6 @@
       "boundary-bay": {
         "reports": 3,
         "matched": 3,
-        "hit_rate": 1
-      },
-      "white-rock-east": {
-        "reports": 1,
-        "matched": 1,
         "hit_rate": 1
       }
     }
