@@ -894,6 +894,10 @@ export const WEBCAMS = [
   { id: "whiterock-east", name: "White Rock East Beach camera", area: "White Rock East Beach", url: "https://www.whiterockcity.ca/1212/Waterfront-Live-Cameras", camstreamer: "Sev2OTrlNL6v43zBHBp0DuE9tobufzZI1zXUkAdW", youtube: "ClvJjIz5GE4", credit: "City of White Rock", spotId: "white-rock-east" },
   { id: "whiterock-west", name: "White Rock West Beach (pier) camera", area: "White Rock West Beach and the pier", url: "https://www.whiterockcity.ca/1212/Waterfront-Live-Cameras", camstreamer: "kJLUClW1kDbLu1C1N8WKsKXGxWcK0gI26OvLxcc2", youtube: "4MK3E9EWDSY", credit: "City of White Rock" },
   { id: "gondola", name: "Sea to Sky Gondola", area: "Squamish and Howe Sound", url: "https://www.seatoskygondola.com/weather-and-cams/", spotId: "squamish-spit" },
+  // Nov 4 2026 (Guillermo): Elliot Funt's camera near Copper Cove, West Vancouver, looking north up Howe Sound. The stream only plays on his own page (camsecure.co refuses other sites), so it's a link card.
+  { id: "copper-cove", name: "Howe Sound camera (Copper Cove)", area: "Lower Howe Sound, looking north from West Vancouver", url: "https://www.howe-sound.ca/", credit: "Elliot Funt" },
+  // Nov 12 2026 (Guillermo): Boundary Bay Weather's camera over Boundary Bay. The website (one Microsoft Azure server) is often down, but the camera streams through Ozolio, a separate camera host, so its picture (the "poster", refreshed about every 15 minutes) loads even when the website doesn't.
+  { id: "boundary-bay", name: "Boundary Bay camera", area: "Boundary Bay", url: "https://www.boundarybayweather.com/", image: "https://relay.ozolio.com/pub.api?cmd=poster&oid=CID_OPTQ0000006B", credit: "Boundary Bay Weather", spotId: "boundary-bay" },
 ];
 
 export const DEG_LABELS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
