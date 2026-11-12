@@ -1,5 +1,5 @@
 {
-  "version": "6849918",
-  "message": "Merge branch 'now-prod'",
-  "deployed_at": "2026-11-12T20:19:17Z"
+  "version": "19df557",
+  "message": "Now page: reload itself when a new site version is live (checked every 10 minutes, never while the report form is open)",
+  "deployed_at": "2026-11-12T20:34:19Z"
 }
