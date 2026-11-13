@@ -1,5 +1,5 @@
 {
-  "version": "dad251b",
-  "message": "Now page: best spot from first light before sunrise (and correct after dark message); OSR sends the forecast speed to 0.1kt",
-  "deployed_at": "2026-11-13T14:59:26Z"
+  "version": "4c82eca",
+  "message": "Now page: best spot uses the full page's odds and hour ranking, shows every hour as the full page does (wind to gust, offshore ⚠️, outflow ⬇️, same percent and colours)",
+  "deployed_at": "2026-11-13T15:51:46Z"
 }
