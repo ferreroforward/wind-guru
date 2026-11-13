@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T03:52:45.875Z",
+  "generated_at": "2026-11-13T08:16:21.776Z",
   "min_samples": 2,
   "min_rider_reports": 5,
   "min_rider_days": 2,
@@ -132,17 +132,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.93,
-        "multiplier": 0.93,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 93% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.89,
+        "multiplier": 0.89,
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 89% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.93,
-        "multiplier": 0.93,
-        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 93% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.89,
+        "multiplier": 0.89,
+        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 89% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "tsawwassen-south": {
