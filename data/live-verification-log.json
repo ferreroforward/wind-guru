@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-13T00:45:38.376Z",
+  "updated_at": "2026-11-13T03:52:45.961Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -619,6 +619,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-11-12T20:00",
+      "forecasted": 8.7,
+      "actual": 8.9,
+      "ratio": 1.0229885057471266,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "outflow",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-13T03:52:45.961Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-11-12T17:00",
       "forecasted": 3.2,
       "actual": 12.1,
@@ -1125,19 +1138,6 @@
       "checked_at": "2026-11-03T08:06:19.881Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-11-02T14:00",
-      "forecasted": 0,
-      "actual": 12.1,
-      "ratio": 2.42,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "calm",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-11-02T21:36:12.798Z"
-    },
-    {
       "spot": "white-rock-east",
       "time": "2026-11-04T10:00",
       "forecasted": 3.3,
@@ -1370,6 +1370,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-11-12T20:00",
+      "forecasted": 10.3,
+      "actual": 2.9,
+      "ratio": 0.2815533980582524,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 65%, so spread between models likely explains some of the gap.",
+      "checked_at": "2026-11-13T03:52:45.961Z"
     },
     {
       "spot": "garry-point",
@@ -1877,19 +1890,6 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 53%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-11-05T08:00:30.893Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-11-04T20:00",
-      "forecasted": 12.7,
-      "actual": 11.1,
-      "ratio": 0.8740157480314961,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-11-05T03:58:24.082Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -3180,6 +3180,19 @@
     },
     {
       "spot": "squamish-spit",
+      "time": "2026-11-12T20:00",
+      "forecasted": 8.4,
+      "actual": 9.4,
+      "ratio": 1.119047619047619,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "outflow",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-13T03:52:45.961Z"
+    },
+    {
+      "spot": "squamish-spit",
       "time": "2026-11-12T13:00",
       "forecasted": 9,
       "actual": 4.5,
@@ -3684,19 +3697,6 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-10-30T13:11:26.120Z"
-    },
-    {
-      "spot": "squamish-spit",
-      "time": "2026-10-30T00:00",
-      "forecasted": 9.3,
-      "actual": 11.5,
-      "ratio": 1.2365591397849462,
-      "source": "live-station",
-      "station": "Squamish terminal sensor (Kiteloop)",
-      "regime": "outflow",
-      "mismatch": true,
-      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-10-30T07:22:03.822Z"
     }
   ]
 }
