@@ -1,5 +1,5 @@
 {
-  "version": "19df557",
-  "message": "Now page: reload itself when a new site version is live (checked every 10 minutes, never while the report form is open)",
-  "deployed_at": "2026-11-12T20:34:19Z"
+  "version": "dad251b",
+  "message": "Now page: best spot from first light before sunrise (and correct after dark message); OSR sends the forecast speed to 0.1kt",
+  "deployed_at": "2026-11-13T14:59:26Z"
 }
