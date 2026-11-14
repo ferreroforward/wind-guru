@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-14T16:00:17.526Z",
+  "updated_at": "2026-11-14T16:05:49.985Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -108,7 +108,7 @@
       "regime": "outflow",
       "mismatch": true,
       "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
-      "checked_at": "2026-11-14T16:00:17.526Z"
+      "checked_at": "2026-11-14T16:05:49.985Z"
     },
     {
       "spot": "erwin-park",
@@ -1382,7 +1382,7 @@
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-11-14T16:00:17.526Z"
+      "checked_at": "2026-11-14T16:05:49.985Z"
     },
     {
       "spot": "garry-point",
@@ -2669,7 +2669,7 @@
       "regime": "mixed",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-11-14T16:00:17.526Z"
+      "checked_at": "2026-11-14T16:05:49.985Z"
     },
     {
       "spot": "jericho-spanish-banks",
