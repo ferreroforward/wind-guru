@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-14T16:05:49.882Z",
+  "generated_at": "2026-11-14T16:17:37.668Z",
   "min_samples": 2,
   "min_rider_reports": 5,
   "min_rider_days": 2,
@@ -209,11 +209,16 @@
   "accuracy": {
     "tolerance_kt": 3,
     "sample_size": 88,
-    "hit_rate": 0.42
+    "hit_rate": 0.43
   },
   "direction": {
     "match_deg": 45,
     "spots": {
+      "boundary-bay": {
+        "reports": 4,
+        "matched": 4,
+        "hit_rate": 1
+      },
       "erwin-park": {
         "reports": 2,
         "matched": 2,
@@ -242,11 +247,6 @@
       "squamish-spit": {
         "reports": 14,
         "matched": 14,
-        "hit_rate": 1
-      },
-      "boundary-bay": {
-        "reports": 3,
-        "matched": 3,
         "hit_rate": 1
       }
     }
