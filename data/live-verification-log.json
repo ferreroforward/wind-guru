@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-14T20:46:35.349Z",
+  "updated_at": "2026-11-14T20:51:13.262Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -108,7 +108,7 @@
       "regime": "outflow",
       "mismatch": true,
       "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
-      "checked_at": "2026-11-14T20:46:35.349Z"
+      "checked_at": "2026-11-14T20:51:13.262Z"
     },
     {
       "spot": "erwin-park",
@@ -628,7 +628,7 @@
       "regime": "calm",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-11-14T20:46:35.349Z"
+      "checked_at": "2026-11-14T20:51:13.262Z"
     },
     {
       "spot": "porteau-cove",
@@ -1382,7 +1382,7 @@
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-11-14T20:46:35.349Z"
+      "checked_at": "2026-11-14T20:51:13.262Z"
     },
     {
       "spot": "garry-point",
@@ -2669,7 +2669,7 @@
       "regime": "mixed",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-11-14T20:46:35.349Z"
+      "checked_at": "2026-11-14T20:51:13.262Z"
     },
     {
       "spot": "jericho-spanish-banks",
@@ -3189,7 +3189,7 @@
       "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-11-14T20:46:35.349Z"
+      "checked_at": "2026-11-14T20:51:13.262Z"
     },
     {
       "spot": "squamish-spit",
