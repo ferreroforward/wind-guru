@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-15T18:00:10.313Z",
+  "updated_at": "2026-11-15T18:02:24.333Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -108,7 +108,7 @@
       "regime": "outflow",
       "mismatch": true,
       "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
-      "checked_at": "2026-11-15T18:00:10.313Z"
+      "checked_at": "2026-11-15T18:02:24.333Z"
     },
     {
       "spot": "erwin-park",
@@ -628,7 +628,7 @@
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-11-15T18:00:10.313Z"
+      "checked_at": "2026-11-15T18:02:24.333Z"
     },
     {
       "spot": "porteau-cove",
@@ -1382,7 +1382,7 @@
       "regime": "synoptic",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-11-15T18:00:10.313Z"
+      "checked_at": "2026-11-15T18:02:24.333Z"
     },
     {
       "spot": "garry-point",
@@ -3182,14 +3182,14 @@
       "spot": "squamish-spit",
       "time": "2026-11-15T11:00",
       "forecasted": 17.3,
-      "actual": 14,
-      "ratio": 0.8092485549132947,
+      "actual": 13.5,
+      "ratio": 0.7803468208092486,
       "source": "live-station",
       "station": "Squamish terminal sensor (Kiteloop)",
       "regime": "mixed",
       "mismatch": false,
       "reasoning": null,
-      "checked_at": "2026-11-15T18:00:10.313Z"
+      "checked_at": "2026-11-15T18:02:24.333Z"
     },
     {
       "spot": "squamish-spit",

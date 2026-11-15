@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-15T18:00:10.251Z",
+  "generated_at": "2026-11-15T18:02:24.256Z",
   "min_samples": 2,
   "min_rider_reports": 5,
   "min_rider_days": 2,
@@ -8,19 +8,19 @@
     "porteau-cove": {
       "general": {
         "sample_size": 20,
-        "rider_reports": 1,
-        "live_checks": 19,
-        "avg_ratio": 1.17,
-        "multiplier": 1.17,
-        "note": "Based on 20 total data points (1 rider report, 19 live-station checks): actual wind averaged 117% of what was forecasted (rider reports weighted 3x a station check)."
+        "rider_reports": 2,
+        "live_checks": 18,
+        "avg_ratio": 1.04,
+        "multiplier": 1.04,
+        "note": "Based on 20 total data points (2 rider reports, 18 live-station checks): actual wind averaged 104% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
-        "sample_size": 13,
+        "sample_size": 14,
         "rider_reports": 0,
-        "live_checks": 13,
-        "avg_ratio": 0.87,
-        "multiplier": 0.87,
-        "note": "Based on 13 synoptic data points (0 rider reports, 13 live-station checks): actual wind averaged 87% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 14,
+        "avg_ratio": 0.89,
+        "multiplier": 0.89,
+        "note": "Based on 14 synoptic data points (0 rider reports, 14 live-station checks): actual wind averaged 89% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "outflow": {
         "sample_size": 8,
@@ -108,17 +108,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 1.33,
-        "multiplier": 1.33,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 133% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 1.37,
+        "multiplier": 1.37,
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 137% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "outflow": {
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 1.33,
-        "multiplier": 1.33,
-        "note": "Based on 20 outflow data points (0 rider reports, 20 live-station checks): actual wind averaged 133% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 1.37,
+        "multiplier": 1.37,
+        "note": "Based on 20 outflow data points (0 rider reports, 20 live-station checks): actual wind averaged 137% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 3,
@@ -134,17 +134,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.84,
-        "multiplier": 0.84,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 84% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.87,
+        "multiplier": 0.87,
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 87% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.81,
-        "multiplier": 0.81,
-        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 81% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.84,
+        "multiplier": 0.84,
+        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 84% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "tsawwassen-south": {
@@ -211,14 +211,14 @@
   "accuracy": {
     "tolerance_kt": 3,
     "sample_size": 88,
-    "hit_rate": 0.43
+    "hit_rate": 0.42
   },
   "direction": {
     "match_deg": 45,
     "spots": {
       "porteau-cove": {
-        "reports": 16,
-        "matched": 15,
+        "reports": 17,
+        "matched": 16,
         "hit_rate": 0.94
       },
       "boundary-bay": {

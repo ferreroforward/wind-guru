@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-15T18:00:10.313Z",
-  "generated_at_label": "Sun, Nov 15, 11:00 AM",
+  "generated_at": "2026-11-15T18:02:24.333Z",
+  "generated_at_label": "Sun, Nov 15, 11:02 AM",
   "models_used": [
     "HRRR 3km (NOAA), then GFS",
     "ECMWF 25km",
@@ -394,19 +394,19 @@
     "porteau-cove": {
       "general": {
         "sample_size": 20,
-        "rider_reports": 1,
-        "live_checks": 19,
-        "avg_ratio": 1.17,
-        "multiplier": 1.17,
-        "note": "Based on 20 total data points (1 rider report, 19 live-station checks): actual wind averaged 117% of what was forecasted (rider reports weighted 3x a station check)."
+        "rider_reports": 2,
+        "live_checks": 18,
+        "avg_ratio": 1.04,
+        "multiplier": 1.04,
+        "note": "Based on 20 total data points (2 rider reports, 18 live-station checks): actual wind averaged 104% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
-        "sample_size": 13,
+        "sample_size": 14,
         "rider_reports": 0,
-        "live_checks": 13,
-        "avg_ratio": 0.87,
-        "multiplier": 0.87,
-        "note": "Based on 13 synoptic data points (0 rider reports, 13 live-station checks): actual wind averaged 87% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 14,
+        "avg_ratio": 0.89,
+        "multiplier": 0.89,
+        "note": "Based on 14 synoptic data points (0 rider reports, 14 live-station checks): actual wind averaged 89% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "outflow": {
         "sample_size": 8,
@@ -494,17 +494,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 1.33,
-        "multiplier": 1.33,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 133% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 1.37,
+        "multiplier": 1.37,
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 137% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "outflow": {
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 1.33,
-        "multiplier": 1.33,
-        "note": "Based on 20 outflow data points (0 rider reports, 20 live-station checks): actual wind averaged 133% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 1.37,
+        "multiplier": 1.37,
+        "note": "Based on 20 outflow data points (0 rider reports, 20 live-station checks): actual wind averaged 137% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 3,
@@ -520,17 +520,17 @@
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.84,
-        "multiplier": 0.84,
-        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 84% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.87,
+        "multiplier": 0.87,
+        "note": "Based on 20 total data points (0 rider reports, 20 live-station checks): actual wind averaged 87% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 20,
         "rider_reports": 0,
         "live_checks": 20,
-        "avg_ratio": 0.81,
-        "multiplier": 0.81,
-        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 81% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.84,
+        "multiplier": 0.84,
+        "note": "Based on 20 synoptic data points (0 rider reports, 20 live-station checks): actual wind averaged 84% of what was forecasted (rider reports weighted 3x a station check)."
       }
     },
     "tsawwassen-south": {
@@ -598,14 +598,14 @@
     "accuracy": {
       "tolerance_kt": 3,
       "sample_size": 88,
-      "hit_rate": 0.43
+      "hit_rate": 0.42
     },
     "direction": {
       "match_deg": 45,
       "spots": {
         "porteau-cove": {
-          "reports": 16,
-          "matched": 15,
+          "reports": 17,
+          "matched": 16,
           "hit_rate": 0.94
         },
         "boundary-bay": {
@@ -962,17 +962,17 @@
     }
   },
   "surface_observations": {
-    "updated_at": "2026-11-15T18:00:10.313Z",
+    "updated_at": "2026-11-15T18:02:24.333Z",
     "board_source_url": "https://wtfbc.ca/swob.php",
     "stations": [
       {
         "name": "Squamish terminal sensor (Kiteloop)",
         "source_url": "https://kiteloop.vercel.app/",
-        "observed_local_time": "10:53",
-        "observed_age_min": 7,
+        "observed_local_time": "10:58",
+        "observed_age_min": 4,
         "temp_c": null,
         "direction_label": "S",
-        "speed_kt": 14,
+        "speed_kt": 13.5,
         "gust_kt": 23.2,
         "source": "wind-guru"
       },
@@ -980,7 +980,7 @@
         "name": "Pam Rocks (Howe Sound entrance)",
         "source_url": null,
         "observed_local_time": "09:00",
-        "observed_age_min": 120,
+        "observed_age_min": 123,
         "temp_c": null,
         "direction_label": "S",
         "speed_kt": 15,
@@ -990,19 +990,19 @@
       {
         "name": "Jericho Sailing Centre (beach)",
         "source_url": "https://jsca.bc.ca/services/weather/",
-        "observed_local_time": "11:30",
-        "observed_age_min": -29,
+        "observed_local_time": "12:00",
+        "observed_age_min": -57,
         "temp_c": null,
         "direction_label": "ENE",
         "speed_kt": 4.3,
-        "gust_kt": 7.8,
+        "gust_kt": 7,
         "source": "wind-guru"
       },
       {
         "name": "Sand Heads",
         "source_url": null,
         "observed_local_time": "09:00",
-        "observed_age_min": 121,
+        "observed_age_min": 123,
         "temp_c": null,
         "direction_label": "SSW",
         "speed_kt": 20,
@@ -1013,7 +1013,7 @@
         "name": "Point Atkinson",
         "source_url": null,
         "observed_local_time": "09:00",
-        "observed_age_min": 121,
+        "observed_age_min": 123,
         "temp_c": null,
         "direction_label": "E",
         "speed_kt": 15,
@@ -1024,7 +1024,7 @@
         "name": "Halibut Bank Buoy",
         "source_url": "https://weather.gc.ca/past_conditions/index_e.html?station=46146",
         "observed_local_time": "10:00",
-        "observed_age_min": 60,
+        "observed_age_min": 63,
         "temp_c": null,
         "direction_label": "SE",
         "speed_kt": 14.6,
@@ -1035,7 +1035,7 @@
         "name": "English Bay buoy",
         "source_url": "https://weather.gc.ca/past_conditions/index_e.html?station=46304",
         "observed_local_time": "10:00",
-        "observed_age_min": 60,
+        "observed_age_min": 63,
         "temp_c": null,
         "direction_label": "ESE",
         "speed_kt": 6.5,
@@ -1055,11 +1055,11 @@
       {
         "name": "Squamish Airport",
         "source_url": "https://dd.weather.gc.ca/today/observations/swob-ml/latest/CWSK-AUTO-minute-swob.xml",
-        "observed_local_time": "11:00 am",
+        "observed_local_time": "11:02 am",
         "temp_c": 11,
         "direction_label": "SE",
-        "speed_kt": 6,
-        "gust_kt": 9,
+        "speed_kt": 7,
+        "gust_kt": 10,
         "source": "wtfbc"
       },
       {
@@ -1083,7 +1083,7 @@
     }
   },
   "howe_sound_pressure": {
-    "updated_at": "2026-11-15T18:00:10.313Z",
+    "updated_at": "2026-11-15T18:02:24.333Z",
     "source": "EC SWOB hourly sea level pressure (0.1 hPa)",
     "observed": [
       {
@@ -1239,6 +1239,20 @@
         "wsk_c": 10.6,
         "gap": 2.7,
         "local": 0.7
+      },
+      {
+        "t": "2026-11-15T11:00",
+        "at": 1794765600000,
+        "pem": 1005.1,
+        "yvr": null,
+        "was": 1007,
+        "pam_kt": 11.5,
+        "pam_dir": "S",
+        "was_c": 12.7,
+        "wsk": 1006.4,
+        "wsk_c": 11.5,
+        "gap": null,
+        "local": 0.6
       }
     ],
     "forecast": {
@@ -13174,13 +13188,13 @@
       "live_check": {
         "checked_hour": "2026-11-15T11:00",
         "station": "Squamish terminal sensor (Kiteloop)",
-        "observed_local_time": "10:53",
-        "observed_age_min": 7,
+        "observed_local_time": "10:58",
+        "observed_age_min": 4,
         "forecasted_kt": 16.4,
-        "live_kt": 14,
+        "live_kt": 13.5,
         "live_gust_kt": 23.2,
         "live_direction": "S",
-        "error_pct": -15,
+        "error_pct": -18,
         "mismatch": false,
         "regime": "mixed"
       },
@@ -28481,7 +28495,7 @@
         "checked_hour": "2026-11-15T11:00",
         "station": "Pam Rocks (Howe Sound entrance)",
         "observed_local_time": "09:00",
-        "observed_age_min": 120,
+        "observed_age_min": 123,
         "forecasted_kt": 13.6,
         "live_kt": 15,
         "live_gust_kt": 22.9,
@@ -52642,7 +52656,7 @@
         "checked_hour": "2026-11-15T11:00",
         "station": "Sand Heads",
         "observed_local_time": "09:00",
-        "observed_age_min": 121,
+        "observed_age_min": 123,
         "forecasted_kt": 20,
         "live_kt": 20,
         "live_gust_kt": 26,
@@ -114493,7 +114507,7 @@
         "checked_hour": "2026-11-15T11:00",
         "station": "Point Atkinson",
         "observed_local_time": "09:00",
-        "observed_age_min": 121,
+        "observed_age_min": 123,
         "forecasted_kt": 7.4,
         "live_kt": 15,
         "live_gust_kt": 21,
