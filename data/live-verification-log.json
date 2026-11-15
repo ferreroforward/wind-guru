@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-15T03:31:54.966Z",
+  "updated_at": "2026-11-15T07:59:31.852Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -96,6 +96,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-11-15T00:00",
+      "forecasted": 17.6,
+      "actual": 29,
+      "ratio": 1.6477272727272725,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "outflow",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-15T07:59:31.852Z"
     },
     {
       "spot": "erwin-park",
@@ -605,17 +618,17 @@
       "checked_at": "2026-11-05T19:46:26.222Z"
     },
     {
-      "spot": "erwin-park",
-      "time": "2026-11-05T05:00",
-      "forecasted": 2.5,
+      "spot": "porteau-cove",
+      "time": "2026-11-15T00:00",
+      "forecasted": 7.2,
       "actual": 9.9,
-      "ratio": 1.98,
+      "ratio": 1.375,
       "source": "live-station",
-      "station": "Point Atkinson",
-      "regime": "calm",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "mixed",
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-11-05T12:52:08.817Z"
+      "checked_at": "2026-11-15T07:59:31.852Z"
     },
     {
       "spot": "porteau-cove",
@@ -1125,19 +1138,6 @@
       "checked_at": "2026-11-04T19:36:37.141Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-11-04T10:00",
-      "forecasted": 0,
-      "actual": 17.1,
-      "ratio": 3.4200000000000004,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "calm",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-11-04T17:26:26.883Z"
-    },
-    {
       "spot": "white-rock-east",
       "time": "2026-11-04T10:00",
       "forecasted": 3.3,
@@ -1370,6 +1370,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-11-15T00:00",
+      "forecasted": 24.9,
+      "actual": 28,
+      "ratio": 1.1244979919678715,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-15T07:59:31.852Z"
     },
     {
       "spot": "garry-point",
@@ -1877,19 +1890,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-11-07T23:31:08.186Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-11-07T10:00",
-      "forecasted": 13.1,
-      "actual": 12.1,
-      "ratio": 0.9236641221374046,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-11-07T17:01:16.041Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -2660,6 +2660,19 @@
     },
     {
       "spot": "jericho-spanish-banks",
+      "time": "2026-11-15T00:00",
+      "forecasted": 22,
+      "actual": 13,
+      "ratio": 0.5909090909090909,
+      "source": "live-station",
+      "station": "Jericho Sailing Centre (beach)",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-11-15T07:59:31.852Z"
+    },
+    {
+      "spot": "jericho-spanish-banks",
       "time": "2026-11-14T20:00",
       "forecasted": 20,
       "actual": 17.4,
@@ -3166,17 +3179,17 @@
       "checked_at": "2026-11-05T03:58:24.082Z"
     },
     {
-      "spot": "jericho-spanish-banks",
-      "time": "2026-11-01T16:00",
-      "forecasted": 1.5,
-      "actual": 9.6,
-      "ratio": 1.92,
+      "spot": "squamish-spit",
+      "time": "2026-11-15T00:00",
+      "forecasted": 9.3,
+      "actual": 0.7,
+      "ratio": 0.07526881720430106,
       "source": "live-station",
-      "station": "Jericho Sailing Centre (beach)",
+      "station": "Squamish terminal sensor (Kiteloop)",
       "regime": "mixed",
       "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-11-01T23:10:12.261Z"
+      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-11-15T07:59:31.852Z"
     },
     {
       "spot": "squamish-spit",
@@ -3684,19 +3697,6 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-11-02T21:36:12.798Z"
-    },
-    {
-      "spot": "squamish-spit",
-      "time": "2026-11-02T06:00",
-      "forecasted": 4.6,
-      "actual": 9.4,
-      "ratio": 1.8800000000000001,
-      "source": "live-station",
-      "station": "Squamish terminal sensor (Kiteloop)",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-11-02T13:13:22.198Z"
     }
   ]
 }
