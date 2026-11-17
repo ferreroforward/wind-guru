@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-17T15:51:57.474Z",
+  "generated_at": "2026-11-17T20:41:08.231Z",
   "min_samples": 2,
   "min_rider_reports": 5,
   "min_rider_days": 2,
@@ -33,12 +33,12 @@
         "note": "Based on 4 mixed data points (0 rider reports, 4 live-station checks): actual wind averaged 126% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
-        "sample_size": 13,
+        "sample_size": 12,
         "rider_reports": 0,
-        "live_checks": 13,
-        "avg_ratio": 0.87,
-        "multiplier": 0.87,
-        "note": "Based on 13 synoptic data points (0 rider reports, 13 live-station checks): actual wind averaged 87% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 12,
+        "avg_ratio": 0.89,
+        "multiplier": 0.89,
+        "note": "Based on 12 synoptic data points (0 rider reports, 12 live-station checks): actual wind averaged 89% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "outflow": {
         "sample_size": 8,
