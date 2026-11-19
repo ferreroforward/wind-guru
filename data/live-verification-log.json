@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-18T20:15:59.699Z",
+  "updated_at": "2026-11-19T01:32:26.116Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1373,6 +1373,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-11-18T18:00",
+      "forecasted": 9.5,
+      "actual": 15,
+      "ratio": 1.5789473684210527,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-19T01:32:26.116Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-11-18T13:00",
       "forecasted": 6.5,
       "actual": 11.1,
@@ -1877,19 +1890,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-11-10T04:58:58.556Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-11-09T19:00",
-      "forecasted": 14.7,
-      "actual": 18.1,
-      "ratio": 1.231292517006803,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 73%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-11-10T02:26:21.307Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -3180,6 +3180,19 @@
     },
     {
       "spot": "squamish-spit",
+      "time": "2026-11-18T18:00",
+      "forecasted": 9.2,
+      "actual": 9.2,
+      "ratio": 1,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "mixed",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-19T01:32:26.116Z"
+    },
+    {
+      "spot": "squamish-spit",
       "time": "2026-11-18T13:00",
       "forecasted": 11.5,
       "actual": 10.3,
@@ -3684,19 +3697,6 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-11-05T19:46:26.222Z"
-    },
-    {
-      "spot": "squamish-spit",
-      "time": "2026-11-05T05:00",
-      "forecasted": 5.4,
-      "actual": 10.1,
-      "ratio": 1.8703703703703702,
-      "source": "live-station",
-      "station": "Squamish terminal sensor (Kiteloop)",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-11-05T12:52:08.817Z"
     }
   ]
 }
