@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-20T14:44:24.090Z",
+  "updated_at": "2026-11-20T19:50:53.583Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -96,6 +96,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-11-20T12:00",
+      "forecasted": 2.4,
+      "actual": 15,
+      "ratio": 3,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-11-20T19:50:53.583Z"
     },
     {
       "spot": "erwin-park",
@@ -605,17 +618,17 @@
       "checked_at": "2026-11-07T07:25:25.159Z"
     },
     {
-      "spot": "erwin-park",
-      "time": "2026-11-06T18:00",
-      "forecasted": 13,
-      "actual": 22.9,
-      "ratio": 1.7615384615384615,
+      "spot": "porteau-cove",
+      "time": "2026-11-20T12:00",
+      "forecasted": 2.9,
+      "actual": 8,
+      "ratio": 1.6,
       "source": "live-station",
-      "station": "Point Atkinson",
-      "regime": "outflow",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "calm",
       "mismatch": true,
-      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
-      "checked_at": "2026-11-07T01:56:46.922Z"
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-11-20T19:50:53.583Z"
     },
     {
       "spot": "porteau-cove",
@@ -1125,19 +1138,6 @@
       "checked_at": "2026-11-10T08:32:22.887Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-11-09T21:00",
-      "forecasted": 8.1,
-      "actual": 19,
-      "ratio": 2.345679012345679,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "outflow",
-      "mismatch": true,
-      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
-      "checked_at": "2026-11-10T04:58:58.556Z"
-    },
-    {
       "spot": "white-rock-east",
       "time": "2026-11-04T10:00",
       "forecasted": 3.3,
@@ -1370,6 +1370,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-11-20T12:00",
+      "forecasted": 7.3,
+      "actual": 12.1,
+      "ratio": 1.6575342465753424,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-11-20T19:50:53.583Z"
     },
     {
       "spot": "garry-point",
@@ -1877,19 +1890,6 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 46%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-11-11T19:26:28.968Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-11-11T08:00",
-      "forecasted": 22.1,
-      "actual": 18.1,
-      "ratio": 0.8190045248868778,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-11-11T15:11:23.035Z"
     },
     {
       "spot": "tsawwassen-south",
