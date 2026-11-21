@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-20T19:50:53.583Z",
+  "updated_at": "2026-11-21T00:58:56.447Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1373,6 +1373,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-11-20T17:00",
+      "forecasted": 7.1,
+      "actual": 8.9,
+      "ratio": 1.2535211267605635,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-11-21T00:58:56.447Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-11-20T12:00",
       "forecasted": 7.3,
       "actual": 12.1,
@@ -1877,19 +1890,6 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 24%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-11-11T22:47:36.553Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-11-11T12:00",
-      "forecasted": 22.6,
-      "actual": 17.1,
-      "ratio": 0.756637168141593,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": true,
-      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 46%, so spread between models likely explains some of the gap.",
-      "checked_at": "2026-11-11T19:26:28.968Z"
     },
     {
       "spot": "tsawwassen-south",
