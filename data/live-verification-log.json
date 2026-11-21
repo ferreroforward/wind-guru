@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-21T15:52:23.369Z",
+  "updated_at": "2026-11-21T18:56:52.861Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -619,6 +619,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-11-21T11:00",
+      "forecasted": 18,
+      "actual": 22,
+      "ratio": 1.2222222222222223,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 45%, so spread between models likely explains some of the gap.",
+      "checked_at": "2026-11-21T18:56:52.861Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-11-21T08:00",
       "forecasted": 5,
       "actual": 21,
@@ -1125,19 +1138,6 @@
       "checked_at": "2026-11-11T14:50:12.038Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-11-11T00:00",
-      "forecasted": 6.5,
-      "actual": 13,
-      "ratio": 2,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-11-11T07:53:54.414Z"
-    },
-    {
       "spot": "white-rock-east",
       "time": "2026-11-04T10:00",
       "forecasted": 3.3,
@@ -1370,6 +1370,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-11-21T11:00",
+      "forecasted": 8.3,
+      "actual": 5.1,
+      "ratio": 0.6144578313253011,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
+      "checked_at": "2026-11-21T18:56:52.861Z"
     },
     {
       "spot": "garry-point",
@@ -1877,19 +1890,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-11-12T16:27:22.294Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-11-12T01:00",
-      "forecasted": 6.8,
-      "actual": 8.9,
-      "ratio": 1.3088235294117647,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-11-12T08:31:33.058Z"
     },
     {
       "spot": "tsawwassen-south",
