@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T20:00:24.455Z",
+  "generated_at": "2026-11-21T20:01:54.000Z",
   "min_samples": 2,
   "min_rider_reports": 5,
   "min_rider_days": 2,
@@ -10,9 +10,9 @@
         "sample_size": 20,
         "rider_reports": 7,
         "live_checks": 13,
-        "avg_ratio": 0.82,
-        "multiplier": 0.82,
-        "note": "Based on 20 total data points (7 rider reports, 13 live-station checks): actual wind averaged 82% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.89,
+        "multiplier": 0.89,
+        "note": "Based on 20 total data points (7 rider reports, 13 live-station checks): actual wind averaged 89% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 9,
@@ -234,15 +234,15 @@
   },
   "accuracy": {
     "tolerance_kt": 3,
-    "sample_size": 92,
-    "hit_rate": 0.37
+    "sample_size": 93,
+    "hit_rate": 0.38
   },
   "direction": {
     "match_deg": 45,
     "spots": {
       "porteau-cove": {
-        "reports": 23,
-        "matched": 22,
+        "reports": 24,
+        "matched": 23,
         "hit_rate": 0.96
       },
       "jericho-spanish-banks": {

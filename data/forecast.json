@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-21T20:00:24.559Z",
-  "generated_at_label": "Sat, Nov 21, 1:00 PM",
+  "generated_at": "2026-11-21T20:01:54.116Z",
+  "generated_at_label": "Sat, Nov 21, 1:01 PM",
   "models_used": [
     "HRRR 3km (NOAA), then GFS",
     "ECMWF 25km",
@@ -373,9 +373,9 @@
         "sample_size": 20,
         "rider_reports": 7,
         "live_checks": 13,
-        "avg_ratio": 0.82,
-        "multiplier": 0.82,
-        "note": "Based on 20 total data points (7 rider reports, 13 live-station checks): actual wind averaged 82% of what was forecasted (rider reports weighted 3x a station check)."
+        "avg_ratio": 0.89,
+        "multiplier": 0.89,
+        "note": "Based on 20 total data points (7 rider reports, 13 live-station checks): actual wind averaged 89% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
         "sample_size": 9,
@@ -598,15 +598,15 @@
   "rider_feedback": {
     "accuracy": {
       "tolerance_kt": 3,
-      "sample_size": 92,
-      "hit_rate": 0.37
+      "sample_size": 93,
+      "hit_rate": 0.38
     },
     "direction": {
       "match_deg": 45,
       "spots": {
         "porteau-cove": {
-          "reports": 23,
-          "matched": 22,
+          "reports": 24,
+          "matched": 23,
           "hit_rate": 0.96
         },
         "jericho-spanish-banks": {
@@ -712,13 +712,6 @@
       "posted_at": "2026-11-12T16:27:08Z",
       "updated_at": "2026-11-12T16:27:08Z",
       "issue_number": 161
-    },
-    "2026-11-11": {
-      "date": "2026-11-11",
-      "text": "The southeast gale is slow to reach the south shore, with Boundary Bay almost calm this morning, but the easterly is pumping off West Van: Point Atkinson read E 22 gusting 29 at 7am, ahead of the page. Erwin Park should be working  from first light (about 7:45am) to about 5:30pm, E 17 to 21 and gusty, so bring a small wing. No tide or weed worries there. Check before driving: Point Atkinson 20 or more from the east, go. East Beach in White Rock is the backup if the southeast fills in later; the FT and Boundary should be good for kiting but weeds may still be there for foiling.",
-      "posted_at": "2026-11-11T14:49:56Z",
-      "updated_at": "2026-11-11T14:49:56Z",
-      "issue_number": 157
     }
   },
   "weed_reports": {},
@@ -956,14 +949,14 @@
     }
   },
   "surface_observations": {
-    "updated_at": "2026-11-21T20:00:24.559Z",
+    "updated_at": "2026-11-21T20:01:54.116Z",
     "board_source_url": "https://wtfbc.ca/swob.php",
     "stations": [
       {
         "name": "Squamish terminal sensor (Kiteloop)",
         "source_url": "https://kiteloop.vercel.app/",
         "observed_local_time": "12:58",
-        "observed_age_min": 3,
+        "observed_age_min": 4,
         "temp_c": null,
         "direction_label": "N",
         "speed_kt": 7.7,
@@ -974,7 +967,7 @@
         "name": "Pam Rocks (Howe Sound entrance)",
         "source_url": null,
         "observed_local_time": "12:00",
-        "observed_age_min": 61,
+        "observed_age_min": 62,
         "temp_c": null,
         "direction_label": "N",
         "speed_kt": 21,
@@ -984,19 +977,19 @@
       {
         "name": "Jericho Sailing Centre (beach)",
         "source_url": "https://jsca.bc.ca/services/weather/",
-        "observed_local_time": "13:30",
-        "observed_age_min": -29,
+        "observed_local_time": "14:00",
+        "observed_age_min": -58,
         "temp_c": null,
-        "direction_label": "NE",
-        "speed_kt": 1.7,
-        "gust_kt": 3.5,
+        "direction_label": "NNE",
+        "speed_kt": 2.6,
+        "gust_kt": 4.3,
         "source": "wind-guru"
       },
       {
         "name": "Sand Heads",
         "source_url": null,
         "observed_local_time": "12:00",
-        "observed_age_min": 61,
+        "observed_age_min": 62,
         "temp_c": null,
         "direction_label": "NE",
         "speed_kt": 6,
@@ -1007,7 +1000,7 @@
         "name": "Point Atkinson",
         "source_url": null,
         "observed_local_time": "12:00",
-        "observed_age_min": 61,
+        "observed_age_min": 62,
         "temp_c": null,
         "direction_label": "E",
         "speed_kt": 4.1,
@@ -1018,7 +1011,7 @@
         "name": "Halibut Bank Buoy",
         "source_url": "https://weather.gc.ca/past_conditions/index_e.html?station=46146",
         "observed_local_time": "12:00",
-        "observed_age_min": 61,
+        "observed_age_min": 62,
         "temp_c": null,
         "direction_label": "E",
         "speed_kt": 8.1,
@@ -1029,7 +1022,7 @@
         "name": "English Bay buoy",
         "source_url": "https://weather.gc.ca/past_conditions/index_e.html?station=46304",
         "observed_local_time": "12:00",
-        "observed_age_min": 61,
+        "observed_age_min": 62,
         "temp_c": null,
         "direction_label": "NE",
         "speed_kt": 11.9,
@@ -1039,21 +1032,21 @@
       {
         "name": "Vancouver International",
         "source_url": "https://dd.weather.gc.ca/today/observations/swob-ml/latest/CYVR-MAN-swob.xml",
-        "observed_local_time": "12:00 pm",
-        "temp_c": 7,
+        "observed_local_time": "1:00 pm",
+        "temp_c": 8,
         "direction_label": "ENE",
-        "speed_kt": 5,
+        "speed_kt": 2,
         "gust_kt": null,
         "source": "wtfbc"
       },
       {
         "name": "Squamish Airport",
         "source_url": "https://dd.weather.gc.ca/today/observations/swob-ml/latest/CWSK-AUTO-minute-swob.xml",
-        "observed_local_time": "12:59 pm",
+        "observed_local_time": "1:00 pm",
         "temp_c": 5,
         "direction_label": "NNW",
-        "speed_kt": 5,
-        "gust_kt": 6,
+        "speed_kt": 4,
+        "gust_kt": 5,
         "source": "wtfbc"
       },
       {
@@ -1077,7 +1070,7 @@
     }
   },
   "howe_sound_pressure": {
-    "updated_at": "2026-11-21T20:00:24.559Z",
+    "updated_at": "2026-11-21T20:01:54.116Z",
     "source": "EC SWOB hourly sea level pressure (0.1 hPa)",
     "observed": [
       {
@@ -1233,6 +1226,17 @@
         "was_c": 5.9,
         "gap": -3.9,
         "local": -2.4
+      },
+      {
+        "t": "2026-11-21T13:00",
+        "at": 1795291200000,
+        "pem": 1017.2,
+        "yvr": 1013.3,
+        "was": null,
+        "wsk": 1014.6,
+        "wsk_c": 5.2,
+        "gap": -3.9,
+        "local": null
       }
     ],
     "forecast": {
@@ -14900,16 +14904,16 @@
         },
         {
           "time": "2026-11-21T14:00",
-          "speed_kt": 9,
-          "gust_kt": 11.3,
+          "speed_kt": 0,
+          "gust_kt": 0,
           "direction_deg": 19,
           "direction_label": "NNE",
           "cloud_pct": 57,
           "radiation_wm2": 292,
           "upper_speed_kt": 11.9,
           "gusty": false,
-          "regime": "outflow",
-          "reason": "Light: this spot's learned forecast is under 5kt even though some models show more. Pam Rocks forecast ~9kt (outflow). Porteau works in an outflow once Pam Rocks reads 22kt+, which this doesn't reach. Environment Canada calls for northerly 25kt, stronger than the models here (~0kt). Not used as the number (EC's zone forecast has run about 4kt high for single spots); check the live readings. Pam Rocks reads 21kt N now, with the Pemberton minus Vancouver gap steady (0 hPa in 3 hours), so the outflow is held at about 20kt here 1 hour ahead.",
+          "regime": "calm",
+          "reason": "Light: this spot's learned forecast is under 5kt even though some models show more. Pam Rocks forecast ~9kt (outflow). Porteau works in an outflow once Pam Rocks reads 22kt+, which this doesn't reach. Environment Canada calls for northerly 25kt, stronger than the models here (~0kt). Not used as the number (EC's zone forecast has run about 4kt high for single spots); check the live readings.",
           "summary": "Light and variable — not much going on.",
           "favorable_direction": true,
           "outflow_not_ridden": false,
@@ -14942,7 +14946,7 @@
           "mos_used": true,
           "mos": {
             "station": "Pam Rocks",
-            "station_kt": 20.3,
+            "station_kt": 8.6,
             "variant": "A",
             "sigma_kt": 4.6,
             "recent_offset_kt": 0.2,
@@ -15023,14 +15027,6 @@
             "cma": 5.2,
             "aifs": 2.5
           },
-          "outflow_hold": {
-            "hours_ahead": 1,
-            "pam_rocks_now_kt": 21.3,
-            "pam_rocks_kt": 20.3,
-            "trend": "steady",
-            "gap_hpa": 3.9,
-            "change_hpa": 0
-          },
           "tide": {
             "level_m": 4.34,
             "level_ft": 14.2,
@@ -15038,37 +15034,25 @@
             "rate_m_per_h": 0.22
           },
           "swell": {
-            "label": "chop",
-            "hs_m": 0.4,
-            "hs_ft": 1.3,
-            "period_s": 2.1,
-            "duration_h": 1,
-            "fetch_km": 15,
-            "limited_by": "duration",
-            "current": "flood",
-            "vs_wind": "against",
-            "current_factor": 1.22,
-            "building": false
-          },
-          "waves": {
-            "ft": 1.3,
-            "period_s": 2.1,
-            "dir_deg": null,
-            "source": "estimate"
+            "label": "flat",
+            "hs_m": 0,
+            "hs_ft": 0,
+            "period_s": null,
+            "duration_h": 0
           }
         },
         {
           "time": "2026-11-21T15:00",
-          "speed_kt": 7.6,
-          "gust_kt": 9.5,
+          "speed_kt": 0,
+          "gust_kt": 0,
           "direction_deg": 21,
           "direction_label": "NNE",
           "cloud_pct": 58,
           "radiation_wm2": 244,
           "upper_speed_kt": 11.8,
           "gusty": false,
-          "regime": "outflow",
-          "reason": "Light: this spot's learned forecast is under 5kt even though some models show more. Pam Rocks forecast ~9kt (outflow). Porteau works in an outflow once Pam Rocks reads 22kt+, which this doesn't reach. Environment Canada calls for northerly 15kt late this afternoon, stronger than the models here (~0kt). Not used as the number (EC's zone forecast has run about 4kt high for single spots); check the live readings. Pam Rocks reads 21kt N now, with the Pemberton minus Vancouver gap steady (0 hPa in 3 hours), so the outflow is held at about 19kt here 2 hours ahead.",
+          "regime": "calm",
+          "reason": "Light: this spot's learned forecast is under 5kt even though some models show more. Pam Rocks forecast ~9kt (outflow). Porteau works in an outflow once Pam Rocks reads 22kt+, which this doesn't reach. Environment Canada calls for northerly 15kt late this afternoon, stronger than the models here (~0kt). Not used as the number (EC's zone forecast has run about 4kt high for single spots); check the live readings.",
           "summary": "Light and variable — not much going on.",
           "favorable_direction": true,
           "outflow_not_ridden": false,
@@ -15101,7 +15085,7 @@
           "mos_used": true,
           "mos": {
             "station": "Pam Rocks",
-            "station_kt": 19.3,
+            "station_kt": 8.8,
             "variant": "A",
             "sigma_kt": 4.6,
             "recent_offset_kt": 0.2,
@@ -15182,14 +15166,6 @@
             "cma": 5.2,
             "aifs": 2.3
           },
-          "outflow_hold": {
-            "hours_ahead": 2,
-            "pam_rocks_now_kt": 21.3,
-            "pam_rocks_kt": 19.3,
-            "trend": "steady",
-            "gap_hpa": 3.9,
-            "change_hpa": 0
-          },
           "tide": {
             "level_m": 4.46,
             "level_ft": 14.6,
@@ -15202,26 +15178,20 @@
             "hs_ft": 0,
             "period_s": null,
             "duration_h": 0
-          },
-          "waves": {
-            "ft": 1,
-            "period_s": 2.1,
-            "dir_deg": null,
-            "source": "estimate"
           }
         },
         {
           "time": "2026-11-21T16:00",
-          "speed_kt": 6.1,
-          "gust_kt": 7.7,
+          "speed_kt": 0,
+          "gust_kt": 0,
           "direction_deg": 22,
           "direction_label": "NNE",
           "cloud_pct": 69,
           "radiation_wm2": 163,
           "upper_speed_kt": 11.8,
           "gusty": false,
-          "regime": "outflow",
-          "reason": "Light: this spot's learned forecast is under 5kt even though some models show more. Pam Rocks forecast ~10kt (outflow). Porteau works in an outflow once Pam Rocks reads 22kt+, which this doesn't reach. Environment Canada calls for northerly 15kt late this afternoon, stronger than the models here (~0kt). Not used as the number (EC's zone forecast has run about 4kt high for single spots); check the live readings. Pam Rocks reads 21kt N now, with the Pemberton minus Vancouver gap steady (0 hPa in 3 hours), so the outflow is held at about 18kt here 3 hours ahead.",
+          "regime": "calm",
+          "reason": "Light: this spot's learned forecast is under 5kt even though some models show more. Pam Rocks forecast ~10kt (outflow). Porteau works in an outflow once Pam Rocks reads 22kt+, which this doesn't reach. Environment Canada calls for northerly 15kt late this afternoon, stronger than the models here (~0kt). Not used as the number (EC's zone forecast has run about 4kt high for single spots); check the live readings.",
           "summary": "Light and variable — not much going on.",
           "favorable_direction": true,
           "outflow_not_ridden": false,
@@ -15254,7 +15224,7 @@
           "mos_used": true,
           "mos": {
             "station": "Pam Rocks",
-            "station_kt": 18.3,
+            "station_kt": 10,
             "variant": "A",
             "sigma_kt": 4.8,
             "recent_offset_kt": 0.2,
@@ -15335,14 +15305,6 @@
             "cma": 4.4,
             "aifs": 2.4
           },
-          "outflow_hold": {
-            "hours_ahead": 3,
-            "pam_rocks_now_kt": 21.3,
-            "pam_rocks_kt": 18.3,
-            "trend": "steady",
-            "gap_hpa": 3.9,
-            "change_hpa": 0
-          },
           "tide": {
             "level_m": 4.32,
             "level_ft": 14.2,
@@ -15355,12 +15317,6 @@
             "hs_ft": 0,
             "period_s": null,
             "duration_h": 0
-          },
-          "waves": {
-            "ft": 0.8,
-            "period_s": 2.1,
-            "dir_deg": null,
-            "source": "estimate"
           }
         },
         {
@@ -15500,12 +15456,6 @@
             "hs_ft": 0,
             "period_s": null,
             "duration_h": 0
-          },
-          "waves": {
-            "ft": 0.6,
-            "period_s": 2.1,
-            "dir_deg": null,
-            "source": "estimate"
           }
         },
         {
@@ -29024,7 +28974,7 @@
         "checked_hour": "2026-11-21T13:00",
         "station": "Pam Rocks (Howe Sound entrance)",
         "observed_local_time": "12:00",
-        "observed_age_min": 61,
+        "observed_age_min": 62,
         "forecasted_kt": 0,
         "live_kt": 21,
         "live_gust_kt": 26,
