@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T19:23:43.227Z",
+  "generated_at": "2026-11-21T20:00:24.455Z",
   "min_samples": 2,
   "min_rider_reports": 5,
   "min_rider_days": 2,
@@ -10,17 +10,17 @@
         "sample_size": 20,
         "rider_reports": 7,
         "live_checks": 13,
-        "avg_ratio": 0.71,
-        "multiplier": 0.77,
-        "note": "Based on 20 total data points (7 rider reports, 13 live-station checks): actual wind averaged 71% of what was forecasted (rider reports weighted 3x a station check). Scaled toward no-adjustment since there's only 20 data points so far -- the raw ratio would be 71%, softened to a 77% multiplier until more reports come in."
+        "avg_ratio": 0.82,
+        "multiplier": 0.82,
+        "note": "Based on 20 total data points (7 rider reports, 13 live-station checks): actual wind averaged 82% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "synoptic": {
-        "sample_size": 8,
+        "sample_size": 9,
         "rider_reports": 0,
-        "live_checks": 8,
-        "avg_ratio": 1.04,
-        "multiplier": 1.04,
-        "note": "Based on 8 synoptic data points (0 rider reports, 8 live-station checks): actual wind averaged 104% of what was forecasted (rider reports weighted 3x a station check)."
+        "live_checks": 9,
+        "avg_ratio": 1.06,
+        "multiplier": 1.06,
+        "note": "Based on 9 synoptic data points (0 rider reports, 9 live-station checks): actual wind averaged 106% of what was forecasted (rider reports weighted 3x a station check)."
       },
       "calm": {
         "sample_size": 2,
@@ -234,16 +234,16 @@
   },
   "accuracy": {
     "tolerance_kt": 3,
-    "sample_size": 91,
+    "sample_size": 92,
     "hit_rate": 0.37
   },
   "direction": {
     "match_deg": 45,
     "spots": {
       "porteau-cove": {
-        "reports": 22,
-        "matched": 21,
-        "hit_rate": 0.95
+        "reports": 23,
+        "matched": 22,
+        "hit_rate": 0.96
       },
       "jericho-spanish-banks": {
         "reports": 6,

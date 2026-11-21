@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-21T19:23:43.313Z",
+  "updated_at": "2026-11-21T20:00:24.559Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -619,6 +619,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-11-21T13:00",
+      "forecasted": 0,
+      "actual": 21,
+      "ratio": 4.2,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-11-21T20:00:24.559Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-11-21T12:00",
       "forecasted": 18,
       "actual": 22,
@@ -1123,19 +1136,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-11-11T22:47:36.553Z"
-    },
-    {
-      "spot": "porteau-cove",
-      "time": "2026-11-11T08:00",
-      "forecasted": 8.9,
-      "actual": 9.9,
-      "ratio": 1.1123595505617978,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "mixed",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-11-11T15:11:23.035Z"
     },
     {
       "spot": "white-rock-east",
