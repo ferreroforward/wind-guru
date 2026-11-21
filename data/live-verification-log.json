@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-21T18:56:52.861Z",
+  "updated_at": "2026-11-21T19:23:43.313Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -619,6 +619,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-11-21T12:00",
+      "forecasted": 18,
+      "actual": 22,
+      "ratio": 1.2222222222222223,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "synoptic",
+      "mismatch": true,
+      "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 61%, so spread between models likely explains some of the gap.",
+      "checked_at": "2026-11-21T19:23:43.313Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-11-21T11:00",
       "forecasted": 18,
       "actual": 22,
@@ -1123,19 +1136,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-11-11T15:11:23.035Z"
-    },
-    {
-      "spot": "porteau-cove",
-      "time": "2026-11-11T07:00",
-      "forecasted": 7.9,
-      "actual": 9.9,
-      "ratio": 1.2531645569620253,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-11-11T14:50:12.038Z"
     },
     {
       "spot": "white-rock-east",
@@ -3180,6 +3180,19 @@
     },
     {
       "spot": "squamish-spit",
+      "time": "2026-11-21T12:00",
+      "forecasted": 6.1,
+      "actual": 8.7,
+      "ratio": 1.4262295081967213,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-11-21T19:23:43.313Z"
+    },
+    {
+      "spot": "squamish-spit",
       "time": "2026-11-21T08:00",
       "forecasted": 5.8,
       "actual": 9.9,
@@ -3684,19 +3697,6 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-11-08T02:59:38.703Z"
-    },
-    {
-      "spot": "squamish-spit",
-      "time": "2026-11-07T10:00",
-      "forecasted": 8.6,
-      "actual": 7.9,
-      "ratio": 0.9186046511627908,
-      "source": "live-station",
-      "station": "Squamish terminal sensor (Kiteloop)",
-      "regime": "outflow",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-11-07T17:01:16.041Z"
     }
   ]
 }
