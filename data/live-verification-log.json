@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-21T23:58:40.298Z",
+  "updated_at": "2026-11-22T03:49:16.755Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -96,6 +96,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-11-21T20:00",
+      "forecasted": 1.2,
+      "actual": 9.9,
+      "ratio": 1.98,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-11-22T03:49:16.755Z"
     },
     {
       "spot": "erwin-park",
@@ -605,17 +618,17 @@
       "checked_at": "2026-11-08T02:59:38.703Z"
     },
     {
-      "spot": "erwin-park",
-      "time": "2026-11-07T16:00",
-      "forecasted": 11.3,
-      "actual": 15.9,
-      "ratio": 1.407079646017699,
+      "spot": "porteau-cove",
+      "time": "2026-11-21T20:00",
+      "forecasted": 0,
+      "actual": 8,
+      "ratio": 1.6,
       "source": "live-station",
-      "station": "Point Atkinson",
-      "regime": "outflow",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "calm",
       "mismatch": true,
-      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
-      "checked_at": "2026-11-07T23:31:08.186Z"
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-11-22T03:49:16.755Z"
     },
     {
       "spot": "porteau-cove",
@@ -1125,19 +1138,6 @@
       "checked_at": "2026-11-12T08:31:33.058Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-11-11T18:00",
-      "forecasted": 8.8,
-      "actual": 12.1,
-      "ratio": 1.3749999999999998,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-11-12T01:42:27.404Z"
-    },
-    {
       "spot": "white-rock-east",
       "time": "2026-11-04T10:00",
       "forecasted": 3.3,
@@ -1370,6 +1370,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-11-21T20:00",
+      "forecasted": 12.7,
+      "actual": 15,
+      "ratio": 1.1811023622047245,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-22T03:49:16.755Z"
     },
     {
       "spot": "garry-point",
@@ -1877,19 +1890,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-11-12T20:25:42.939Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-11-12T09:00",
-      "forecasted": 9.5,
-      "actual": 8.9,
-      "ratio": 0.9368421052631579,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "mixed",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-11-12T16:27:22.294Z"
     },
     {
       "spot": "tsawwassen-south",
