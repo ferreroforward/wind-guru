@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-26T21:15:03.178Z",
+  "updated_at": "2026-11-27T02:29:39.233Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -619,6 +619,19 @@
     },
     {
       "spot": "porteau-cove",
+      "time": "2026-11-26T19:00",
+      "forecasted": 9.9,
+      "actual": 8,
+      "ratio": 0.8080808080808081,
+      "source": "live-station",
+      "station": "Pam Rocks (Howe Sound entrance)",
+      "regime": "mixed",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-27T02:29:39.233Z"
+    },
+    {
+      "spot": "porteau-cove",
       "time": "2026-11-26T14:00",
       "forecasted": 19,
       "actual": 21,
@@ -1125,19 +1138,6 @@
       "checked_at": "2026-11-20T01:28:05.613Z"
     },
     {
-      "spot": "porteau-cove",
-      "time": "2026-11-19T13:00",
-      "forecasted": 0,
-      "actual": 21,
-      "ratio": 4.2,
-      "source": "live-station",
-      "station": "Pam Rocks (Howe Sound entrance)",
-      "regime": "calm",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
-      "checked_at": "2026-11-19T20:19:57.072Z"
-    },
-    {
       "spot": "white-rock-east",
       "time": "2026-11-04T10:00",
       "forecasted": 3.3,
@@ -1370,6 +1370,19 @@
       "mismatch": true,
       "reasoning": "Synoptic regime, but the magnitude missed — model agreement was 56%, so spread between models likely explains some of the gap.",
       "checked_at": "2026-08-28T02:19:42.599Z"
+    },
+    {
+      "spot": "garry-point",
+      "time": "2026-11-26T19:00",
+      "forecasted": 15.8,
+      "actual": 18.1,
+      "ratio": 1.1455696202531647,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-27T02:29:39.233Z"
     },
     {
       "spot": "garry-point",
@@ -1877,19 +1890,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-11-19T13:06:39.736Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-11-19T01:00",
-      "forecasted": 9.1,
-      "actual": 9.9,
-      "ratio": 1.087912087912088,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "mixed",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-11-19T08:57:34.814Z"
     },
     {
       "spot": "tsawwassen-south",
@@ -3180,6 +3180,19 @@
     },
     {
       "spot": "squamish-spit",
+      "time": "2026-11-26T19:00",
+      "forecasted": 13.8,
+      "actual": 22.5,
+      "ratio": 1.6304347826086956,
+      "source": "live-station",
+      "station": "Squamish terminal sensor (Kiteloop)",
+      "regime": "mixed",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught. This hour already had a rider-feedback adjustment applied.",
+      "checked_at": "2026-11-27T02:29:39.233Z"
+    },
+    {
+      "spot": "squamish-spit",
       "time": "2026-11-26T14:00",
       "forecasted": 13.3,
       "actual": 18.9,
@@ -3684,19 +3697,6 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. This hour already had a rider-feedback adjustment applied.",
       "checked_at": "2026-11-11T15:11:23.035Z"
-    },
-    {
-      "spot": "squamish-spit",
-      "time": "2026-11-11T07:00",
-      "forecasted": 9.9,
-      "actual": 5.2,
-      "ratio": 0.5252525252525253,
-      "source": "live-station",
-      "station": "Squamish terminal sensor (Kiteloop)",
-      "regime": "mixed",
-      "mismatch": true,
-      "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high. This hour already had a rider-feedback adjustment applied.",
-      "checked_at": "2026-11-11T14:50:12.038Z"
     }
   ]
 }
