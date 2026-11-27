@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-27T16:36:02.178Z",
+  "updated_at": "2026-11-27T20:56:59.445Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -96,6 +96,19 @@
       "station": "White Rock, BC",
       "reasoning": "Forecast showed calm/mixed and live wind came in lighter still — models were on the right track, just a bit high.",
       "checked_at": "2026-08-15T03:05:00.396Z"
+    },
+    {
+      "spot": "erwin-park",
+      "time": "2026-11-27T13:00",
+      "forecasted": 4.1,
+      "actual": 8.9,
+      "ratio": 1.78,
+      "source": "live-station",
+      "station": "Point Atkinson",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-11-27T20:56:59.445Z"
     },
     {
       "spot": "erwin-park",
@@ -603,19 +616,6 @@
       "mismatch": true,
       "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
       "checked_at": "2026-11-14T23:27:07.267Z"
-    },
-    {
-      "spot": "erwin-park",
-      "time": "2026-11-14T13:00",
-      "forecasted": 11.9,
-      "actual": 20,
-      "ratio": 1.680672268907563,
-      "source": "live-station",
-      "station": "Point Atkinson",
-      "regime": "outflow",
-      "mismatch": true,
-      "reasoning": "Forecast called outflow but under-shot it — the real pressure gradient may be stronger than the reference stations captured.",
-      "checked_at": "2026-11-14T20:51:13.262Z"
     },
     {
       "spot": "porteau-cove",
@@ -1373,6 +1373,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-11-27T13:00",
+      "forecasted": 12,
+      "actual": 12.1,
+      "ratio": 1.0083333333333333,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "synoptic",
+      "mismatch": false,
+      "reasoning": null,
+      "checked_at": "2026-11-27T20:56:59.445Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-11-27T09:00",
       "forecasted": 15.2,
       "actual": 13,
@@ -1877,19 +1890,6 @@
       "mismatch": false,
       "reasoning": null,
       "checked_at": "2026-11-20T04:40:07.641Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-11-19T18:00",
-      "forecasted": 12.4,
-      "actual": 15,
-      "ratio": 1.2096774193548387,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-11-20T01:28:05.613Z"
     },
     {
       "spot": "tsawwassen-south",
