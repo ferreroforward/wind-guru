@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-27T20:56:59.445Z",
+  "updated_at": "2026-11-28T02:17:29.807Z",
   "entries": [
     {
       "spot": "boundary-bay",
@@ -1373,6 +1373,19 @@
     },
     {
       "spot": "garry-point",
+      "time": "2026-11-27T19:00",
+      "forecasted": 4.5,
+      "actual": 8,
+      "ratio": 1.6,
+      "source": "live-station",
+      "station": "Sand Heads",
+      "regime": "calm",
+      "mismatch": true,
+      "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
+      "checked_at": "2026-11-28T02:17:29.807Z"
+    },
+    {
+      "spot": "garry-point",
       "time": "2026-11-27T13:00",
       "forecasted": 12,
       "actual": 12.1,
@@ -1877,19 +1890,6 @@
       "mismatch": true,
       "reasoning": "Forecast showed calm/mixed but live wind is running well above that — likely an unmodeled local effect or a synoptic push none of the current signals caught.",
       "checked_at": "2026-11-20T14:44:24.090Z"
-    },
-    {
-      "spot": "garry-point",
-      "time": "2026-11-19T21:00",
-      "forecasted": 11.2,
-      "actual": 13,
-      "ratio": 1.1607142857142858,
-      "source": "live-station",
-      "station": "Sand Heads",
-      "regime": "synoptic",
-      "mismatch": false,
-      "reasoning": null,
-      "checked_at": "2026-11-20T04:40:07.641Z"
     },
     {
       "spot": "tsawwassen-south",
